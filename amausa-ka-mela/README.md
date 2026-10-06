@@ -7,10 +7,14 @@ It has no voiceover. All text and facts come from the artist's portfolio.
 ## Outputs (`output/`)
 | File | What it is |
 |---|---|
-| `amausa-ka-mela-reel.mp4` | Final reel, ready to upload |
-| `amausa-ka-mela-reel_safezone-preview.mp4` | Same reel with the Instagram safe zones drawn over it (for review only, not for upload) |
-| `amausa-ka-mela-cover.jpg` | Cover frame (title card; the title sits inside the 3:4 grid crop) |
-| `amausa-ka-mela-music.wav` | Original soundtrack |
+| `amausa-ka-mela-reel.mp4` | English reel, ready to upload |
+| `amausa-ka-mela-cover.jpg` | English thumbnail |
+| `amausa-ka-mela-reel-hindi.mp4` | Hindi reel (all on-screen text in Hindi), ready to upload |
+| `amausa-ka-mela-thumbnail-hindi.jpg` | Hindi thumbnail |
+
+In the Hindi version, the artist scene lists her credentials from the portfolio's "Recognition"
+page instead of her quote: 25+ years with Indian folk art, Government of India licensed artisan,
+studying at Shilp Kala Vidyapeeth.
 
 ## Storyboard (each scene is two bars of music, 2.5 s per bar)
 | Time | Scene |
@@ -33,14 +37,15 @@ manjira, ghungroo and temple bells. The tempo is 96 bpm, and scene cuts land on 
 ## Instagram safe zones
 Text and the CTA stay inside x 90–930 and y 270–1480. That leaves the top 270 px clear for the
 Reels header, the bottom 440 px for the caption and audio row, and the right 150 px for the
-action buttons. `python3 render.py x --check` measures every caption on every third frame and
-reports anything outside the safe area. The current build reports 0 issues.
+action buttons. `python3 render.py x --check` (add `--lang hi` for Hindi) measures every caption on every third frame and
+reports anything outside the safe area. Both versions currently report 0 issues.
 
 ## Rebuild
 ```
 python3 music.py music.wav
 python3 render.py output/amausa-ka-mela-reel.mp4 music.wav               # final
-python3 render.py output/preview.mp4 music.wav --safezones               # with overlay
+python3 render.py output/amausa-ka-mela-reel-hindi.mp4 music.wav --lang hi   # Hindi
+python3 render.py output/preview.mp4 music.wav --safezones               # safe-zone overlay (review only)
 ```
 Requires Python 3 with Pillow (with raqm, for Devanagari) and numpy, plus ffmpeg with libx264.
-Fonts are Cormorant Garamond, Jost and Tiro Devanagari Hindi, all under SIL OFL (see `assets/fonts`).
+Fonts are Cormorant Garamond, Jost, Tiro Devanagari Hindi, Martel and Hind, all under SIL OFL (see `assets/fonts`).

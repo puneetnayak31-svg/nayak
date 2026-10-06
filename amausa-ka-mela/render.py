@@ -38,6 +38,7 @@ GOLD = (232, 182, 72)
 WHITE = (255, 255, 255)
 
 SAFEZONES = False
+LANG = "en"  # "hi" renders the Hindi text version
 TEXT_BOUNDS = None  # list when checking the safe area
 
 # ------------------------------------------------------------------ assets
@@ -60,6 +61,13 @@ def font(name, size):
         "sans-medium": "Jost_500Medium.ttf",
         "sans-semi": "Jost_600SemiBold.ttf",
         "deva": "TiroDevanagariHindi_400Regular.ttf",
+        # Hindi version
+        "hi-serif": "Martel_600SemiBold.ttf",
+        "hi-serif-bold": "Martel_700Bold.ttf",
+        "hi-serif-light": "Martel_300Light.ttf",
+        "hi-sans": "Hind_400Regular.ttf",
+        "hi-sans-medium": "Hind_500Medium.ttf",
+        "hi-sans-semi": "Hind_600SemiBold.ttf",
     }
     return _font(files[name], size)
 
@@ -260,8 +268,29 @@ MASK_MED = circle_mask(730)
 
 
 # ------------------------------------------------------------------ text
+HI_FONT = {  # Latin face -> Devanagari face, size factor
+    "serif": ("hi-serif", 0.8), "serif-semi": ("hi-serif-bold", 0.8),
+    "serif-italic": ("hi-serif-light", 0.8), "sans": ("hi-sans", 1.3),
+    "sans-medium": ("hi-sans-medium", 1.3), "sans-semi": ("hi-sans-semi", 1.1),
+}
+MAX_TEXT_W = 2 * min(CX - SAFE_LEFT, SAFE_RIGHT - CX) - 20
+
+
+def is_deva(text):
+    return any("\u0900" <= ch <= "\u097f" for ch in text)
+
+
+def tr(text):
+    return HI.get(text, text) if LANG == "hi" else text
+
+
 @lru_cache(512)
 def text_img(text, fname, size, fill, tracking=0, shadow=0):
+    if is_deva(text):
+        if fname in HI_FONT:
+            fname, k = HI_FONT[fname]
+            size = round(size * k)
+        tracking = 0  # letter-spacing would break the conjuncts
     f = font(fname, size)
     if tracking:
         widths = [f.getlength(ch) for ch in text]
@@ -269,6 +298,8 @@ def text_img(text, fname, size, fill, tracking=0, shadow=0):
     else:
         tw = f.getlength(text)
     asc, desc = f.getmetrics()
+    # put_text shifts by 0.18 * align; for Devanagari that lands the headline (shirorekha) on y
+    align = f.getbbox("क")[1] / 0.18 if is_deva(text) else asc
     pad = 30 + shadow * 2
     im = Image.new("RGBA", (int(tw) + pad * 2, asc + desc + pad * 2), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -286,7 +317,7 @@ def text_img(text, fname, size, fill, tracking=0, shadow=0):
         sh.alpha_composite(im)
         sh.alpha_composite(im)
         im = Image.alpha_composite(sh, im)
-    return im, pad, asc
+    return im, pad, align
 
 
 def fade_alpha(im, alpha):
@@ -302,8 +333,13 @@ def put_text(canvas, text, fname, size, fill, y, alpha=1.0, x=CX, align="center"
     """y is the top of the cap line. Returns the rendered width."""
     if alpha <= 0.003:
         return 0
+    text = tr(text)
     im, pad, asc = text_img(text, fname, size, fill, tracking, shadow)
     tw = im.width - 2 * pad
+    if tw > MAX_TEXT_W and align == "center":  # shrink to fit the safe width
+        size = int(size * MAX_TEXT_W / tw)
+        im, pad, asc = text_img(text, fname, size, fill, tracking, shadow)
+        tw = im.width - 2 * pad
     if align == "center":
         px = x - tw / 2 - pad
     elif align == "left":
@@ -311,6 +347,8 @@ def put_text(canvas, text, fname, size, fill, y, alpha=1.0, x=CX, align="center"
     else:
         px = x - tw - pad
     py = y - pad - asc * 0.18 + dy
+    if is_deva(text):
+        py += 0.15 * size  # leave room for the matras above the headline
     if TEXT_BOUNDS is not None and alpha > 0.5:
         bb = im.getchannel("A").getbbox()
         if bb:
@@ -422,6 +460,8 @@ def paper_canvas(bands=True):
 
 
 def kicker(canvas, text, y, alpha, dy=0, color=RED, size=27):
+    if LANG == "hi":
+        y -= 14
     put_text(canvas, text, "sans-medium", size, color, y, alpha, tracking=6, dy=dy)
 
 
@@ -461,10 +501,17 @@ def s_title(t, d):
     gallery_frame(c, img, CX, 680, a)
     a, dy = reveal(t, 0.35)
     kicker(c, "N° 01  ·  THE PAINTING", 1060, a, dy)
+    first, second = ("Amausa Ka Mela", "अमौसा का मेला") if LANG == "en" else ("अमौसा का मेला", "Amausa Ka Mela")
     a, dy = reveal(t, 0.6, 0.7)
-    put_text(c, "Amausa Ka Mela", "serif-semi", 112, INK, 1108, a, dy=dy)
+    if LANG == "en":
+        put_text(c, first, "serif-semi", 112, INK, 1108, a, dy=dy)
+    else:
+        put_text(c, first, "deva", 100, INK, 1112, a, dy=dy)
     a, dy = reveal(t, 1.1, 0.7)
-    put_text(c, "अमौसा का मेला", "deva", 60, RED, 1248, a, dy=dy)
+    if LANG == "en":
+        put_text(c, second, "deva", 60, RED, 1248, a, dy=dy)
+    else:
+        put_text(c, second, "serif-italic", 60, RED, 1250, a, dy=dy)
     a, dy = reveal(t, 1.6)
     put_text(c, "FOLK LIFE  ·  FESTIVALS  ·  CONTEMPORARY MITHILA", "sans", 23, (90, 78, 66), 1365, a, dy=dy, tracking=3)
     return c
@@ -535,7 +582,7 @@ def s_technique(t, d):
     put_text(c, label, "sans-semi", 44, RED, y0 + 42, a, dy=dy, tracking=14)
     put_text(c, l1, "serif-semi", 64, INK, y0 + 112, a, dy=dy)
     put_text(c, l2, "serif-italic", 60, (60, 50, 44), y0 + 190, a, dy=dy)
-    put_text(c, note.upper(), "sans", 22, (110, 96, 84), y0 + 276, a, dy=dy, tracking=4)
+    put_text(c, tr(note).upper(), "sans", 22, (110, 96, 84), y0 + 276, a, dy=dy, tracking=4)
     return c
 
 
@@ -610,6 +657,11 @@ def s_artist(t, d):
     kicker(c, "MITHILA / MADHUBANI ARTIST  ·  BHOPAL", 950, a, dy, size=24)
     a, dy = reveal(t, 0.9)
     c.alpha_composite(fade_alpha(LOTUS, a), (CX - LOTUS.width // 2, 1010))
+    if LANG == "hi":
+        for j, ln in enumerate(CREDENTIALS_HI):
+            a, dy = reveal(t, 1.15 + j * 0.4, 0.6)
+            put_text(c, ln, "serif", 54, (54, 44, 38), 1130 + j * 96, a, dy=dy)
+        return c
     quote = "“Mithila painting has become not just an artistic practice for me, but a meaningful cultural and spiritual journey.”"
     lines = wrap(quote, "serif-italic", 54, 760)
     for j, ln in enumerate(lines):
@@ -643,7 +695,8 @@ def follow_button(canvas, y, t):
                         outline=(CREAM if not done else RED) + (255,), width=3)
     canvas.alpha_composite(fade_alpha(lay, a), (0, y0 - 60))
     col = RED if done else CREAM
-    put_text(canvas, "Following" if done else "+  Follow", "sans-semi", 50, col, y0 + bh / 2 - 26, a)
+    put_text(canvas, "Following" if done else "+  Follow", "sans-semi", 50 if LANG == "en" else 44, col,
+             y0 + bh / 2 - (26 if LANG == "en" else 22), a)
     # tap ripple
     if tap - 0.35 < t < tap + 0.5:
         r = 30 + 160 * ease_out((t - tap + 0.1) / 0.6)
@@ -680,6 +733,56 @@ def s_cta(t, d):
     a, dy = reveal(t, 3.2)
     kicker(c, "BHOPAL, INDIA", 1352, a, dy, color=(220, 210, 190), size=22)
     return c
+
+
+# Hindi version copy (facts from the artist's portfolio)
+HI = {
+    "A MITHILA PAINTING  ·  N° 01": "एक मिथिला चित्र  ·  क्रमांक 01",
+    "Two childhood friends.": "बचपन की दो सहेलियाँ।",
+    "One river.": "एक नदी।",
+    "One fair.": "एक मेला।",
+    "N° 01  ·  THE PAINTING": "क्रमांक 01  ·  चित्र",
+    "FOLK LIFE  ·  FESTIVALS  ·  CONTEMPORARY MITHILA": "लोक जीवन  ·  पर्व-त्योहार  ·  समकालीन मिथिला",
+    "THE REUNION": "पुनर्मिलन",
+    "Champa & Chameli —": "चंपा और चमेली —",
+    "childhood friends, together again": "बचपन की सहेलियाँ, फिर एक साथ",
+    "AT A MELA IN PRAYAGRAJ": "प्रयागराज के मेले में",
+    "trading stories of families,": "परिवार, ससुराल और घर-आँगन",
+    "married lives and homes": "की बातें साझा करती हुईं",
+    "THE GANGES BETWEEN THEM": "दोनों के बीच बहती गंगा",
+    "a river that has held": "एक नदी, जिसने बरसों से",
+    "their conversation": "उनकी बातों को",
+    "in trust for years.": "सहेज कर रखा है।",
+    "KACHNI": "कचनी",
+    "Blue waves, hatched": "नीली लहरें, एक-एक",
+    "line by line": "रेखा से उकेरी गईं",
+    "patient, rhythmic linework": "धैर्य भरी, लयबद्ध रेखाएँ",
+    "BHARNI": "भरनी",
+    "Solid colour fills": "ठोस रंगों की भराई,",
+    "that warm the figures": "जो आकृतियों में गर्माहट भरती है",
+    "acrylic on handmade paper": "हस्तनिर्मित कागज़ पर ऐक्रेलिक",
+    "MITHILA ELEMENTS": "मिथिला कला के तत्व",
+    "Birds in flight": "उड़ते पंछी",
+    "Floral fills": "फूलों की भराई",
+    "Geometric patterning": "ज्यामितीय अलंकरण",
+    "Ornamental motifs": "पारंपरिक आभूषण-रूपांकन",
+    "INSPIRED BY THE POEM": "इस कविता से प्रेरित",
+    "“Amausa Ka Mela”": "“अमौसा का मेला”",
+    "by Kailash Gautam": "कवि कैलाश गौतम",
+    "ACRYLIC ON HANDMADE PAPER  ·  DIP NIB  ·  22 × 30 IN": "हस्तनिर्मित कागज़ पर ऐक्रेलिक  ·  डिप निब  ·  22 × 30 इंच",
+    "Dr Piyush Kiran Nayak": "डॉ. पीयूष किरण नायक",
+    "MITHILA / MADHUBANI ARTIST  ·  BHOPAL": "मिथिला / मधुबनी कलाकार  ·  भोपाल",
+    "Follow for more Mithila stories": "मिथिला की और कहानियों के लिए",
+    "Following": "फ़ॉलो कर रहे हैं",
+    "+  Follow": "+  फ़ॉलो करें",
+    "COMMISSIONS  ·  WORKSHOPS  ·  EXHIBITIONS": "कमीशन  ·  कार्यशालाएँ  ·  प्रदर्शनियाँ",
+    "BHOPAL, INDIA": "भोपाल, भारत",
+}
+CREDENTIALS_HI = [  # replaces the quote in the Hindi version (portfolio, "Recognition")
+    "भारतीय लोक कला में 25+ वर्ष",
+    "भारत सरकार से लाइसेंस प्राप्त शिल्पी",
+    "शिल्प कला विद्यापीठ में अध्ययनरत",
+]
 
 
 SCENES = [
@@ -763,6 +866,9 @@ def main():
     global SAFEZONES
     args = sys.argv[1:]
     SAFEZONES = "--safezones" in args
+    global LANG
+    if "--lang" in args:
+        LANG = args[args.index("--lang") + 1]
     if "--check" in args:
         global TEXT_BOUNDS
         bad = set()

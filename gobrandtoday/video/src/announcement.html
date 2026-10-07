@@ -53,24 +53,24 @@
 </style>
 </head>
 <body>
-<div id="root" class="{{FMT}}" data-composition-id="announcement" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="38">
+<div id="root" class="{{FMT}}" data-composition-id="announcement" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="54">
   <div class="layer bg-dark" id="bgdark"></div>
   <div class="layer" id="wipes"></div>
   <div class="layer" id="glows"></div>
   <div class="layer field" id="field"></div>
   <section class="clip" id="s-hook" data-start="0" data-duration="3" data-track-index="1"></section>
-  <section class="clip" id="s-idea" data-start="3" data-duration="5.05" data-track-index="1"></section>
-  <section class="clip" id="s-spark" data-start="8" data-duration="2.55" data-track-index="2"></section>
-  <section class="clip" id="s-names" data-start="10" data-duration="4" data-track-index="1"></section>
-  <section class="clip" id="s-checks" data-start="14" data-duration="4" data-track-index="1"></section>
-  <section class="clip" id="s-score" data-start="18" data-duration="4" data-track-index="1"></section>
-  <section class="clip" id="s-looks" data-start="22" data-duration="4.05" data-track-index="1"></section>
-  <section class="clip" id="s-book" data-start="26" data-duration="2" data-track-index="1"></section>
-  <section class="clip" id="s-launch" data-start="28" data-duration="2.05" data-track-index="1"></section>
-  <section class="clip" id="s-close" data-start="30" data-duration="8" data-track-index="1"></section>
-  <section class="clip" id="s-hud" data-start="10" data-duration="20" data-track-index="3"></section>
+  <section class="clip" id="s-idea" data-start="3" data-duration="7.05" data-track-index="1"></section>
+  <section class="clip" id="s-spark" data-start="10" data-duration="2.55" data-track-index="2"></section>
+  <section class="clip" id="s-names" data-start="12" data-duration="6" data-track-index="1"></section>
+  <section class="clip" id="s-checks" data-start="18" data-duration="6" data-track-index="1"></section>
+  <section class="clip" id="s-score" data-start="24" data-duration="6" data-track-index="1"></section>
+  <section class="clip" id="s-looks" data-start="30" data-duration="6.05" data-track-index="1"></section>
+  <section class="clip" id="s-book" data-start="36" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-launch" data-start="40" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-close" data-start="44" data-duration="10" data-track-index="1"></section>
+  <section class="clip" id="s-hud" data-start="12" data-duration="32" data-track-index="3"></section>
   <div class="layer grain"></div>
-  <audio id="music" src="assets/audio/announcement.wav" data-start="0" data-duration="38" data-volume="1"></audio>
+  <audio id="music" src="assets/audio/announcement-vo.wav" data-start="0" data-duration="54" data-volume="1"></audio>
 </div>
 <script>
 {{COMMON_JS}}
@@ -78,7 +78,16 @@
 fontsLoaded().then(() => {
   const W = {{W}}, H = {{H}}, V = H > W;
   const root = document.getElementById("root");
-  const tl = gsap.timeline({ paused: true });
+  // Every cue below is written on the original 38 s cue sheet; R() inserts a two-bar hold at each
+  // point in HOLDS (same as audio/sound.py) so each scene has time to be read. tl remaps positions.
+  const HOLDS = [6.52, 12.0, 17.5, 20.5, 24.0, 27.6, 29.5, 36.5];
+  const R = (t) => t + 2 * HOLDS.filter(h => t >= h).length;
+  const tl0 = gsap.timeline({ paused: true });
+  const tl = {
+    to: (t, v, p) => { tl0.to(t, v, R(p)); return tl; },
+    fromTo: (t, a, b, p) => { tl0.fromTo(t, a, b, R(p)); return tl; },
+    set: (t, v, p) => { tl0.set(t, v, R(p)); return tl; },
+  };
   const $ = (id) => document.getElementById(id);
 
   // Instagram Reels safe area for the vertical cut (text stays out of the header, caption and
@@ -165,7 +174,7 @@ fontsLoaded().then(() => {
     FLAMES.forEach((f) => {
       let t = start + r() * 0.3;
       while (t < end - 0.3) {
-        tl.to(f, { scaleY: 0.9 + r() * 0.25, scaleX: 0.95 + r() * 0.1, skewX: (r() - 0.5) * 10, duration: 0.18 + r() * 0.12, ease: "sine.inOut" }, t);
+        tl0.to(f, { scaleY: 0.9 + r() * 0.25, scaleX: 0.95 + r() * 0.1, skewX: (r() - 0.5) * 10, duration: 0.18 + r() * 0.12, ease: "sine.inOut" }, t);
         t += 0.22 + r() * 0.15;
       }
     });
@@ -777,11 +786,18 @@ fontsLoaded().then(() => {
     tl.to([wm.wm], { keyframes: [{ scale: 1.04, duration: 0.12 }, { scale: 1, duration: 0.5, ease: "elastic.out(1,0.5)" }] }, C.end);
     tl.to(wm.twin.svg, { keyframes: [{ scale: 1.6, rotation: 45, duration: 0.15 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)" }] }, C.end + 0.5);
     fieldRipple(tl, F, C.end, "center", 0.7, 1.8);
-    fieldTwinkle(tl, F, 33.6, 38, 41);
+    fieldTwinkle(tl0, F, R(33.6), 54, 41);
   }
 
-  flicker(0, 38, 9);
-  window.__timelines["announcement"] = tl;
+  flicker(0, 54, 9);
+  // The field of full stops: full during the intro and the spark, gone on the light product
+  // scenes so text reads cleanly, and only a soft texture on the dark ones.
+  tl0.to("#field", { opacity: 0.6, duration: 0.4 }, 10.6);
+  tl0.to("#field", { opacity: 0, duration: 0.4 }, 12.3);
+  tl0.to("#field", { opacity: 0.22, duration: 0.5 }, 24.2);
+  tl0.to("#field", { opacity: 0, duration: 0.3 }, 29.7);
+  tl0.to("#field", { opacity: 0.3, duration: 0.6 }, 44.2);
+  window.__timelines["announcement"] = tl0;
 });
 </script>
 </body>

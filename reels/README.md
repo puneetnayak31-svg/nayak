@@ -1,6 +1,6 @@
 # Mithila painting reels: Dr Piyush Kiran Nayak
 
-These are 9:16 Instagram Reels (1080×1920, 30 fps, H.264 + AAC, -14 LUFS), one per painting. They have no
+These are 9:16 Instagram Reels (1080×1920, 30 fps, H.264 at about 4.8 Mbps, AAC, -14 LUFS), one per painting. They have no
 voiceover. Every caption comes from the artist's portfolio, and each reel has its own playful soundtrack.
 
 ## Outputs (`output/`): one reel and one thumbnail per painting

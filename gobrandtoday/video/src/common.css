@@ -46,3 +46,4 @@ body { font-family: "Manrope", sans-serif; color: var(--graphite); -webkit-font-
 .mono { font-family: "Space Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase; }
 .display { font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 0.98; }
 .caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.06em; background: var(--violet); }
+@font-face { font-family: "Tiro Devanagari Hindi"; src: url("assets/fonts/TiroDevanagariHindi.ttf") format("truetype"); font-display: block; }

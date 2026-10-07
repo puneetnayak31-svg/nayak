@@ -20,7 +20,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "src")
 FORMATS = {"16x9": (1920, 1080, "H"), "9x16": (1080, 1920, "V")}
-VIDEOS = [v for v in ("logo-reveal", "announcement") if os.path.exists(os.path.join(SRC, v + ".html"))]
+VIDEOS = sorted(f[:-5] for f in os.listdir(SRC) if f.endswith(".html"))
 
 
 def grain():
@@ -37,13 +37,22 @@ def main():
     for f in sorted(os.listdir(out)):
         if f.endswith(".wav"):
             shutil.copy(os.path.join(out, f), os.path.join(HERE, "assets", "audio", f))
+    shorts = os.path.join(out, "shorts")
+    os.makedirs(os.path.join(HERE, "assets", "audio", "shorts"), exist_ok=True)
+    for f in sorted(os.listdir(shorts)) if os.path.isdir(shorts) else []:
+        if f.endswith(".wav") and not f.endswith("-music.wav") and ".raw." not in f:
+            shutil.copy(os.path.join(shorts, f), os.path.join(HERE, "assets", "audio", "shorts", f))
     css = open(os.path.join(SRC, "common.css")).read()
     js = open(os.path.join(SRC, "common.js")).read()
     wickd = open(os.path.join(SRC, "wickd.js")).read()
+    kit_css = open(os.path.join(SRC, "kit.css")).read()
+    kit_js = open(os.path.join(SRC, "kit.js")).read()
+    brands = open(os.path.join(SRC, "brands.js")).read()
     for v in VIDEOS:
         tpl = open(os.path.join(SRC, v + ".html")).read()
         for name, (w, h, fmt) in FORMATS.items():
             html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js).replace("{{WICKD_JS}}", wickd)
+                    .replace("{{KIT_CSS}}", kit_css).replace("{{KIT_JS}}", kit_js).replace("{{BRANDS_JS}}", brands)
                     .replace("{{W}}", str(w)).replace("{{H}}", str(h)).replace("{{FMT}}", fmt))
             proj = os.path.join(HERE, "projects", f"{v}-{name}")
             os.makedirs(proj, exist_ok=True)

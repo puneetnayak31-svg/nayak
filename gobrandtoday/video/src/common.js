@@ -65,7 +65,7 @@ function appear(tl, e, at, until) {
 function fontsLoaded() {
   return Promise.all(['700 64px "Space Grotesk"', '500 64px "Space Grotesk"', '400 24px "Space Mono"',
     '700 24px "Space Mono"', '400 32px "Manrope"', '600 32px "Manrope"', '700 32px "Manrope"', '800 32px "Manrope"',
-    '64px "Anton"', '600 64px "Fraunces"', '64px "Rozha One"', '700 64px "Syne"']
+    '64px "Anton"', '600 64px "Fraunces"', '64px "Rozha One"', '700 64px "Syne"', '64px "Tiro Devanagari Hindi"']
     .map(f => document.fonts.load(f))).then(() => document.fonts.ready);
 }
 

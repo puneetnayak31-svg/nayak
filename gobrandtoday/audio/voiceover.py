@@ -5,6 +5,7 @@
 Each line is spoken by Kokoro-82M (a local text-to-speech model, run through `hyperframes tts`)
 and placed on its scene. Writes vo/NN.wav (one per line) and out/announcement-vo.wav (the final mix).
 """
+import hashlib
 import os
 import subprocess
 import wave
@@ -42,8 +43,9 @@ def read_wav(path):
     return sr, x
 
 
-def line_audio(k, text):
-    path = os.path.join(HERE, "vo", f"{k:02d}.wav")
+def line_audio(k, text, cache="vo"):
+    tag = hashlib.md5(f"{VOICE}|{SPEED}|{text}".encode()).hexdigest()[:8]
+    path = os.path.join(HERE, cache, f"{k:02d}-{tag}.wav")
     if not os.path.exists(path):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         subprocess.run(["npx", "--no-install", "hyperframes", "tts", text, "-v", VOICE, "-s", str(SPEED), "-o", path],
@@ -59,12 +61,18 @@ def line_audio(k, text):
 
 
 def main():
-    sr, music = read_wav(os.path.join(HERE, "out", "announcement.wav"))
+    mix_vo(os.path.join(HERE, "out", "announcement.wav"), LINES, os.path.join(HERE, "out", "announcement-vo.wav"), "vo")
+
+
+def mix_vo(music_path, lines, out_path, cache):
+    """Place each (start, text) line over the music, duck the music under it and master."""
+    sr, music = read_wav(music_path)
     assert sr == SR
+    LINES = lines
     n = music.shape[1]
     vo = np.zeros(n)
     for k, (t, text) in enumerate(LINES):
-        a = line_audio(k, text)
+        a = line_audio(k, text, cache)
         i = int(t * SR)
         end = t + len(a) / SR
         nxt = LINES[k + 1][0] if k + 1 < len(LINES) else n / SR
@@ -82,10 +90,10 @@ def main():
         sm[j] = acc
     duck = 1 - 0.65 * np.clip(sm / 0.08, 0, 1)
     mix = music * duck[None, :] + np.stack([vo, vo]) * 0.95
-    raw = os.path.join(HERE, "out", "announcement-vo.raw.wav")
+    raw = out_path.replace(".wav", ".raw.wav")
     write_wav(raw, mix / max(1.0, np.max(np.abs(mix))))
-    master(raw, os.path.join(HERE, "out", "announcement-vo.wav"))
-    print("wrote out/announcement-vo.wav")
+    master(raw, out_path)
+    print("wrote", os.path.relpath(out_path, HERE))
 
 
 if __name__ == "__main__":

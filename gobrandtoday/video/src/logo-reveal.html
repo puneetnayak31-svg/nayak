@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>gobrandtoday logo reveal {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+.stage { position: absolute; inset: 0; }
+.lockup { position: absolute; left: 0; top: 0; }
+.eyebrow { position: absolute; color: var(--violet); font-size: 26px; white-space: nowrap; }
+.tagline { position: absolute; color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+.tagline .w { display: inline-block; margin-right: 0.26em; }
+.drop { position: absolute; width: 10px; height: 10px; }
+.V .eyebrow { font-size: 22px; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="logo-reveal" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="6">
+  <div class="layer bg-glow" id="glow"></div>
+  <div class="stage" id="stage">
+    <div class="layer field" id="field"></div>
+    <div class="layer" id="fx"></div>
+    <div class="lockup" id="lockup"></div>
+  </div>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/logo-reveal.wav" data-start="0" data-duration="6" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}}, V = H > W;
+  const root = document.getElementById("root");
+  const tl = gsap.timeline({ paused: true });
+
+  // ---- cue times (seconds) from audio/sound.py LOGO
+  const TYPE0 = 0.4, STEP = 0.125, DOT = 2.0, DIAMOND = 2.5, SPARK = 3.0, TWIN = 3.5;
+
+  // ---- wordmark, centred
+  const size = V ? 128 : 172;
+  const lock = document.getElementById("lockup");
+  const M = buildWordmark(lock, size, { m: 0 });
+  const geo = M.place();
+  const wmW = geo.width, wmH = size;
+  const lx = (W - wmW) / 2, ly = H / 2 - size * 0.42;
+  M.wm.style.left = lx + "px"; M.wm.style.top = ly + "px";
+  const sx = lx + geo.cx, sy = ly + geo.cy;            // the spark's centre on screen
+  const caret = el("span", "caret", M.wm.querySelector(".wm-t"));
+  M.wm.querySelector(".wm-t").insertBefore(caret, M.wm.querySelector(".wm-t").lastChild);
+
+  const eyebrow = el("div", "eyebrow mono", lock, "AI brand studio · Made in India");
+  eyebrow.style.left = "0px"; eyebrow.style.width = W + "px"; eyebrow.style.textAlign = "center";
+  eyebrow.style.top = (ly - (V ? 90 : 110)) + "px";
+  const tag = el("div", "tagline", lock);
+  tag.style.fontSize = (V ? 42 : 48) + "px";
+  const words = "Your idea deserves a brand".split(" ").map(w => el("span", "w", tag, w));
+  tag.style.left = "0px"; tag.style.width = W + "px"; tag.style.textAlign = "center";
+  tag.style.top = (ly + size * 1.25) + "px";
+
+  const clear = [{ x: lx - 40, y: ly - (V ? 120 : 140), w: wmW + 80, h: size * 1.25 + (V ? 200 : 230) }];
+  const F = buildField(document.getElementById("field"), W, H, V ? 60 : 64, "rgba(22,22,26,0.16)", 0.32, 7, clear);
+  const fx = document.getElementById("fx");
+  const fxRatio = [sx / W, sy / H];
+
+  // ---- 0.0  the field of full stops breathes in
+  fieldIn(tl, F, 0.0, fxRatio, 1.0, 1);
+
+  // ---- typing: letters hop in on 16ths, the caret rides along and blinks
+  M.chars.forEach((c, i) => {
+    tl.fromTo(c, { display: "none" }, { display: "inline-block", duration: 0.01 }, TYPE0 + i * STEP);
+    tl.fromTo(c, { y: size * 0.18, scale: 0.86 }, { y: 0, scale: 1, duration: 0.22, ease: "back.out(3)" }, TYPE0 + i * STEP);
+  });
+  [[0, 1], [0.2, 0], [TYPE0, 1], [DOT - 0.1, 0]]
+    .forEach(([t, o]) => tl.set(caret, { opacity: o }, t));
+
+  // ---- 2.0  the full stop falls in, squashes and sends a ripple through the field
+  const mk = M.mark.svg;
+  M.mark.path.setAttribute("d", sparkD(0));
+  appear(tl, mk, DOT - 0.22);
+  appear(tl, M.twin.svg, TWIN);
+  tl.fromTo(mk, { y: -(sy + 80), scaleX: 0.42 * 0.8, scaleY: 0.42 * 1.4 },
+    { y: 0, duration: 0.22, ease: "power3.in" }, DOT - 0.22);
+  tl.to(mk, { keyframes: [{ scaleX: 0.42 * 1.45, scaleY: 0.42 * 0.62, duration: 0.07 }, { scaleX: 0.42, scaleY: 0.42, duration: 0.35, ease: "elastic.out(1.2,0.4)" }] }, DOT);
+  fieldRipple(tl, F, DOT, fxRatio, 0.9, 2.4);
+  const ring0 = el("div", "", fx);
+  ring0.style.cssText = `position:absolute;left:${sx - 40}px;top:${sy - 40}px;width:80px;height:80px;border-radius:50%;border:3px solid var(--violet)`;
+  appear(tl, ring0, DOT, DOT + 1.0);
+  tl.fromTo(ring0, { scale: 0.2, opacity: 0.8 }, { scale: 9, opacity: 0, duration: 1.0, ease: "expo.out" }, DOT);
+
+  // ---- 2.5  thinking: it breathes into a soft diamond
+  morph(tl, M.mark.path, 0, 1, DIAMOND - 0.12, 0.3, "back.out(2)");
+  tl.to(mk, { scale: 0.62, rotation: 0, duration: 0.3, ease: "back.out(2)" }, DIAMOND - 0.12);
+  fieldToDiamonds(tl, F, DIAMOND - 0.1, fxRatio, 0.7);
+  tl.fromTo("#glow", { opacity: 0, scale: 0.4, x: sx - W / 2, y: sy - H / 2 }, { opacity: 0.55, scale: 0.9, duration: 0.5, ease: "sine.inOut" }, DIAMOND - 0.1);
+
+  // ---- 3.0  SPARK: snap, burst, camera punch, the field twinkles into sparks
+  morph(tl, M.mark.path, 1, 2, SPARK - 0.06, 0.16, "power3.in");
+  tl.to(mk, { keyframes: [{ scale: 1.9, rotation: 90, duration: 0.16, ease: "power2.out" }, { scale: 1, rotation: 90, duration: 0.5, ease: "elastic.out(1,0.45)" }] }, SPARK - 0.04);
+  burst(tl, fx, sx, sy, SPARK, { rays: 12, len: V ? 120 : 150, r0: 30, r1: V ? 200 : 240, ringScale: 7 });
+  tl.to("#stage", { keyframes: [{ scale: 1.045, duration: 0.12, ease: "power2.out" }, { scale: 1, duration: 0.6, ease: "power3.out" }], transformOrigin: `${sx}px ${sy}px` }, SPARK);
+  fieldToSparks(tl, F, SPARK + 0.02, fxRatio, 0.9);
+  tl.to("#glow", { opacity: 0.85, scale: 1.4, duration: 0.25, ease: "power2.out" }, SPARK);
+  tl.to("#glow", { opacity: 0.35, scale: 1.1, duration: 1.2, ease: "sine.inOut" }, SPARK + 0.3);
+
+  // ---- 3.5  TWIN: the little aqua spark appears for "done"
+  const tw = M.twin.svg;
+  tl.fromTo(tw, { scale: 0, rotation: -90, opacity: 1 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(4)" }, TWIN);
+  const flare = el("div", "", fx);
+  flare.style.cssText = `position:absolute;left:${lx + geo.tx - 3}px;top:${ly + geo.ty - 60}px;width:6px;height:120px;border-radius:6px;background:var(--aqua)`;
+  const flare2 = el("div", "", fx);
+  flare2.style.cssText = `position:absolute;left:${lx + geo.tx - 60}px;top:${ly + geo.ty - 3}px;width:120px;height:6px;border-radius:6px;background:var(--aqua)`;
+  appear(tl, [flare, flare2], TWIN, TWIN + 0.5);
+  tl.fromTo([flare, flare2], { scale: 0, opacity: 1 }, { scale: 1, opacity: 0, duration: 0.5, ease: "expo.out" }, TWIN);
+
+  // ---- 3.75  eyebrow wipes in, the tagline rises word by word
+  tl.fromTo(eyebrow, { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.6, ease: "power3.out" }, TWIN + 0.25);
+  tl.fromTo(words, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out", stagger: 0.08 }, TWIN + 0.35);
+
+  // ---- 4.5  hold: the spark breathes, the twin winks on the tabla, the field twinkles
+  tl.to(mk, { scale: 1.08, duration: 0.75, ease: "sine.inOut", yoyo: true, repeat: 1 }, 4.4);
+  tl.to(tw, { keyframes: [{ scale: 1.5, rotation: 45, duration: 0.15 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)" }] }, 4.5);
+  fieldTwinkle(tl, F, 3.9, 6.0, 11);
+
+  window.__timelines["logo-reveal"] = tl;
+});
+</script>
+</body>
+</html>

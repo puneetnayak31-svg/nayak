@@ -1,0 +1,62 @@
+"""Builds the GoBrandToday compositions: one self-contained HTML file per video and format.
+
+    python3 build.py            # writes projects/<video>-16x9/ and projects/<video>-9x16/
+
+Each project is a HyperFrames project (one root index.html each) whose assets/ links to the shared
+assets folder here. Render one with: npx hyperframes render projects/<video>-<format>
+
+Sources live in src/: common.css and common.js are inlined into each template, and {{W}}, {{H}}
+and {{FMT}} are filled in per format. The score comes from ../audio (python3 ../audio/sound.py).
+"""
+import base64
+import io
+import os
+import json
+import shutil
+
+import numpy as np
+from PIL import Image
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(HERE, "src")
+FORMATS = {"16x9": (1920, 1080, "H"), "9x16": (1080, 1920, "V")}
+VIDEOS = [v for v in ("logo-reveal", "announcement") if os.path.exists(os.path.join(SRC, v + ".html"))]
+
+
+def grain():
+    """A 256 px tileable film-grain texture, seeded so every build is identical."""
+    rng = np.random.default_rng(5)
+    g = rng.normal(128, 38, (256, 256)).clip(0, 255).astype("uint8")
+    Image.fromarray(g, "L").save(os.path.join(HERE, "assets", "grain.png"))
+
+
+def main():
+    os.makedirs(os.path.join(HERE, "assets", "audio"), exist_ok=True)
+    grain()
+    out = os.path.join(HERE, "..", "audio", "out")
+    for f in sorted(os.listdir(out)):
+        if f.endswith(".wav"):
+            shutil.copy(os.path.join(out, f), os.path.join(HERE, "assets", "audio", f))
+    css = open(os.path.join(SRC, "common.css")).read()
+    js = open(os.path.join(SRC, "common.js")).read()
+    for v in VIDEOS:
+        tpl = open(os.path.join(SRC, v + ".html")).read()
+        for name, (w, h, fmt) in FORMATS.items():
+            html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js)
+                    .replace("{{W}}", str(w)).replace("{{H}}", str(h)).replace("{{FMT}}", fmt))
+            proj = os.path.join(HERE, "projects", f"{v}-{name}")
+            os.makedirs(proj, exist_ok=True)
+            link = os.path.join(proj, "assets")
+            if not os.path.islink(link):
+                os.symlink(os.path.join("..", "..", "assets"), link)
+            open(os.path.join(proj, "index.html"), "w").write(html)
+            json.dump({"$schema": "https://hyperframes.heygen.com/schema/hyperframes.json",
+                       "paths": {"blocks": "compositions", "components": "compositions/components", "assets": "assets"},
+                       "media": {"autoProxy": True}}, open(os.path.join(proj, "hyperframes.json"), "w"), indent=2)
+            json.dump({"id": f"gobrandtoday-{v}-{name}", "name": f"gobrandtoday {v} {name}"},
+                      open(os.path.join(proj, "meta.json"), "w"), indent=2)
+            print("wrote", os.path.relpath(proj, HERE))
+
+
+if __name__ == "__main__":
+    main()

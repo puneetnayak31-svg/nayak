@@ -1,0 +1,48 @@
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk-Variable.woff2") format("woff2"); font-weight: 300 700; font-display: block; }
+@font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope-Variable.woff2") format("woff2"); font-weight: 200 800; font-display: block; }
+@font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+@font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Bold.woff2") format("woff2"); font-weight: 700; font-display: block; }
+@font-face { font-family: "Anton"; src: url("assets/fonts/Anton.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Fraunces"; src: url("assets/fonts/Fraunces.woff2") format("woff2"); font-weight: 600; font-display: block; }
+@font-face { font-family: "Rozha One"; src: url("assets/fonts/RozhaOne.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Syne"; src: url("assets/fonts/Syne.woff2") format("woff2"); font-weight: 700; font-display: block; }
+
+:root {
+  --graphite: #16161A;
+  --violet: #6D4AFF;
+  --violet-d: #4527D9;
+  --violet-s: #8F75FF;
+  --violet-m: #B9AEFF;
+  --aqua: #19C3B4;
+  --lilac: #ECE7FF;
+  --paper: #FAFAF7;
+  --ink-2: #4A4756;
+  --line: #DCD8E8;
+}
+
+html, body { margin: 0; padding: 0; background: var(--paper); }
+body { font-family: "Manrope", sans-serif; color: var(--graphite); -webkit-font-smoothing: antialiased; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--paper); }
+.layer { position: absolute; inset: 0; }
+.clip { position: absolute; inset: 0; }
+.bg-dark { background: var(--graphite); opacity: 0; }
+.bg-glow { opacity: 0; background: radial-gradient(closest-side, rgba(109, 74, 255, 0.42), rgba(109, 74, 255, 0) 100%); }
+.grain { pointer-events: none; mix-blend-mode: multiply; opacity: 0.07; background-image: url("assets/grain.png"); background-size: 256px 256px; }
+
+/* The field of full stops behind everything: dots that ripple, turn into diamonds and twinkle into sparks. */
+.field { pointer-events: none; }
+.cell { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; display: block; }
+.cell .dm { position: absolute; inset: 2px; background: currentColor; border-radius: 50%; display: block; }
+.cell .sp { position: absolute; left: -9px; top: -9px; width: 28px; height: 28px; overflow: visible; opacity: 0; }
+.cell .sp path { fill: var(--violet); }
+
+/* Wordmark: lowercase gobrandtoday + the spark in place of a full stop, and its aqua twin. */
+.wm { position: absolute; display: block; white-space: nowrap; font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
+.wm .ch { display: inline-block; }
+.wm .mark { position: absolute; width: 0.5em; height: 0.5em; overflow: visible; }
+.wm .twin { position: absolute; width: 0.22em; height: 0.22em; overflow: visible; }
+.spark-svg { overflow: visible; }
+
+.mono { font-family: "Space Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.display { font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 0.98; }
+.caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.06em; background: var(--violet); }

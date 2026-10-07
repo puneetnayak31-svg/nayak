@@ -110,7 +110,47 @@ def ep01():
     return m.render(), EP01_VO
 
 
-SCORES = {"name-my-brand-ep01": ep01}
+# ------------------------------------------------------------------ 2  Comment -> Brand (22 s)
+CMT = dict(dur=22.0, type0=0.4, idea="a dog café with a reading corner", post=2.4, sting=2.5,
+           name=4.1, logo=6.0, swatches=[8.0, 8.25, 8.5, 8.75, 9.0], mocks=[10.25, 10.75, 11.25], chip=12.0,
+           next=14.0, end=18.0)
+CMT_VO = [
+    (0.1, "Comment an idea, and we'll turn it into a brand."),
+    (4.3, "Pawse. Paws, plus pause."),
+    (6.2, "A logo with a paw for a full stop."),
+    (8.2, "Warm, cosy colours."),
+    (10.2, "And a café that's ready to open."),
+    (14.2, "Your idea could be next. Drop it in the comments."),
+]
+
+
+def comment():
+    a = CMT
+    m = Mix(a["dur"])
+    groove_bar(m, 0.0, 0, level=0.55, arp=False)
+    quiet_pad(m, 0.0, 2.6, chord=0, lo=600, hi=1600)
+    type_clicks(m, a["type0"], len(a["idea"]), S16 / 2, 0.7)
+    m.add(pop(1100, 0.8), a["post"], rev=0.2)
+    sting(m, a["sting"], big=False)
+    m.add(reverse_whoosh(0.4, 0.6), 3.6)
+    groove(m, 4.0, 5)
+    groove(m, 14.0, 2, start=1, level=0.8)
+    motif(m, 14.0, 0.4)
+    m.add(pop(800, 0.7), a["name"], rev=0.2)
+    m.add(bell(83, 0.4), a["logo"], rev=0.3, dly=0.12)
+    for i, t in enumerate(a["swatches"]):
+        m.add(pop(620 + 90 * i, 0.55), t, pan=-0.4 + 0.2 * i)
+    for i, t in enumerate(a["mocks"]):
+        m.add(pop(700 + 120 * i, 0.6), t, pan=-0.3 + 0.3 * i)
+        m.add(tabla("na", 0.4), t, rev=0.1)
+    m.add(pop(1200, 0.45), a["chip"])
+    for t in (4.0, 6.0, 8.0, 10.0, 14.0):
+        m.add(whoosh(0.4, 0.6), t - 0.25, rev=0.1)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), CMT_VO
+
+
+SCORES = {"name-my-brand-ep01": ep01, "comment-to-brand": comment}
 
 
 def build(slug):

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Four Logos One Name {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.stage { position: absolute; border-radius: 36px; overflow: hidden; border: 3px solid var(--line); background: #FFFFFF; }
+.num { position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--violet); color: #FFFFFF; font-family: "Space Grotesk"; font-weight: 700; }
+.gcard { position: absolute; border-radius: 26px; overflow: hidden; border: 3px solid var(--line); background: #FFFFFF; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="four" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="22">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-l1" data-start="2" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-l2" data-start="4" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-l3" data-start="6" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-l4" data-start="8" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-grid" data-start="10" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-facts" data-start="14" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="18" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-chrome" data-start="2" data-duration="12" data-track-index="2"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/four-logos-one-name.wav" data-start="0" data-duration="22" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  const C = { looks: [2, 4, 6, 8], grid: [10.1, 10.25, 10.4, 10.55], facts: 14, end: 18 };
+  K.fieldTo(0, 0, 0.001);
+  const tints = ["#F3F0FF", "#EEF0FA", "#F7F1FF", "#FFF7EA"];
+
+  // ===================================================== 0-2 HOOK
+  {
+    const sc = $("s-hook");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 620 : 280) + "px", fontSize: (V ? 100 : 120) + "px" });
+    const w1 = K.words(hl, "Same name.");
+    const l2 = el("div", "", hl); const w2 = K.words(l2, "Four logos.");
+    const l3 = el("div", "", hl); l3.style.marginTop = "18px";
+    const mk = el("span", "marker", l3, "Which wins?");
+    tl.fromTo(w1, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.1 }, 0.0);
+    tl.fromTo(w2, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.1 }, 0.5);
+    tl.fromTo(mk, { scale: 0.5, opacity: 0, rotation: -4 }, { scale: 1, opacity: 1, rotation: -1.5, duration: 0.4, ease: "back.out(3)" }, 1.0);
+    const nm = el("div", "mono abs", sc, "Name: Mello · a calm-sleep tea");
+    Object.assign(nm.style, { left: "0", width: W + "px", textAlign: "center", top: (V ? 1100 : 760) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(nm, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.2);
+    tl.to([hl, nm], { scale: 0.9, opacity: 0, duration: 0.2, ease: "power2.in" }, 1.82);
+  }
+
+  // chrome
+  {
+    const sc = $("s-chrome");
+    const p = el("div", "pill vi abs", sc, "Mello · four looks");
+    Object.assign(p.style, { left: CA.x + "px", top: CA.y + "px" });
+    const ex = K.exPill(sc, CA.x + CA.w - 140, CA.y);
+    tl.fromTo([p, ex], { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05 }, 2.05);
+  }
+
+  // ===================================================== 2-10 FOUR LOOKS, ONE PER BEAT PAIR
+  const SB = V ? { x: CA.x, y: 470, w: CA.w, h: 700 } : { x: 330, y: 190, w: 1260, h: 600 };
+  MELLO_LOOKS.forEach((lk, k) => {
+    const sc = $("s-l" + (k + 1));
+    const t0 = C.looks[k];
+    const bg = el("div", "layer", sc); bg.style.background = tints[k];
+    tl.fromTo(bg, { clipPath: `circle(0% at ${k % 2 ? 100 : 0}% 50%)` }, { clipPath: `circle(150% at ${k % 2 ? 100 : 0}% 50%)`, duration: 0.45, ease: "power3.inOut" }, t0 - 0.05);
+    const st = el("div", "stage", sc);
+    Object.assign(st.style, { left: SB.x + "px", top: SB.y + "px", width: SB.w + "px", height: SB.h + "px" });
+    const inner = el("div", "abs", st); Object.assign(inner.style, { left: "0", top: "0", width: SB.w + "px", height: SB.h + "px" });
+    lk.draw(inner, SB.w, SB.h);
+    const n = el("div", "num", sc, String(k + 1));
+    const ns = V ? 120 : 130;
+    Object.assign(n.style, { left: (SB.x - (V ? 0 : ns / 2)) + "px", top: (SB.y - ns / 2) + "px", width: ns + "px", height: ns + "px", fontSize: (ns * 0.56) + "px" });
+    if (V) n.style.left = (SB.x + 20) + "px";
+    const meta = el("div", "abs", sc);
+    Object.assign(meta.style, { left: SB.x + "px", top: (SB.y + SB.h + 26) + "px", width: SB.w + "px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" });
+    const cn = el("div", "mono", meta, lk.name); cn.style.cssText = "font-size:22px;color:var(--violet-d)";
+    const pal = el("div", "", meta); pal.style.cssText = "display:flex;gap:6px";
+    lk.pal.forEach(c => { const s = el("i", "", pal); s.style.cssText = `display:block;width:34px;height:26px;border-radius:8px;background:${c};border:2px solid rgba(0,0,0,0.08)`; });
+    const fn = el("div", "", meta, lk.fonts); fn.style.cssText = "font:600 22px Manrope;color:var(--ink-2)";
+    tl.fromTo(st, { scale: 0.86, opacity: 0, rotation: k % 2 ? 2 : -2 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.5, ease: "back.out(1.6)" }, t0 + 0.05);
+    tl.fromTo(n, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)" }, t0 + 0.15);
+    tl.fromTo(meta, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, t0 + 0.3);
+    tl.to(inner, { scale: 1.04, duration: 1.6, ease: "sine.inOut" }, t0 + 0.3);
+    if (k < 3) tl.to([st, n, meta], { opacity: 0, x: -60, duration: 0.2, ease: "power2.in" }, t0 + 1.8);
+    else tl.to([st, n, meta], { opacity: 0, scale: 0.9, duration: 0.2, ease: "power2.in" }, t0 + 1.8);
+  });
+  SPIN.forEach(g => tl.fromTo(g, { rotation: 0 }, { rotation: -200, svgOrigin: "80 80", duration: 14, ease: "none" }, 0));
+  // the editorial look's z's float up
+  document.querySelectorAll(".zz").forEach((z, k) => tl.fromTo(z, { y: 10, opacity: 0.2 }, { y: -14, opacity: 1, duration: 1.4, ease: "sine.inOut", repeat: 4, yoyo: true }, 8 + k * 0.3));
+
+  // ===================================================== 10-14 THE GRID: comment your pick
+  {
+    const sc = $("s-grid");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? CA.y + 80 : CA.y + 70) + "px", fontSize: (V ? 76 : 84) + "px" });
+    const ws = K.words(hl, "Comment your pick.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.08 }, 10.02);
+    const g = V ? { x: CA.x, y: 520, w: 400, h: 400, gap: 16, cols: 2 } : { x: 120, y: 330, w: 405, h: 440, gap: 20, cols: 4 };
+    const cards = MELLO_LOOKS.map((lk, k) => {
+      const c = el("div", "gcard", sc);
+      const cx = g.x + (k % g.cols) * (g.w + g.gap), cy = g.y + Math.floor(k / g.cols) * (g.h + g.gap);
+      Object.assign(c.style, { left: cx + "px", top: cy + "px", width: g.w + "px", height: g.h + "px", background: tints[k] });
+      const inner = el("div", "abs", c); Object.assign(inner.style, { left: "0", top: "0", width: g.w + "px", height: (g.h - 60) + "px" });
+      lk.draw(inner, g.w, g.h - 60);
+      const n = el("div", "num", c, String(k + 1)); Object.assign(n.style, { left: "16px", top: "16px", width: "64px", height: "64px", fontSize: "36px" });
+      const cn = el("div", "mono abs", c, lk.name); cn.style.cssText = "left:20px;bottom:20px;font-size:17px;color:var(--violet-d)";
+      return c;
+    });
+    cards.forEach((c, k) => tl.fromTo(c, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, C.grid[k]));
+    const ask = el("div", "pill vi abs", sc, "Comment 1, 2, 3 or 4");
+    ask.style.top = (V ? g.y + 2 * g.h + g.gap + 30 : g.y + g.h + 40) + "px";
+    ask.style.fontSize = "24px";
+    ask.style.left = (W / 2 - ask.offsetWidth / 2) + "px";
+    tl.fromTo(ask, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, 11.0);
+    tl.to(ask, { y: -8, duration: 0.25, yoyo: true, repeat: 5, ease: "sine.inOut" }, 11.5);
+    SPIN.slice(0, 0);
+    K.out([hl, ...cards, ask], 13.72);
+  }
+
+  // ===================================================== 14-18 FOUR LOOKS FOR EVERY BRAND, and more inside
+  {
+    const sc = $("s-facts");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 480 : 200) + "px", fontSize: (V ? 80 : 92) + "px" });
+    const ws = K.words(hl, "Every brand gets four looks.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.06 }, 14.02);
+    const facts = ["10 logo constructions", "13 symbol families", "AI-drawn symbols", "Crisp vector SVG", "Switch looks any time"];
+    const fb = el("div", "abs", sc);
+    fb.style.cssText = `left:${K.SAFE.x}px;width:${K.SAFE.w}px;top:${V ? 720 : 420}px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px`;
+    const fe = facts.map(f => { const p = el("div", "pill", fb, f); p.style.cssText += ";background:#FFFFFF;border:2px solid #DCD8E8;color:#16161A;font-size:20px"; return p; });
+    tl.fromTo(fe, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.1 }, 14.5);
+    const rail = featureRail(K, tl, sc, 15.4, 18, V ? 940 : 600, false);
+    const more = el("div", "mono abs", sc, "+ A lot more inside");
+    Object.assign(more.style, { left: "0", width: W + "px", textAlign: "center", top: (V ? 1080 : 740) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(more, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 15.8);
+    K.out([hl, fb, rail, more], 17.72);
+  }
+
+  K.endCard($("s-end"), C.end, { cta: "Find your four looks." });
+  window.__timelines["four"] = tl;
+});
+</script>
+</body>
+</html>

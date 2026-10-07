@@ -88,9 +88,11 @@ const MELLO_LOOKS = [
     row.appendChild(document.createTextNode("mell"));
     const moon = el("span", "", row);
     moon.style.cssText = `display:inline-block;position:relative;width:0.5em;height:0.5em;border-radius:50%;background:#F4C26B;margin-left:0.04em;vertical-align:0`;
-    ["z", "z"].forEach((z, k) => {
-      const s = el("span", "zz", moon, z);
-      s.style.cssText = `position:absolute;left:${0.42 + k * 0.2}em;top:${-0.34 - k * 0.24}em;font:700 ${0.22 - k * 0.04}em "Space Mono";color:#B9A7F5`;
+    [0, 1].forEach((k) => {
+      const z = svgEl(`<svg viewBox="0 0 10 10" style="overflow:visible"><path d="M1.5 1.5 H8.5 L1.5 8.5 H8.5" fill="none" stroke="#9C88F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        `position:absolute;left:${0.46 + k * 0.2}em;top:${-0.3 - k * 0.24}em;width:${0.15 - k * 0.03}em;height:${0.15 - k * 0.03}em`);
+      z.setAttribute("class", "zz");
+      moon.appendChild(z);
     });
     const rule = el("div", "", st);
     rule.style.cssText = `position:absolute;left:30%;width:40%;top:${h * 0.66}px;height:2px;background:#1D1B3A`;

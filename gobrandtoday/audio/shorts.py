@@ -180,7 +180,35 @@ def race():
     return m.render(), RACE_VO
 
 
-SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race}
+# ------------------------------------------------------------------ Four logos, one name (22 s)
+FOUR = dict(dur=22.0, looks=[2.0, 4.0, 6.0, 8.0], grid=[10.1, 10.25, 10.4, 10.55], facts=14.0, end=18.0)
+FOUR_VO = [
+    (0.1, "Same name. Four logos. Which wins?"),
+    (2.3, "One: a teacup with moon steam."),
+    (4.3, "Two: an m that's fast asleep."),
+    (6.3, "Three: a night-sky emblem."),
+    (8.3, "Four: a full moon for an o."),
+    (10.3, "Comment your pick. One, two, three, or four?"),
+    (14.2, "Every brand gets four looks. And a lot more inside."),
+]
+
+
+def four():
+    a = FOUR
+    m = Mix(a["dur"])
+    groove(m, 0.0, 9, level=0.9)
+    for i, t in enumerate(a["looks"]):
+        m.add(whoosh(0.45, 0.8), t - 0.3, rev=0.1)
+        m.add(tabla("dha" if i % 2 else "tin", 0.55), t, rev=0.15)
+        m.add(bell(76 + [0, 7, 12, 16][i], 0.45), t, pan=-0.3 + 0.2 * i, rev=0.35, dly=0.12)
+    for i, t in enumerate(a["grid"]):
+        m.add(pop(700 + 110 * i, 0.55), t, pan=-0.4 + 0.27 * i)
+    motif(m, a["facts"], 0.4)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), FOUR_VO
+
+
+SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
 
 
 def build(slug):

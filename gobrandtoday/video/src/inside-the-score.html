@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Inside the GoBrand Score {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.crow { position: absolute; display: flex; align-items: center; gap: 16px; background: #FFFFFF; border: 3px solid var(--line); border-radius: 18px; padding: 0 20px; box-sizing: border-box; }
+.crow .cn { font: 700 24px Manrope; color: var(--graphite); white-space: nowrap; }
+.crow .wt { font-family: "Space Mono"; font-weight: 700; font-size: 16px; color: var(--violet-d); background: var(--lilac); border-radius: 8px; padding: 3px 8px; }
+.crow .bars { margin-left: auto; display: flex; flex-direction: column; gap: 7px; }
+.crow .bar { position: relative; height: 12px; border-radius: 6px; background: #EEECF3; overflow: hidden; }
+.crow .bar b { position: absolute; left: 0; top: 0; bottom: 0; display: block; border-radius: 6px; transform-origin: 0 50%; }
+.crow .vals { display: flex; flex-direction: column; gap: 2px; font-family: "Space Mono"; font-weight: 700; font-size: 15px; text-align: right; width: 40px; }
+.V .crow .cn { font-size: 21px; }
+.chip { display: inline-flex; align-items: center; gap: 10px; font: 700 26px Manrope; padding: 10px 20px; border-radius: 16px; }
+.dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="score" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="30">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="3.05" data-track-index="1"></section>
+  <section class="clip" id="s-parts" data-start="3" data-duration="16.05" data-track-index="1"></section>
+  <section class="clip" id="s-total" data-start="19" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-guide" data-start="23" data-duration="3.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="26" data-duration="4" data-track-index="1"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/inside-the-score.wav" data-start="0" data-duration="30" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  K.fieldTo(0, 0, 0.001);
+  const A = "#6D4AFF", Bc = "#9C98A8";
+  // weights from the product; the two names' part scores are illustrative
+  const COMPS = [["Brandability", 18, "Could it become a real brand?", 9.0, 4.0], ["Memorability", 15, "Will people remember it tomorrow?", 9.2, 2.5],
+    ["Pronunciation", 13, "Can anyone say it on the first try?", 9.5, 1.5], ["Domain availability", 13, "Can you actually get the domain?", 7.5, 8.0],
+    ["Distinctiveness", 12, "Does it stand out from look-alikes?", 8.0, 6.5], ["SEO potential", 11, "Does it hint at what you do?", 7.0, 1.0],
+    ["Global usability", 9, "Does it work across languages?", 8.5, 3.0], ["Social availability", 9, "Are the handles free?", 7.0, 8.5]];
+  const tot = (i) => (COMPS.reduce((s, c) => s + c[1] * c[3 + i], 0) / 100).toFixed(1);   // 8.3 and 4.3
+
+  // ===================================================== 0-3 HOOK
+  {
+    const sc = $("s-hook");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 520 : 230) + "px", fontSize: (V ? 96 : 112) + "px" });
+    const w1 = K.words(hl, "Is your brand name");
+    const l2 = el("div", "", hl); l2.style.marginTop = "12px";
+    const mk = el("span", "marker", l2, "actually good?");
+    tl.fromTo(w1, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.09 }, 0.0);
+    tl.fromTo(mk, { scale: 0.5, opacity: 0, rotation: -4 }, { scale: 1, opacity: 1, rotation: -1.5, duration: 0.4, ease: "back.out(3)" }, 0.55);
+    const vs = el("div", "abs", sc);
+    vs.style.cssText = `left:0;width:${W}px;top:${V ? 920 : 640}px;display:flex;justify-content:center;align-items:center;gap:24px`;
+    const a = el("div", "chip", vs); a.style.cssText += ";background:#FFFFFF;border:3px solid var(--violet);color:var(--graphite)"; a.innerHTML = `<i class="dot" style="background:${A}"></i>Mello`;
+    const v = el("div", "mono", vs, "vs"); v.style.cssText = "font-size:22px;color:#5F5B6B";
+    const b = el("div", "chip", vs); b.style.cssText += ";background:#FFFFFF;border:3px solid #CFCAD9;color:var(--graphite)"; b.innerHTML = `<i class="dot" style="background:${Bc}"></i>Qwyzzlr`;
+    tl.fromTo(a, { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "back.out(2)" }, 1.2);
+    tl.fromTo(b, { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "back.out(2)" }, 1.5);
+    tl.fromTo(v, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.4);
+    const ex = el("div", "pill ex abs", sc, "Example names"); Object.assign(ex.style, { left: (W / 2 - 110) + "px", top: (V ? 1020 : 740) + "px" });
+    tl.fromTo(ex, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.8);
+    K.out([hl, vs, ex], 2.72);
+  }
+
+  // ===================================================== 3-19 EIGHT PARTS, ONE EVERY TWO SECONDS
+  {
+    const sc = $("s-parts");
+    const hd = K.head(sc, "GoBrand Score · 8 parts", "", V ? { y: CA.y + 10 } : { y: CA.y + 10, w: 640 });
+    hd.h.remove();
+    tl.fromTo(hd.e, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4 }, 3.02);
+    const leg = el("div", "abs", sc);
+    leg.style.cssText = V ? `left:${CA.x + CA.w - 330}px;top:${CA.y + 4}px;display:flex;gap:18px` : `left:${CA.x}px;top:${CA.y + 60}px;display:flex;gap:18px`;
+    leg.innerHTML = `<span class="mono" style="font-size:17px;color:#16161A"><i class="dot" style="background:${A}"></i> Mello</span><span class="mono" style="font-size:17px;color:#16161A"><i class="dot" style="background:${Bc}"></i> Qwyzzlr</span>`;
+    tl.fromTo(leg, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 3.1);
+    // the callout: the part in focus, big
+    const cb = V ? { x: CA.x, y: CA.y + 70, w: CA.w } : { x: CA.x, y: CA.y + 130, w: 640 };
+    const rows = V ? { x: CA.x, y: CA.y + 330, w: CA.w, h: 100, gap: 10 } : { x: 820, y: CA.y + 10, w: 980, h: 92, gap: 10 };
+    COMPS.forEach(([n, wgt, q, va, vb], i) => {
+      const t0 = 3.0 + i * 2;
+      const c = el("div", "abs", sc);
+      Object.assign(c.style, { left: cb.x + "px", top: cb.y + "px", width: cb.w + "px" });
+      const cn = el("div", "hl", c, n); cn.style.fontSize = (V ? 68 : 76) + "px";
+      const cq = el("div", "sub", c, q); cq.style.cssText += `;font-size:${V ? 32 : 36}px;margin-top:12px;color:var(--graphite)`;
+      const cw = el("div", "mono", c, `Weight ${wgt} / 100`); cw.style.cssText = "font-size:20px;color:var(--violet-d);margin-top:14px";
+      appear(tl, c, t0, t0 + 2);
+      tl.fromTo(c, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(1.8)" }, t0);
+      if (i < 7) tl.to(c, { y: -20, opacity: 0, duration: 0.2, ease: "power2.in" }, t0 + 1.8);
+      else tl.to(c, { opacity: 0, duration: 0.2 }, t0 + 1.8);
+      // the row it leaves behind
+      const r = el("div", "crow", sc);
+      Object.assign(r.style, { left: rows.x + "px", top: (rows.y + i * (rows.h + rows.gap)) + "px", width: rows.w + "px", height: rows.h + "px" });
+      el("div", "cn", r, n);
+      el("div", "wt", r, String(wgt));
+      const bars = el("div", "bars", r); bars.style.width = (V ? 260 : 380) + "px";
+      const ba = el("div", "bar", bars), bb = el("div", "bar", bars);
+      const fa = el("b", "", ba), fb = el("b", "", bb);
+      fa.style.background = A; fb.style.background = Bc;
+      fa.style.width = (va * 10) + "%"; fb.style.width = (vb * 10) + "%";
+      const vals = el("div", "vals", r);
+      const xa = el("div", "", vals, va.toFixed(1)); xa.style.color = "var(--violet-d)";
+      const xb = el("div", "", vals, vb.toFixed(1)); xb.style.color = "#5F5B6B";
+      tl.fromTo(r, { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "back.out(1.7)" }, t0 + 0.2);
+      tl.fromTo(fa, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, t0 + 0.5);
+      tl.fromTo(fb, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, t0 + 0.62);
+      tl.fromTo(vals, { opacity: 0 }, { opacity: 1, duration: 0.3 }, t0 + 0.7);
+      tl.to(r, { borderColor: "#6D4AFF", duration: 0.2 }, t0 + 0.2);
+      tl.to(r, { borderColor: "#DCD8E8", duration: 0.3 }, t0 + 2.0);
+    });
+    K.out([hd.box, leg, ...sc.querySelectorAll(".crow")], 18.72);
+  }
+
+  // ===================================================== 19-23 THE TOTAL
+  {
+    const sc = $("s-total");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? CA.y + 60 : CA.y + 40) + "px", fontSize: (V ? 80 : 88) + "px" });
+    const ws = K.words(hl, "Add it up.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.08 }, 19.02);
+    const box = el("div", "abs", sc);
+    box.style.cssText = V ? `left:${CA.x}px;top:${CA.y + 230}px;width:${CA.w}px;display:flex;flex-direction:column;gap:22px`
+                          : `left:${CA.x}px;top:${CA.y + 220}px;width:${CA.w}px;display:flex;justify-content:center;gap:40px`;
+    const make = (name, val, col, good) => {
+      const c = el("div", "card", box);
+      c.style.cssText += `;position:relative;padding:30px 36px;${V ? "" : "width:700px;"}border-color:${good ? "#6D4AFF" : "#DCD8E8"}`;
+      const n = el("div", "hl", c, name); n.style.fontSize = (V ? 56 : 62) + "px";
+      const row = el("div", "", c); row.style.cssText = "display:flex;align-items:flex-end;gap:12px;margin-top:10px";
+      const od = K.odo(row, val); od.o.style.cssText = `font:700 ${V ? 120 : 140}px "Space Grotesk";color:${col};letter-spacing:-0.04em`;
+      const s10 = el("div", "mono", row, "/ 10"); s10.style.cssText = "font-size:26px;color:#5F5B6B;padding-bottom:30px";
+      const rs = el("div", "sub", c, good ? "Memorable, easy to say, works across languages." : "Hard to say, hard to remember, says nothing about you.");
+      rs.style.cssText += `;font-size:${V ? 24 : 26}px;margin-top:6px`;
+      return { c, od };
+    };
+    const ga = make("Mello", tot(0), "#6D4AFF", true), gb = make("Qwyzzlr", tot(1), "#5F5B6B", false);
+    tl.fromTo(ga.c, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.7)" }, 19.4);
+    tl.fromTo(gb.c, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.7)" }, 19.7);
+    K.roll(ga.od, 19.5, 1.0); K.roll(gb.od, 19.8, 1.0);
+    const flags = el("div", "abs", sc);
+    flags.style.cssText = `left:${K.SAFE.x}px;width:${K.SAFE.w}px;top:${V ? 1330 : 880}px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap`;
+    const fl = ["Meaning checks in 7+ languages", "Look-alike brand flags"].map(f => { const p = el("div", "pill ex", flags, f); p.style.fontSize = "18px"; return p; });
+    tl.fromTo(fl, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.12 }, 21.0);
+    K.out([hl, box, flags], 22.72);
+  }
+
+  // ===================================================== 23-26 GUIDANCE, NOT A GUARANTEE, and more inside
+  {
+    const sc = $("s-guide");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 500 : 210) + "px", fontSize: (V ? 76 : 86) + "px" });
+    const ws = K.words(hl, "Guidance, not a guarantee.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.07 }, 23.02);
+    const tm = el("div", "sub abs", sc, "Always run a trademark search before you invest.");
+    Object.assign(tm.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 700 : 340) + "px", fontSize: (V ? 28 : 32) + "px" });
+    tl.fromTo(tm, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 23.4);
+    const rail = featureRail(K, tl, sc, 23.6, 26, V ? 850 : 480, false);
+    const more = el("div", "mono abs", sc, "+ A lot more inside");
+    Object.assign(more.style, { left: "0", width: W + "px", textAlign: "center", top: (V ? 990 : 620) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(more, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 24.0);
+    K.out([hl, tm, rail, more], 25.72);
+  }
+
+  K.endCard($("s-end"), 26, { cta: "Score your name, free." });
+  window.__timelines["score"] = tl;
+});
+</script>
+</body>
+</html>

@@ -208,7 +208,38 @@ def four():
     return m.render(), FOUR_VO
 
 
-SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
+# ------------------------------------------------------------------ Inside the GoBrand Score (30 s)
+SCORE = dict(dur=30.0, comps=[3.0 + 2 * i for i in range(8)], totals=19.0, guide=23.0, end=26.0)
+SCORE_VO = [
+    (0.1, "Is your brand name actually good? Here's how we score it."),
+    (3.4, "Eight parts. Each one weighted, and explained."),
+    (7.1, "Will people remember it? Can they say it?"),
+    (11.1, "Is the domain free? Does it stand out?"),
+    (15.1, "Does it work in other languages? Are the handles free?"),
+    (19.2, "Add it up, and you get a score out of ten, with the reasons."),
+    (22.75, "It's guidance, not a guarantee. And there's a lot more inside."),
+]
+
+
+def score_video():
+    a = SCORE
+    m = Mix(a["dur"])
+    groove(m, 0.0, 13, level=0.85)
+    m.add(pop(700, 0.6), 1.2)
+    m.add(pop(500, 0.6), 1.5)
+    for i, t in enumerate(a["comps"]):
+        m.add(whoosh(0.3, 0.4), t - 0.15)
+        m.add(pluck(76 + [0, 4, 7, 11, 12, 16, 19, 23][i], 0.5), t, pan=-0.3 + 0.08 * i, rev=0.25)
+        m.add(pop(900, 0.35), t + 0.5)
+        m.add(pop(600, 0.3), t + 0.62)
+    m.add(bell(88, 0.5), a["totals"], rev=0.35, dly=0.15)
+    m.add(bell(76, 0.35), a["totals"] + 0.4, rev=0.35)
+    motif(m, a["guide"], 0.35)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), SCORE_VO
+
+
+SCORES = {"inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
 
 
 def build(slug):

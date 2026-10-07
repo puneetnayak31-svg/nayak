@@ -103,10 +103,10 @@ function mockSign(parent, w, h) {
 
 function mockPost(parent, w, h) {
   const t = tile(parent, w, h, WK.plum);
-  const q = el("div", "", t, "Burn bright. Stay cosy.");
-  q.style.cssText = `position:absolute;left:${w * 0.1}px;top:${h * 0.16}px;width:${w * 0.8}px;font:700 ${Math.min(w, h) * 0.13}px Syne;line-height:1.02;color:${WK.cream}`;
   const l = wickdLogo(t, Math.min(w, h) * 0.1, WK.lilac, WK.ember, WK.peach);
-  Object.assign(l.style, { position: "absolute", left: (w * 0.1) + "px", bottom: (h * 0.1) + "px" });
+  Object.assign(l.style, { position: "absolute", left: (w * 0.1) + "px", top: (h * 0.1) + "px" });
+  const q = el("div", "", t, "Burn bright. Stay cosy.");
+  q.style.cssText = `position:absolute;left:${w * 0.1}px;bottom:${h * 0.1}px;width:${w * 0.8}px;font:700 ${Math.min(w, h) * 0.13}px Syne;line-height:1.02;color:${WK.cream}`;
   return t;
 }
 

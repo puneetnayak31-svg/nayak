@@ -33,3 +33,6 @@
 .win .bar b { margin-left: 6px; font: 600 16px Manrope; color: var(--ink-2); white-space: nowrap; overflow: hidden; }
 .win .body { padding: 14px; }
 .win .sk { height: 12px; border-radius: 6px; background: #ECE9F2; margin-bottom: 10px; }
+.wk-logo { font-family: "Syne", sans-serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; display: inline-block; }
+.wk-i { position: relative; display: inline-block; }
+.wk-flame { position: absolute; width: 0.3em; height: 0.42em; left: calc(50% - 0.15em); top: -0.2em; overflow: visible; transform-origin: 50% 100%; }

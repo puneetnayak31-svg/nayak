@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Brand Book Unboxing {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.page { position: absolute; border-radius: 10px 24px 24px 10px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 30px 60px rgba(36, 19, 50, 0.22); }
+.page .spine { position: absolute; left: 0; top: 0; bottom: 0; width: 18px; background: linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0)); }
+.pg-k { font-family: "Space Mono"; font-weight: 700; font-size: 18px; letter-spacing: 0.1em; text-transform: uppercase; color: #8A5A3C; }
+.pg-t { font-family: "Syne"; font-weight: 700; color: #241332; line-height: 1.02; letter-spacing: -0.02em; }
+.pg-n { position: absolute; right: 30px; bottom: 24px; font-family: "Space Mono"; font-size: 16px; color: #8A5A3C; }
+.val { display: inline-block; font: 700 22px Manrope; padding: 10px 18px; border-radius: 999px; background: #FFFFFF; color: #241332; border: 2px solid #E8D9C8; margin: 0 8px 10px 0; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="unbox" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="24">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-book" data-start="0" data-duration="20.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="20" data-duration="4" data-track-index="1"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/brand-book-unboxing.wav" data-start="0" data-duration="24" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  K.fieldTo(0, 0, 0.001);
+  const C = { rip: 1.7, lid: 2.6, rise: 3.4, cover: 4.6, flips: [6.0, 8.2, 10.4, 12.6, 14.8, 17.0], close: 19.0, end: 20.0 };
+  const sc = $("s-book");
+  const PW = V ? 740 : 620, PH = V ? 1000 : 840;
+  const px = V ? (W - PW) / 2 : 1160, py = V ? 380 : 140;
+
+  // ---- POV line (the hook)
+  const pov = el("div", "hl abs", sc);
+  Object.assign(pov.style, V ? { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: "300px", fontSize: "64px" } : { left: "120px", width: "880px", top: "200px", fontSize: "84px" });
+  const pw = K.words(pov, "POV: your brand book just arrived.");
+  tl.fromTo(pw, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.07 }, 0.0);
+  tl.to(pov, { opacity: 0, y: -30, duration: 0.3 }, C.rise);
+
+  // ---- the box: body, lid, tape with the spark
+  const bw = V ? 760 : 700, bh = V ? 520 : 470, bx = V ? (W - bw) / 2 : (V ? 0 : 1120 - 40), by = V ? 860 : 420;
+  const body = el("div", "abs", sc);
+  body.style.cssText = `left:${bx}px;top:${by + 70}px;width:${bw}px;height:${bh - 70}px;border-radius:18px;background:#2B2533;box-shadow:0 40px 80px rgba(22,22,26,0.25)`;
+  const sticker = el("div", "abs", body);
+  sticker.style.cssText = `left:${bw / 2 - 70}px;top:${(bh - 70) / 2 - 50}px;width:140px;height:140px;border-radius:50%;background:#6D4AFF;display:flex;align-items:center;justify-content:center`;
+  const sp = sparkSVG("#FFFFFF", 2, "spark-svg"); sp.svg.style.cssText = "width:64px;height:64px"; sticker.appendChild(sp.svg);
+  const lid = el("div", "abs", sc);
+  lid.style.cssText = `left:${bx - 16}px;top:${by}px;width:${bw + 32}px;height:96px;border-radius:16px;background:#35303F`;
+  const tape = el("div", "abs", lid);
+  tape.style.cssText = `left:${bw / 2 - 40}px;top:-6px;width:96px;height:108px;background:rgba(185,174,255,0.85);border-radius:4px`;
+  const ex0 = el("div", "pill ex abs", body, "Example"); Object.assign(ex0.style, { left: "24px", bottom: "22px", fontSize: "16px" });
+  tl.fromTo([body, lid], { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 0.2);
+  tl.to([body, lid], { keyframes: [{ rotation: -1.5, duration: 0.08 }, { rotation: 1.5, duration: 0.08 }, { rotation: 0, duration: 0.1 }] }, 1.2);
+  tl.to(tape, { x: 520, rotation: 40, opacity: 0, duration: 0.45, ease: "power3.in" }, C.rip);
+  tl.to(lid, { y: -300, x: 260, rotation: 18, opacity: 0, duration: 0.6, ease: "power3.in" }, C.lid);
+  tl.to(ex0, { opacity: 0, duration: 0.15 }, C.rise - 0.25);
+  tl.to(body, { y: 380, opacity: 0, duration: 0.6, ease: "power2.in" }, C.rise + 0.2);
+
+  // ---- the book: a stack of pages; the top one turns on each flip
+  const P = (bg) => { const p = el("div", "page", sc); Object.assign(p.style, { left: px + "px", top: py + "px", width: PW + "px", height: PH + "px", background: bg }); el("div", "spine", p); return p; };
+  const pages = [];
+  const mk = (bg, fill) => { const p = P(bg); fill(p); pages.push(p); return p; };
+  const pad = V ? 56 : 48;
+  const kicker = (p, t, y = pad) => { const k = el("div", "pg-k abs", p, t); Object.assign(k.style, { left: pad + "px", top: y + "px" }); return k; };
+  const title = (p, t, y, size) => { const h = el("div", "pg-t abs", p, t); Object.assign(h.style, { left: pad + "px", top: y + "px", width: (PW - 2 * pad) + "px", fontSize: size + "px" }); return h; };
+  const pn = (p, n) => el("div", "pg-n", p, n);
+  const items = {};
+  // cover
+  mk(WK.plum, (p) => {
+    const l = wickdLogo(p, V ? 150 : 130, WK.cream);
+    Object.assign(l.style, { position: "absolute", left: "0", width: "100%", textAlign: "center", top: (PH * 0.36) + "px" });
+    const s = el("div", "pg-k abs", p, "Brand guidelines · v1.0"); Object.assign(s.style, { left: "0", width: "100%", textAlign: "center", top: (PH * 0.36 + (V ? 200 : 180)) + "px", color: WK.peach });
+    const e = el("div", "pill ex abs", p, "Example"); Object.assign(e.style, { left: (PW / 2 - 70) + "px", bottom: "40px" });
+    tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.cover);
+  });
+  // 1 essence
+  mk(WK.cream, (p) => {
+    kicker(p, "01 · Brand essence");
+    title(p, "Burn bright. Stay cosy.", pad + 50, V ? 92 : 78);
+    const vb = el("div", "abs", p); Object.assign(vb.style, { left: pad + "px", top: (V ? 400 : 360) + "px", width: (PW - 2 * pad) + "px" });
+    items[0] = ["Warm", "Playful", "Honest"].map(v => el("span", "val", vb, v));
+    const ar = el("div", "abs sub", p, "Archetype: The Creator · for Gen Z night owls who like their rooms to glow.");
+    Object.assign(ar.style, { left: pad + "px", top: (V ? 560 : 500) + "px", width: (PW - 2 * pad) + "px", fontSize: (V ? 30 : 26) + "px", color: "#3B2A3F" });
+    items[0].push(ar);
+    pn(p, "p. 2");
+  });
+  // 2 logo
+  mk("#FFFFFF", (p) => {
+    kicker(p, "02 · Logo");
+    const box = el("div", "abs", p);
+    Object.assign(box.style, { left: pad + "px", top: (pad + 60) + "px", width: (PW - 2 * pad) + "px", height: (PH * 0.42) + "px", border: "3px dashed #E0C9B6", borderRadius: "18px" });
+    const l = wickdLogo(box, V ? 140 : 120);
+    Object.assign(l.style, { position: "absolute", left: "0", width: "100%", textAlign: "center", top: (PH * 0.42 / 2 - (V ? 60 : 52)) + "px" });
+    const cs = el("div", "pg-k abs", p, "Clear space = height of the “w”"); Object.assign(cs.style, { left: pad + "px", top: (pad + 80 + PH * 0.42) + "px" });
+    const dn = el("div", "abs", p); Object.assign(dn.style, { left: pad + "px", top: (pad + 140 + PH * 0.42) + "px", display: "flex", gap: "20px" });
+    const bad = el("div", "", dn); bad.style.cssText = "position:relative;width:250px;height:84px;border-radius:16px;background:#FBEDE8;overflow:hidden";
+    const bl = wickdLogo(bad, 50); bl.style.cssText += ";position:absolute;left:18px;top:16px;scale:1.45 0.7;transform-origin:0 50%";
+    const x = el("div", "abs", bad); x.innerHTML = `<svg width="60" height="60" viewBox="0 0 60 60"><path d="M10 10 L50 50 M50 10 L10 50" stroke="#C0392B" stroke-width="6" stroke-linecap="round"/></svg>`; x.style.cssText = "right:-14px;top:-14px";
+    const dl = el("div", "pg-k", dn, "Don't stretch it"); dl.style.alignSelf = "center"; dl.style.color = "#9A2B1E";
+    items[1] = [box, dn];
+    pn(p, "p. 3");
+  });
+  // 3 colour
+  mk("#FFFFFF", (p) => {
+    kicker(p, "03 · Colour");
+    const sw = el("div", "abs", p); Object.assign(sw.style, { left: pad + "px", top: (pad + 60) + "px", width: (PW - 2 * pad) + "px", height: (PH * 0.55) + "px", display: "flex", gap: "12px" });
+    const cols = [["Plum", WK.plum, "36 19 50"], ["Ember", WK.ember, "255 90 54"], ["Peach", WK.peach, "255 179 138"], ["Lilac", WK.lilac, "205 184 255"], ["Cream", WK.cream, "255 246 236"]];
+    items[2] = cols.map(([n, c, rgb], k) => {
+      const s = el("div", "", sw); s.style.cssText = `flex:1;border-radius:16px;background:${c};border:2px solid rgba(36,19,50,0.12);position:relative`;
+      const t = el("div", "abs", s); t.style.cssText = `left:12px;bottom:14px;font:700 ${V ? 20 : 18}px Manrope;color:${k < 1 ? "#FFF6EC" : "#241332"}`;
+      t.textContent = n;
+      return s;
+    });
+    const aa = el("div", "abs", p); Object.assign(aa.style, { left: pad + "px", top: (pad + 90 + PH * 0.55) + "px", display: "flex", gap: "12px", flexWrap: "wrap" });
+    ["Plum on Cream · AA", "Cream on Ember · AA", "Plum on Lilac · AAA"].forEach(t => { const v = el("span", "val", aa, t); v.style.fontSize = "18px"; });
+    pn(p, "p. 4");
+  });
+  // 4 type
+  mk(WK.cream, (p) => {
+    kicker(p, "04 · Typography");
+    const a = el("div", "abs", p, "Aa"); Object.assign(a.style, { left: pad + "px", top: (pad + 40) + "px", font: `700 ${V ? 300 : 250}px Syne`, color: WK.plum, lineHeight: "1" });
+    const lines = [["Display · Syne 700", `700 ${V ? 54 : 46}px Syne`, "Burn bright."], ["Body · Manrope 500", `500 ${V ? 32 : 28}px Manrope`, "Small batch, big glow."], ["Data · Space Mono", `400 ${V ? 26 : 22}px "Space Mono"`, "#FF5A36 · 18 pt"]];
+    items[3] = lines.map(([k, f, txt], i) => {
+      const r = el("div", "abs", p); Object.assign(r.style, { left: pad + "px", top: ((V ? 420 : 360) + i * (V ? 140 : 120)) + "px" });
+      const kk = el("div", "pg-k", r, k); kk.style.fontSize = "15px";
+      const t = el("div", "", r, txt); t.style.cssText = `font:${f};color:${WK.plum};margin-top:8px`;
+      return r;
+    });
+    pn(p, "p. 6");
+  });
+  // 5 mockups
+  mk("#FFFFFF", (p) => {
+    kicker(p, "05 · Mockups · 9 in every book");
+    const g = el("div", "abs", p); Object.assign(g.style, { left: pad + "px", top: (pad + 50) + "px", width: (PW - 2 * pad) + "px" });
+    const tw = (PW - 2 * pad - 14) / 2, th = V ? 400 : 330;
+    items[4] = [mockJar, mockTote, mockApp, mockSign].map((fn, k) => {
+      const t = fn(g, tw, th);
+      Object.assign(t.style, { position: "absolute", left: ((k % 2) * (tw + 14)) + "px", top: (Math.floor(k / 2) * (th + 14)) + "px" });
+      return t;
+    });
+    pn(p, "p. 9");
+  });
+  // 6 launch
+  mk(WK.cream, (p) => {
+    kicker(p, "06 · Launch kit");
+    const post = mockPost(p, PW - 2 * pad, V ? 400 : 330);
+    Object.assign(post.style, { position: "absolute", left: pad + "px", top: (pad + 50) + "px" });
+    const bio = el("div", "abs sub", p, "@wickd · Cosy candles for main-character nights. Small batch, big glow.");
+    Object.assign(bio.style, { left: pad + "px", top: (pad + (V ? 480 : 410)) + "px", width: (PW - 2 * pad) + "px", fontSize: (V ? 28 : 24) + "px", color: "#241332" });
+    const ids = el("div", "abs", p); Object.assign(ids.style, { left: pad + "px", top: (pad + (V ? 590 : 510)) + "px", width: (PW - 2 * pad) + "px" });
+    ["Bios × 4", "Launch posts", "Website copy", "30 days of ideas"].forEach(t => { const v = el("span", "val", ids, t); v.style.fontSize = "19px"; });
+    items[5] = [post, bio, ids];
+    pn(p, "p. 14");
+  });
+  // back cover
+  mk(WK.plum, (p) => {
+    const t = el("div", "pg-t abs", p, "Your brand, in a box."); Object.assign(t.style, { left: pad + "px", top: (PH * 0.32) + "px", width: (PW - 2 * pad) + "px", fontSize: (V ? 86 : 72) + "px", color: WK.cream });
+    const m = el("div", "pg-k abs", p, "+ much more inside gobrandtoday"); Object.assign(m.style, { left: pad + "px", top: (PH * 0.32 + (V ? 220 : 190)) + "px", color: WK.peach });
+  });
+  // stacking: first page on top, a blank sheet underneath so a turning page always reveals paper
+  pages.forEach((p, k) => { p.style.zIndex = String(100 - k); });
+  const base = P(WK.cream); base.style.zIndex = "1";
+  // each page exists only while it is on top or turning (the next one appears once the turn passes halfway)
+  const turn = C.flips.map(t => t - 0.2).concat([C.close - 0.25]);
+  pages.forEach((p, k) => appear(tl, p, k === 0 ? 0 : turn[k - 1] + 0.35, k < turn.length ? turn[k] + 0.68 : C.end));
+  // a turning page's printing fades in its first instant, so nothing reads half-rotated
+  pages.forEach((p, k) => { if (k < turn.length) tl.to([...p.children].filter(c => !c.classList.contains("spine")), { opacity: 0, duration: 0.15 }, turn[k] + 0.05); });
+  // the book rises out of the box
+  tl.fromTo(pages.concat([base]), { y: V ? 500 : 420, scale: 0.6, opacity: 0, rotation: -4 }, { y: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.9, ease: "back.out(1.3)" }, C.rise);
+  // page turns: each top page swings around its spine
+  C.flips.forEach((t, k) => {
+    tl.fromTo(pages[k], { rotationY: 0, transformOrigin: "0% 50%", transformPerspective: 2200 }, { rotationY: -180, duration: 0.7, ease: "power2.inOut" }, t - 0.2);
+    const its = items[k] || [];
+    its.forEach((it, i) => tl.fromTo(it, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(2)" }, t + 0.35 + i * 0.25));
+  });
+  // close on the back cover, then a soft lift
+  tl.fromTo(pages[6], { rotationY: 0, transformOrigin: "0% 50%", transformPerspective: 2200 }, { rotationY: -180, duration: 0.7, ease: "power2.inOut" }, C.close - 0.25);
+  // page captions for 16:9 (left column)
+  if (!V) {
+    const caps = ["Brand essence", "Logo system", "Colour", "Typography", "Mockups", "Launch kit", "And much more inside."];
+    caps.forEach((c, k) => {
+      const t = k < 6 ? C.flips[k] : C.close;
+      const h = el("div", "hl abs", sc, c);
+      Object.assign(h.style, { left: "120px", top: "430px", width: "880px", fontSize: "92px" });
+      appear(tl, h, t, k < 6 ? (C.flips[k + 1] || C.close) - 0.1 : 20.0);
+      tl.fromTo(h, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(2)" }, t + 0.1);
+    });
+  }
+  K.flicker(4.0, 20.0, 5);
+  K.endCard($("s-end"), C.end, { cta: "Unbox your brand." });
+  window.__timelines["unbox"] = tl;
+});
+</script>
+</body>
+</html>

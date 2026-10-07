@@ -278,7 +278,39 @@ def roots():
     return m.render(), ROOTS_VO
 
 
-SCORES = {"indian-roots": roots, "inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
+# ------------------------------------------------------------------ Brand book unboxing (24 s, ASMR)
+UNBOX = dict(dur=24.0, rip=1.7, lid=2.6, rise=3.4, cover=4.6, flips=[6.0, 8.2, 10.4, 12.6, 14.8, 17.0], close=19.0, end=20.0,
+             items={6.0: [6.5, 6.8, 7.1], 8.2: [8.7, 9.1], 10.4: [10.8, 10.95, 11.1, 11.25, 11.4], 12.6: [13.0, 13.4],
+                    14.8: [15.2, 15.45, 15.7, 15.95], 17.0: [17.4, 17.8, 18.2]})
+UNBOX_VO = [
+    (0.2, "Your brand book just arrived."),
+    (18.4, "Your brand, in a box. And more inside."),
+]
+
+
+def unbox():
+    a = UNBOX
+    m = Mix(a["dur"])
+    m.add(pad_chord(CHORDS[0][0], 6.2, 0.35, bright=900), 0.0, rev=0.4)
+    m.add(thud(0.6), 0.3)
+    m.add(tape_rip(1.0), a["rip"], pan=0.3, rev=0.08)
+    m.add(thud(0.8), a["lid"])
+    m.add(page_flip(0.6), a["lid"] + 0.05, pan=-0.2)
+    m.add(riser(1.0, 0.25), a["rise"] - 0.2)
+    m.add(bell(88, 0.35), a["cover"], rev=0.4, dly=0.15)
+    groove(m, 6.0, 7, level=0.45, fills=False)
+    for t in a["flips"]:
+        m.add(page_flip(1.0), t - 0.05, pan=float(RNG.uniform(-0.3, 0.3)), rev=0.1)
+    for t0, its in a["items"].items():
+        for i, t in enumerate(its):
+            m.add(pop(700 + 90 * i, 0.4), t, pan=-0.3 + 0.15 * i, rev=0.1)
+    m.add(page_flip(0.9), a["close"] - 0.05)
+    m.add(thud(0.6), a["close"] + 0.3)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), UNBOX_VO
+
+
+SCORES = {"brand-book-unboxing": unbox, "indian-roots": roots, "inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
 
 
 def build(slug):

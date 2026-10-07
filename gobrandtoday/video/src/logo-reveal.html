@@ -9,10 +9,13 @@
 {{COMMON_CSS}}
 .stage { position: absolute; inset: 0; }
 .lockup { position: absolute; left: 0; top: 0; }
-.eyebrow { position: absolute; color: var(--violet); font-size: 26px; white-space: nowrap; }
+.eyebrow { position: absolute; color: var(--violet-d); font-size: 26px; white-space: nowrap; }
 .tagline { position: absolute; color: var(--ink-2); font-weight: 600; white-space: nowrap; }
 .tagline .w { display: inline-block; margin-right: 0.26em; }
-.drop { position: absolute; width: 10px; height: 10px; }
+.caps { position: absolute; display: flex; justify-content: center; align-items: center; gap: 18px; color: var(--graphite); font-size: 24px; white-space: nowrap; }
+.caps .sep { width: 16px; height: 16px; }
+.V .caps { font-size: 21px; gap: 12px; }
+.V .caps .sep { width: 13px; height: 13px; }
 .V .eyebrow { font-size: 22px; }
 </style>
 </head>
@@ -49,7 +52,7 @@ fontsLoaded().then(() => {
   const caret = el("span", "caret", M.wm.querySelector(".wm-t"));
   M.wm.querySelector(".wm-t").insertBefore(caret, M.wm.querySelector(".wm-t").lastChild);
 
-  const eyebrow = el("div", "eyebrow mono", lock, "AI brand studio · Made in India");
+  const eyebrow = el("div", "eyebrow mono", lock, "AI brand studio");
   eyebrow.style.left = "0px"; eyebrow.style.width = W + "px"; eyebrow.style.textAlign = "center";
   eyebrow.style.top = (ly - (V ? 90 : 110)) + "px";
   const tag = el("div", "tagline", lock);
@@ -58,8 +61,17 @@ fontsLoaded().then(() => {
   tag.style.left = "0px"; tag.style.width = W + "px"; tag.style.textAlign = "center";
   tag.style.top = (ly + size * 1.25) + "px";
 
-  const clear = [{ x: lx - 40, y: ly - (V ? 120 : 140), w: wmW + 80, h: size * 1.25 + (V ? 200 : 230) }];
+  const clear = [{ x: Math.min(lx, (W - (V ? 760 : 900)) / 2) - 40, y: ly - (V ? 120 : 140), w: Math.max(wmW, V ? 760 : 900) + 80, h: size * 1.25 + (V ? 260 : 290) }];
   const F = buildField(document.getElementById("field"), W, H, V ? 60 : 64, "rgba(22,22,26,0.16)", 0.32, 7, clear);
+  // capabilities line: what the studio actually gives you
+  const caps = el("div", "caps mono", lock);
+  caps.style.left = "0px"; caps.style.width = W + "px";
+  caps.style.top = (ly + size * 1.25 + (V ? 84 : 96)) + "px";
+  const capWords = [], seps = [];
+  ["Name", "Domain", "Handles", "Logo", "Launch"].forEach((w, i) => {
+    if (i) { const sp = sparkSVG("var(--violet)", 2, "sep"); caps.appendChild(sp.svg); seps.push(sp.svg); }
+    capWords.push(el("span", "", caps, w));
+  });
   const fx = document.getElementById("fx");
   const fxRatio = [sx / W, sy / H];
 
@@ -96,7 +108,7 @@ fontsLoaded().then(() => {
 
   // ---- 3.0  SPARK: snap, burst, camera punch, the field twinkles into sparks
   morph(tl, M.mark.path, 1, 2, SPARK - 0.06, 0.16, "power3.in");
-  tl.to(mk, { keyframes: [{ scale: 1.9, rotation: 90, duration: 0.16, ease: "power2.out" }, { scale: 1, rotation: 90, duration: 0.5, ease: "elastic.out(1,0.45)" }] }, SPARK - 0.04);
+  tl.to(mk, { keyframes: [{ scale: 1.55, rotation: 90, duration: 0.16, ease: "power2.out" }, { scale: 1, rotation: 90, duration: 0.5, ease: "elastic.out(1,0.45)" }] }, SPARK - 0.04);
   burst(tl, fx, sx, sy, SPARK, { rays: 12, len: V ? 120 : 150, r0: 30, r1: V ? 200 : 240, ringScale: 7 });
   tl.to("#stage", { keyframes: [{ scale: 1.045, duration: 0.12, ease: "power2.out" }, { scale: 1, duration: 0.6, ease: "power3.out" }], transformOrigin: `${sx}px ${sy}px` }, SPARK);
   fieldToSparks(tl, F, SPARK + 0.02, fxRatio, 0.9);
@@ -116,6 +128,14 @@ fontsLoaded().then(() => {
   // ---- 3.75  eyebrow wipes in, the tagline rises word by word
   tl.fromTo(eyebrow, { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.6, ease: "power3.out" }, TWIN + 0.25);
   tl.fromTo(words, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out", stagger: 0.08 }, TWIN + 0.35);
+
+  // ---- 4.25  capabilities pop in on 8ths, sparks spinning between them
+  capWords.forEach((w, i) => {
+    tl.fromTo(w, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(2.5)" }, 4.25 + i * 0.25);
+  });
+  seps.forEach((sp, i) => {
+    tl.fromTo(sp, { scale: 0, rotation: -120 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)" }, 4.38 + i * 0.25);
+  });
 
   // ---- 4.5  hold: the spark breathes, the twin winks on the tabla, the field twinkles
   tl.to(mk, { scale: 1.08, duration: 0.75, ease: "sine.inOut", yoyo: true, repeat: 1 }, 4.4);

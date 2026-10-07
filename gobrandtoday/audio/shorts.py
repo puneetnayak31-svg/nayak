@@ -68,23 +68,23 @@ def thud(gain=1.0):
     return np.sin(2 * np.pi * np.cumsum(70 + 50 * np.exp(-t / 0.03)) / SR) * np.exp(-t / 0.12) * 0.7 * gain
 
 
-# ------------------------------------------------------------------ 1  Name My Brand, Ep. 01 (24 s)
-EP01 = dict(dur=24.0, type0=0.35, idea="A thrift app for college students", sting=2.5,
+# ------------------------------------------------------------------ Name My Brand: Loopa (24 s)
+NMB = dict(dur=24.0, type0=0.35, idea="A thrift app for college students", sting=2.5,
             names=[4.3, 4.7, 5.1], pick=6.6, domains=[8.4, 8.65, 8.9, 9.15], handles=[9.6 + i * 0.2 for i in range(6)],
             looks=[12.0, 12.5, 13.0, 13.5], lpick=14.5, reveal=[16.1, 16.6, 17.0, 17.4, 17.8], scenes=[8.0, 12.0, 16.0],
             end=20.0)
-EP01_VO = [
+NMB_VO = [
     (0.1, "One sentence in. Let's make it a brand."),
     (4.2, "Loopa. Clothes that keep going round. Eight point nine out of ten."),
     (8.2, "Domains and handles, honestly checked."),
     (12.2, "Four looks. This one's the winner."),
-    (16.2, "Meet Loopa. Logo, colours, mockups. Done."),
+    (16.2, "Meet Loopa. Logo, colours, mockups, and a lot more inside."),
     (20.6, "Want yours next? Comment your idea."),
 ]
 
 
-def ep01():
-    a = EP01
+def nmb():
+    a = NMB
     m = Mix(a["dur"])
     quiet_pad(m, 0.0, 2.6)
     type_clicks(m, a["type0"], len(a["idea"]), S16 / 2, 0.7)
@@ -107,10 +107,10 @@ def ep01():
     for i, t in enumerate(a["reveal"]):
         m.add(pop(640 + 80 * i, 0.5), t, pan=-0.4 + 0.2 * i)
     end_card(m, a["end"], a["dur"] - a["end"])
-    return m.render(), EP01_VO
+    return m.render(), NMB_VO
 
 
-# ------------------------------------------------------------------ 2  Comment -> Brand (22 s)
+# ------------------------------------------------------------------ Comment -> Brand (22 s)
 CMT = dict(dur=22.0, type0=0.4, idea="a dog café with a reading corner", post=2.4, sting=2.5,
            name=4.1, logo=6.0, swatches=[8.0, 8.25, 8.5, 8.75, 9.0], mocks=[10.25, 10.75, 11.25], chip=12.0,
            next=14.0, end=18.0)
@@ -150,7 +150,7 @@ def comment():
     return m.render(), CMT_VO
 
 
-SCORES = {"name-my-brand-ep01": ep01, "comment-to-brand": comment}
+SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment}
 
 
 def build(slug):

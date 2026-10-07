@@ -48,11 +48,12 @@ def main():
     kit_css = open(os.path.join(SRC, "kit.css")).read()
     kit_js = open(os.path.join(SRC, "kit.js")).read()
     brands = open(os.path.join(SRC, "brands.js")).read()
+    looks = open(os.path.join(SRC, "looks.js")).read()
     for v in VIDEOS:
         tpl = open(os.path.join(SRC, v + ".html")).read()
         for name, (w, h, fmt) in FORMATS.items():
             html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js).replace("{{WICKD_JS}}", wickd)
-                    .replace("{{KIT_CSS}}", kit_css).replace("{{KIT_JS}}", kit_js).replace("{{BRANDS_JS}}", brands)
+                    .replace("{{KIT_CSS}}", kit_css).replace("{{KIT_JS}}", kit_js).replace("{{BRANDS_JS}}", brands).replace("{{LOOKS_JS}}", looks)
                     .replace("{{W}}", str(w)).replace("{{H}}", str(h)).replace("{{FMT}}", fmt))
             proj = os.path.join(HERE, "projects", f"{v}-{name}")
             os.makedirs(proj, exist_ok=True)

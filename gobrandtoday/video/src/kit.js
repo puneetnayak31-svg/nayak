@@ -160,15 +160,19 @@ function makeKit(tl, W, H) {
     go.textContent = o.button || "Start free";
     tl.fromTo(ub, { y: 40, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, t0 + 2.3);
     tl.to(go, { keyframes: [{ scale: 1.08, duration: 0.15 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }] }, t0 + 3.0);
+    // there is a lot more on the platform than any one video shows
+    const more = el("div", "mono abs", sc, o.more || "+ logos, brand books, launch kits & much more inside");
+    Object.assign(more.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (uy + uh + 26) + "px", fontSize: (V ? 17 : 19) + "px", color: "var(--violet-m)" });
+    tl.fromTo(more, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, t0 + 2.5);
     let lib = null;
     if (V && o.lib !== false) {
       lib = el("div", "pill vi abs", sc, o.lib || "Link in bio");
-      lib.style.top = (uy + uh + 40) + "px";
+      lib.style.top = (uy + uh + 84) + "px";
       const lw = lib.offsetWidth;
       lib.style.left = (W / 2 - lw / 2) + "px";
       tl.fromTo(lib, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, t0 + 2.6);
     }
-    return { wm, cta, ub, lib, sx, sy };
+    return { wm, cta, ub, lib, more, sx, sy };
   };
   return K;
 }

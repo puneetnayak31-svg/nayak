@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width={{W}}, height={{H}}" />
-<title>Name My Brand Ep 01 {{FMT}}</title>
+<title>Name My Brand Loopa {{FMT}}</title>
 <script src="assets/gsap.min.js"></script>
 <style>
 {{COMMON_CSS}}
@@ -16,7 +16,7 @@
 </style>
 </head>
 <body>
-<div id="root" class="{{FMT}}" data-composition-id="ep01" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="24">
+<div id="root" class="{{FMT}}" data-composition-id="nmb-loopa" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="24">
   <div class="layer bg-dark" id="bgdark"></div>
   <div class="layer" id="wipes"></div>
   <div class="layer" id="glows"></div>
@@ -29,13 +29,14 @@
   <section class="clip" id="s-end" data-start="20" data-duration="4" data-track-index="1"></section>
   <section class="clip" id="s-chrome" data-start="4" data-duration="16" data-track-index="2"></section>
   <div class="layer grain"></div>
-  <audio id="music" src="assets/audio/shorts/name-my-brand-ep01.wav" data-start="0" data-duration="24" data-volume="1"></audio>
+  <audio id="music" src="assets/audio/shorts/name-my-brand-loopa.wav" data-start="0" data-duration="24" data-volume="1"></audio>
 </div>
 <script>
 {{COMMON_JS}}
 {{WICKD_JS}}
 {{KIT_JS}}
 {{BRANDS_JS}}
+{{LOOKS_JS}}
 fontsLoaded().then(() => {
   const W = {{W}}, H = {{H}};
   const tl = gsap.timeline({ paused: true });
@@ -51,7 +52,7 @@ fontsLoaded().then(() => {
   // ===================================================== 0-4 HOOK: today's idea, typed; its full stop becomes the spark
   {
     const sc = $("s-hook");
-    const ep = el("div", "pill vi abs", sc, "Name my brand · Ep. 01");
+    const ep = el("div", "pill vi abs", sc, "Name my brand");
     Object.assign(ep.style, V ? { left: CA.x + "px", top: (CA.y + 20) + "px" } : { left: "160px", top: "250px" });
     tl.fromTo(ep, { scale: 0, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.5)" }, 0.0);
     const lab = el("div", "sub abs", sc, "Today's idea:");
@@ -93,7 +94,7 @@ fontsLoaded().then(() => {
   // ===================================================== chrome: series pill + EXAMPLE, 4-20
   {
     const sc = $("s-chrome");
-    const ep = el("div", "pill vi abs", sc, "Name my brand · Ep. 01");
+    const ep = el("div", "pill vi abs", sc, "Name my brand");
     Object.assign(ep.style, { left: CA.x + "px", top: CA.y + "px" });
     const ex = K.exPill(sc, 0, CA.y);
     ex.style.left = (CA.x + CA.w - 140) + "px";
@@ -136,7 +137,19 @@ fontsLoaded().then(() => {
     const star = el("div", "pill vi abs", cards[0].c, "Shortlisted");
     star.style.cssText += V ? ";right:200px;top:30px;font-size:16px" : ";right:260px;top:34px;font-size:16px";
     tl.fromTo(star, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, C.pick + 0.1);
-    K.out([hd.box, ib, ...cards.map(c => c.c)], 7.72);
+    const chips = el("div", "abs", sc);
+    chips.style.cssText = V ? `left:${CA.x}px;top:${cb.y + 3 * (cb.h + cb.gap) + 4}px;width:${CA.w}px;display:flex;gap:10px;flex-wrap:wrap`
+                            : `left:${CA.x}px;top:${HY + 490}px;width:600px;display:flex;gap:10px;flex-wrap:wrap`;
+    const cl = el("div", "mono", chips, "Refine:"); cl.style.cssText = "font-size:17px;color:#5F5B6B;align-self:center";
+    const chipEls = ["Shorter", "More premium", "More global", "Easier to say"].map((t, k) => {
+      const c = el("div", "pill", chips, t);
+      c.style.cssText += ";background:#FFFFFF;border:2px solid #DCD8E8;color:#16161A;font-size:16px;padding:6px 14px";
+      return c;
+    });
+    tl.fromTo(chipEls, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.08 }, 5.7);
+    tl.fromTo(cl, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 5.7);
+    tl.to(chipEls[0], { backgroundColor: "#ECE7FF", borderColor: "#6D4AFF", duration: 0.2 }, 6.3);
+    K.out([hd.box, ib, ...cards.map(c => c.c), chips], 7.72);
   }
 
   // ===================================================== 8-12 CHECKS
@@ -171,7 +184,7 @@ fontsLoaded().then(() => {
       return t;
     });
     tiles.forEach((t, k) => tl.fromTo(t, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" }, C.handles[k]));
-    const foot = el("div", "mono abs", sc, "No scraping. No fake answers.");
+    const foot = el("div", "mono abs", sc, "10 domain endings · 10 platforms · No fake answers");
     Object.assign(foot.style, V ? { left: CA.x + "px", top: (gy + 2 * (th + 12) + 12) + "px", fontSize: "19px", color: "var(--violet-d)" } : { left: CA.x + "px", top: (HY + 420) + "px", fontSize: "22px", color: "var(--violet-d)" });
     tl.fromTo(foot, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5 }, 10.9);
     K.out([hd.box, ...rows, ...tiles, foot], 11.7);
@@ -182,21 +195,11 @@ fontsLoaded().then(() => {
     const sc = $("s-looks");
     const hd = K.head(sc, "Step 3 · Logo", "Four looks. One winner.", V ? { y: HY } : { y: HY - 20, w: 1680 });
     K.headIn(hd, 12.02);
-    const g = V ? { x: CA.x, y: HY + 190, w: 400, h: 400, gap: 16, cols: 2 } : { x: CA.x, y: HY + 130, w: 405, h: 500, gap: 20, cols: 4 };
-    const looks = [
-      { name: "Sticker stack", fonts: "Anton · Manrope", pal: ["#121212", "#FF7AB6", "#FFFFFF", "#FFE58A", "#FFF8EE"], draw: (st, w, h) => {
-        const t = el("div", "", st, "LOOPA");
-        t.style.cssText = `position:absolute;left:${w * 0.18}px;top:${h * 0.3}px;width:${w * 0.64}px;height:${h * 0.36}px;display:flex;align-items:center;justify-content:center;background:#FF7AB6;color:#fff;font:${h * 0.24}px Anton;border-radius:${h * 0.04}px;box-shadow:${h * 0.03}px ${h * 0.03}px 0 #121212;rotate:-5deg`; } },
-      { name: "Lettermark", fonts: "Fraunces · DM Sans", pal: ["#121212", "#3DDC97", "#FFFFFF", "#E8F7EF", "#FFF8EE"], draw: (st, w, h) => {
-        const s = h * 0.32;
-        const q = el("div", "", st, "L"); q.style.cssText = `position:absolute;left:${w * 0.12}px;top:${(h - s) / 2}px;width:${s}px;height:${s}px;border-radius:${s * 0.24}px;background:#3DDC97;color:#121212;font:600 ${s * 0.62}px Fraunces;display:flex;align-items:center;justify-content:center`;
-        const n = el("div", "", st, "Loopa"); n.style.cssText = `position:absolute;left:${w * 0.12 + s * 1.2}px;top:${(h - s) / 2}px;height:${s}px;display:flex;align-items:center;font:600 ${s * 0.58}px Fraunces;color:#121212`; } },
-      { name: "Bouncy letters", fonts: "Syne · Manrope", pal: ["#3DDC97", "#FF7AB6", "#FFE58A", "#121212", "#FFF8EE"], draw: (st, w, h) => {
-        const row = el("div", "", st); row.style.cssText = `position:absolute;left:0;width:100%;top:${h * 0.3}px;display:flex;justify-content:center;gap:${h * 0.01}px`;
-        "loopa".split("").forEach((ch, k) => { const s = el("span", "", row, ch); s.style.cssText = `display:inline-block;font:700 ${h * 0.3}px Syne;color:${["#3DDC97", "#FF7AB6", "#121212", "#FFB800", "#FF7AB6"][k]};margin-top:${[0, -0.06, 0.04, -0.04, 0.02][k] * h}px`; }); } },
-      { name: "Symbol + wordmark", fonts: "Syne · Manrope", pal: B.pal, draw: (st, w, h) => {
-        const l = B.logo(st, h * 0.3); Object.assign(l.style, { position: "absolute", left: "0", width: "100%", textAlign: "center", top: (h * 0.32) + "px" }); } },
-    ];
+    const g = V ? { x: CA.x, y: HY + 240, w: 400, h: 396, gap: 16, cols: 2 } : { x: CA.x, y: HY + 185, w: 405, h: 470, gap: 20, cols: 4 };
+    const looks = LOOPA_LOOKS;
+    const sub = el("div", "sub abs", sc, "From 10 logo constructions, 13 symbol families and AI-drawn symbols.");
+    Object.assign(sub.style, V ? { left: CA.x + "px", top: (HY + 140) + "px", width: CA.w + "px", fontSize: "26px" } : { left: CA.x + "px", top: (HY + 126) + "px", fontSize: "28px" });
+    tl.fromTo(sub, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4 }, 12.4);
     const cards = looks.map((lk, k) => {
       const c = el("div", "lookcard", sc);
       const cx = g.x + (k % g.cols) * (g.w + g.gap), cy = g.y + Math.floor(k / g.cols) * (g.h + g.gap);
@@ -219,7 +222,8 @@ fontsLoaded().then(() => {
     tl.to(ch.b, { backgroundColor: "#6D4AFF", duration: 0.15 }, C.lpick);
     tl.to(ch.c, { borderColor: "#6D4AFF", boxShadow: "0 0 0 8px rgba(109,74,255,0.22)", duration: 0.3 }, C.lpick);
     tl.to(cards.slice(0, 3).map(c => c.c), { opacity: 0.35, scale: 0.96, duration: 0.35 }, C.lpick + 0.05);
-    K.out([hd.box, ...cards.map(c => c.c)], 15.7);
+    SPIN.forEach(g_ => tl.fromTo(g_, { rotation: 0 }, { rotation: -120, svgOrigin: "80 80", duration: 4, ease: "none" }, 12.0));
+    K.out([hd.box, sub, ...cards.map(c => c.c)], 15.7);
   }
 
   // ===================================================== 16-20 REVEAL: meet Loopa
@@ -235,19 +239,21 @@ fontsLoaded().then(() => {
     const mw = V ? 260 : 330, mh = V ? 300 : 420, my = V ? HY + 500 : HY + 30, mx = V ? CA.x : 820;
     const mocks = [mockTote2(sc, mw, mh, B), mockApp2(sc, mw, mh, B), mockPost2(sc, mw, mh, B, "Swap. Wear. Repeat.")];
     mocks.forEach((t, k) => Object.assign(t.style, { position: "absolute", left: (mx + k * (mw + (V ? 18 : 24))) + "px", top: my + "px", border: "3px solid rgba(0,0,0,0.08)" }));
-    const ex = K.exPill(sc, V ? CA.x : 820, V ? HY + 830 : HY + 480);
+    const ex = el("div", "mono abs", sc, "+ Much more inside →");
+    Object.assign(ex.style, { left: (V ? CA.x : CA.x) + "px", top: (V ? 1210 : 772) + "px", fontSize: "19px", color: "var(--violet-d)" });
     tl.fromTo(logo, { scale: 0.6, opacity: 0, transformOrigin: V ? "50% 50%" : "0% 50%" }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(2)" }, C.reveal[0]);
     tl.fromTo(tag, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, C.reveal[0] + 0.3);
     tl.fromTo(pal, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, C.reveal[1]);
     mocks.forEach((t, k) => tl.fromTo(t, { y: 80, opacity: 0, rotation: k % 2 ? 4 : -4 }, { y: 0, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(1.8)" }, C.reveal[2 + k]));
-    tl.fromTo(ex, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.reveal[4]);
-    K.out([logo, tag, pal, ...mocks, ex], 19.72);
+    const rail = featureRail(K, tl, sc, 17.9, 20.0, V ? 1250 : 800, false);
+    tl.fromTo(ex, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4 }, 17.85);
+    K.out([logo, tag, pal, ...mocks, ex, rail], 19.72);
   }
 
   // ===================================================== 20-24 END CARD
-  K.endCard($("s-end"), C.end, { cta: "Comment your idea for Ep. 02" });
+  K.endCard($("s-end"), C.end, { cta: "Comment your idea. It could be next." });
 
-  window.__timelines["ep01"] = tl;
+  window.__timelines["nmb-loopa"] = tl;
 });
 </script>
 </body>

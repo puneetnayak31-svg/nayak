@@ -150,7 +150,37 @@ def comment():
     return m.render(), CMT_VO
 
 
-SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment}
+# ------------------------------------------------------------------ 9 tabs vs 1 tab (18 s)
+RACE = dict(dur=18.0, tabs=[1.5 + i * 0.25 for i in range(9)], steps=[1.5 + i for i in range(7)], done=8.0,
+            rail=10.0, end=14.0)
+RACE_VO = [
+    (0.1, "Same idea. Two ways to brand it."),
+    (2.35, "The old way: nine tabs, three weekends."),
+    (5.0, "Our way: one tab. Name, domains, logo, brand book. Done."),
+    (10.2, "And that's not even everything. There's a lot more inside."),
+]
+
+
+def race():
+    a = RACE
+    m = Mix(a["dur"])
+    groove(m, 0.0, 5, level=0.9)
+    for i, t in enumerate(a["tabs"]):
+        m.add(pop(480 + 40 * i, 0.55), t, pan=-0.5, rev=0.1)
+        m.add(glitch(0.5), t + 0.12, pan=-0.6)
+    for i, t in enumerate(a["steps"]):
+        m.add(pluck(76 + [0, 4, 7, 11, 12, 16, 19][i], 0.5), t, pan=0.5, rev=0.25)
+        m.add(ting(88 + [0, 4, 7, 11, 12, 16, 19][i] % 12, 0.25), t + 0.05, pan=0.5, rev=0.3)
+    m.add(bell(88, 0.5), a["done"], pan=0.4, rev=0.4, dly=0.15)
+    m.add(bell(95, 0.35), a["done"], pan=0.5, rev=0.4)
+    m.add(whoosh(0.5, 0.8), a["rail"] - 0.3, rev=0.1)
+    groove(m, a["rail"], 2, start=2, level=0.85)
+    motif(m, a["rail"], 0.4)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), RACE_VO
+
+
+SCORES = {"name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race}
 
 
 def build(slug):

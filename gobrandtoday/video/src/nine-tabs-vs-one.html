@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Nine Tabs vs One {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.half { position: absolute; border-radius: 30px; overflow: hidden; }
+.old { background: #ECEAF0; border: 3px solid #D6D2DE; }
+.new { background: #FFFFFF; border: 3px solid var(--violet); box-shadow: 0 20px 50px rgba(109, 74, 255, 0.14); }
+.lab { position: absolute; left: 28px; top: 24px; font-family: "Space Mono"; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase; }
+.ctr { position: absolute; display: flex; flex-direction: column; gap: 2px; }
+.ctr .k { font-family: "Space Mono"; font-size: 15px; letter-spacing: 0.08em; color: #44414F; text-transform: uppercase; }
+.ctr .v { position: relative; height: 1.2em; }
+.ctr .v span { position: absolute; left: 0; top: 0; }
+.step { position: absolute; left: 28px; right: 28px; display: flex; align-items: center; gap: 16px; }
+.step .tick { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #CFCAD9; flex: none; position: relative; box-sizing: border-box; }
+.step .tick b { position: absolute; inset: -3px; border-radius: 50%; background: var(--violet); display: block; }
+.step .nm { font: 700 26px Manrope; color: var(--graphite); }
+.step .rs { margin-left: auto; font-family: "Space Mono"; font-size: 17px; color: var(--violet-d); white-space: nowrap; }
+.V .step .nm { font-size: 24px; }
+.V .step .rs { font-size: 15px; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="race" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="18">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-race" data-start="0" data-duration="10.05" data-track-index="1"></section>
+  <section class="clip" id="s-all" data-start="10" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="14" data-duration="4" data-track-index="1"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/nine-tabs-vs-one.wav" data-start="0" data-duration="18" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  const C = { tabs: [1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5], steps: [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5], done: 8.0, all: 10.0, end: 14.0 };
+  K.fieldTo(0, 0, 0.001);
+
+  // ===================================================== 0-10 THE RACE
+  {
+    const sc = $("s-race");
+    const hd = el("div", "hl abs", sc);
+    Object.assign(hd.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? CA.y + 10 : CA.y) + "px", fontSize: (V ? 72 : 86) + "px" });
+    const hw = K.words(hd, "Same idea. Two ways.");
+    tl.fromTo(hw, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.1 }, 0.0);
+    const idea = el("div", "mono abs", sc, "Idea: a thrift app for college students");
+    Object.assign(idea.style, { left: "0", width: W + "px", textAlign: "center", top: (V ? CA.y + 104 : CA.y + 118) + "px", fontSize: "20px", color: "#5F5B6B" });
+    tl.fromTo(idea, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.5);
+    const O = V ? { x: CA.x, y: 480, w: CA.w, h: 460 } : { x: 120, y: 290, w: 820, h: 660 };
+    const N = V ? { x: CA.x, y: 965, w: CA.w, h: 495 } : { x: 980, y: 290, w: 820, h: 660 };
+    const old = el("div", "half old", sc); Object.assign(old.style, { left: O.x + "px", top: O.y + "px", width: O.w + "px", height: O.h + "px" });
+    const nw = el("div", "half new", sc); Object.assign(nw.style, { left: N.x + "px", top: N.y + "px", width: N.w + "px", height: N.h + "px" });
+    const ol = el("div", "lab", old, "The old way"); ol.style.color = "#5F5B6B";
+    const nl = el("div", "lab", nw, "With gobrandtoday"); nl.style.color = "var(--violet-d)";
+    const ex = el("div", "pill ex abs", nw, "Example"); Object.assign(ex.style, { right: "24px", top: "18px", fontSize: "16px" });
+    tl.fromTo(old, { x: V ? 0 : -60, y: V ? -40 : 0, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.4);
+    tl.fromTo(nw, { x: V ? 0 : 60, y: V ? 40 : 0, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.5);
+
+    // ---- the old way: tabs pile up, counters climb
+    const titles = ["Thesaurus", "Domain search", "Hosting plans", "instagram.com/…", "x.com/…", "Logo maker", "Google Fonts", "Colour palettes", "Notes · names v9"];
+    const gw = O.w - 56, gh = O.h - (V ? 82 : 96) - 70 - 16;
+    const ww = (gw - 2 * 12) / 3, wh = (gh - 2 * 10) / 3;
+    const wins = titles.map((t, i) => {
+      const w = el("div", "win", old);
+      Object.assign(w.style, { left: (28 + (i % 3) * (ww + 12)) + "px", top: (70 + Math.floor(i / 3) * (wh + 10)) + "px", width: ww + "px", height: wh + "px" });
+      const bar = el("div", "bar", w); el("i", "", bar); el("i", "", bar); el("i", "", bar); el("b", "", bar, t);
+      const body = el("div", "body", w);
+      for (let q = 0; q < (V ? 2 : 3); q++) { const s = el("div", "sk", body); s.style.width = (45 + ((i * 17 + q * 23) % 45)) + "%"; }
+      return w;
+    });
+    wins.forEach((w, i) => tl.fromTo(w, { scale: 0.4, opacity: 0, rotation: (i % 2 ? 6 : -6) }, { scale: 1, opacity: 1, rotation: (i % 3 - 1) * 2, duration: 0.3, ease: "back.out(2)" }, C.tabs[i]));
+    const r = rng(8);
+    wins.forEach((w) => { for (let q = 0; q < 10; q++) tl.to(w, { x: (r() - 0.5) * 8, y: (r() - 0.5) * 6, duration: 0.12, ease: "sine.inOut" }, 8.0 + q * 0.12); });
+    const ctrs = [["Tabs", [[1.5, 1], [1.75, 2], [2, 3], [2.25, 4], [2.5, 5], [2.75, 6], [3, 7], [3.25, 8], [3.5, 9]]],
+      ["Weekends", [[2.6, 1], [5.0, 2], [7.4, 3]]], ["Coffees", [[1.9, 1], [3.0, 2], [4.0, 3], [5.0, 4], [6.0, 5], [7.0, 6], [8.0, 7]]]];
+    const cy = O.h - (V ? 82 : 96);
+    ctrs.forEach(([k, steps], j) => {
+      const c = el("div", "ctr", old);
+      Object.assign(c.style, { left: (28 + j * (V ? 200 : 210)) + "px", top: cy + "px" });
+      el("div", "k", c, k);
+      const vb = el("div", "v", c);
+      vb.style.font = `700 ${V ? 40 : 46}px "Space Mono"`;
+      vb.style.color = "var(--graphite)";
+      const vals = [[0.4, 0]].concat(steps);
+      vals.forEach(([t, v], q) => {
+        const sp = el("span", "", vb, String(v));
+        appear(tl, sp, t, q + 1 < vals.length ? vals[q + 1][0] : 99);
+        if (q) tl.fromTo(sp, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }, t);
+      });
+    });
+    const srch = el("div", "abs mono", old, "Still searching…");
+    Object.assign(srch.style, { right: "28px", top: (cy + 18) + "px", fontSize: "18px", color: "#9A2B1E" });
+    tl.fromTo(srch, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.done);
+    tl.to(old, { filter: "grayscale(1)", duration: 0.5 }, C.done);
+
+    // ---- the new way: seven steps tick in a second each
+    const steps = [["Name", "Loopa · 8.9"], ["Domains", "loopa.app available"], ["Handles", "3 free · 3 one-tap"], ["Score", "8.9 / 10"],
+      ["Logo", "4 looks"], ["Brand book", "9 mockups"], ["Launch kit", "bios · posts · copy"]];
+    const sy0 = V ? 66 : 92, sdy = V ? 44 : 64;
+    const rows = steps.map(([n, res], k) => {
+      const s = el("div", "step", nw); s.style.top = (sy0 + k * sdy) + "px";
+      const t = el("div", "tick", s); const b = el("b", "", t);
+      b.innerHTML = `<svg viewBox="0 0 34 34" width="100%" height="100%"><path d="M10 17.5 L15 22.5 L24 12.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      el("div", "nm", s, n);
+      const rr = el("div", "rs", s, res);
+      return { s, b, rr };
+    });
+    tl.fromTo(rows.map(r => r.s), { opacity: 0.35 }, { opacity: 0.35, duration: 0.001 }, 0.5);
+    rows.forEach((r, k) => {
+      tl.to(r.s, { opacity: 1, duration: 0.15 }, C.steps[k] - 0.05);
+      tl.fromTo(r.b, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }, C.steps[k]);
+      tl.fromTo(r.rr, { x: 20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3 }, C.steps[k] + 0.08);
+    });
+    const pb = el("div", "abs", nw);
+    pb.style.cssText = `left:28px;right:28px;bottom:${V ? 30 : 36}px;height:12px;border-radius:6px;background:#E6E2F0;overflow:hidden`;
+    const pf = el("b", "", pb); pf.style.cssText = "position:absolute;inset:0;background:var(--violet);display:block;transform-origin:0 50%";
+    tl.fromTo(pf, { scaleX: 0 }, { scaleX: 1, duration: 6.4, ease: "none" }, C.steps[0]);
+    const rdy = el("div", "pill vi abs", nw, "Brand ready");
+    Object.assign(rdy.style, { right: "24px", bottom: (V ? 56 : 68) + "px" });
+    tl.fromTo(rdy, { scale: 0, opacity: 0, transformOrigin: "100% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, C.done);
+    burst(tl, el("div", "layer", sc), N.x + N.w - 110, N.y + N.h - (V ? 76 : 88), C.done, { rays: 12, len: 90, r0: 30, r1: 150, ringScale: 5 });
+    const logo = BRANDS.loopa.logo(nw, V ? 46 : 56);
+    Object.assign(logo.style, { position: "absolute", left: "28px", bottom: (V ? 52 : 62) + "px" });
+    tl.fromTo(logo, { scale: 0.5, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, C.done + 0.1);
+    tl.to(nw, { boxShadow: "0 0 0 10px rgba(109,74,255,0.18), 0 20px 50px rgba(109,74,255,0.25)", duration: 0.4 }, C.done);
+    K.out([hd, idea, old, nw], 9.72);
+  }
+
+  // ===================================================== 10-14 EVERYTHING IN ONE TAB, and more
+  {
+    const sc = $("s-all");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 560 : 250) + "px", fontSize: (V ? 84 : 96) + "px" });
+    const ws = K.words(hl, "All of it, in one tab.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.07 }, C.all + 0.02);
+    const rail = featureRail(K, tl, sc, C.all + 0.3, C.end, V ? 840 : 520, false);
+    const more = el("div", "pill vi abs", sc, "+ A lot more inside");
+    more.style.top = (V ? 1000 : 680) + "px";
+    sc.appendChild(more);
+    more.style.left = (W / 2 - more.offsetWidth / 2) + "px";
+    tl.fromTo(more, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, C.all + 1.2);
+    K.out([hl, rail, more], 13.72);
+  }
+
+  K.endCard($("s-end"), C.end, { cta: "Skip the nine tabs." });
+  window.__timelines["race"] = tl;
+});
+</script>
+</body>
+</html>

@@ -53,10 +53,12 @@ BRANDS.mello.symbol = (parent, s, c = "#F4C26B") => svgEl(MOON(c), `width:${s}px
 BRANDS.ojas.logo = (parent, size, color = "#0F4C4A", bar = "#E3A72F") => {
   const d = el("div", "logo", parent);
   Object.assign(d.style, { fontFamily: "Rozha One", fontSize: size + "px", color, letterSpacing: "0.02em", paddingTop: "0.1em" });
-  d.appendChild(document.createTextNode("ojas"));
-  const b = el("i", "", d);
+  const inner = el("span", "", d);
+  inner.style.cssText = "display:inline-block;position:relative";
+  inner.appendChild(document.createTextNode("ojas"));
+  const b = el("i", "", inner);
   b.className = "ojas-bar";
-  b.style.cssText = `position:absolute;left:-0.06em;right:-0.06em;top:0.36em;height:0.085em;border-radius:0.04em;background:${bar};display:block;transform-origin:0% 50%`;
+  b.style.cssText = `position:absolute;left:-0.06em;right:-0.06em;top:0.29em;height:0.085em;border-radius:0.04em;background:${bar};display:block;transform-origin:0% 50%`;
   return d;
 };
 BRANDS.ojas.symbol = (parent, s) => svgEl(`<svg viewBox="0 0 40 40"><rect x="4" y="9" width="32" height="4" rx="2" fill="#E3A72F"/><text x="20" y="34" text-anchor="middle" font-family="Tiro Devanagari Hindi" font-size="26" fill="#0F4C4A">ओ</text></svg>`, `width:${s}px;height:${s}px`);

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Indian Roots {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.deva { font-family: "Tiro Devanagari Hindi"; color: #0F4C4A; line-height: 1.2; white-space: nowrap; }
+.mode { display: inline-flex; align-items: center; font: 700 20px Manrope; padding: 10px 18px; border-radius: 999px; background: #FFFFFF; border: 2px solid #DCD8E8; color: #16161A; white-space: nowrap; }
+.root { font-family: "Space Mono"; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #8A4B12; background: #FBEFD9; border-radius: 8px; padding: 4px 10px; }
+.lang { display: inline-flex; align-items: center; gap: 10px; font: 700 24px Manrope; padding: 12px 20px; border-radius: 16px; background: #FFFFFF; border: 3px solid #DCD8E8; color: #16161A; }
+.lang .ck { width: 26px; height: 26px; border-radius: 50%; background: #0F7B6C; display: inline-flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="roots" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="26">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="3.05" data-track-index="1"></section>
+  <section class="clip" id="s-mode" data-start="3" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-names" data-start="7" data-duration="6.05" data-track-index="1"></section>
+  <section class="clip" id="s-langs" data-start="13" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-logo" data-start="17" data-duration="5.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="22" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-chrome" data-start="3" data-duration="19" data-track-index="2"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/indian-roots.wav" data-start="0" data-duration="26" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  const B = BRANDS.ojas;
+  K.fieldTo(0, 0, 0.001);
+  const C = { morph: 1.0, idea: 3.4, mode: 5.0, names: [7.4, 7.9, 8.4], langs: [13.6, 13.85, 14.1, 14.35, 14.6, 14.85, 15.1], clear: 15.6, logo: 17.2, mocks: [18.6, 19.1], end: 22 };
+
+  // ===================================================== 0-3 HOOK: Devanagari becomes a Latin wordmark under the same headline bar
+  {
+    const sc = $("s-hook");
+    const cy = V ? 760 : 400;
+    const dv = el("div", "deva abs", sc, "ओजस्");
+    Object.assign(dv.style, { left: "0", width: W + "px", textAlign: "center", top: (cy - (V ? 150 : 170)) + "px", fontSize: (V ? 220 : 250) + "px" });
+    const lat = B.logo(sc, V ? 230 : 260);
+    Object.assign(lat.style, { position: "absolute", left: "0", width: W + "px", textAlign: "center", top: (cy - (V ? 140 : 160)) + "px" });
+    tl.fromTo(dv, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 0.0);
+    tl.to(dv, { y: -40, opacity: 0, duration: 0.35, ease: "power2.in" }, C.morph);
+    tl.fromTo(lat, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(2)" }, C.morph + 0.15);
+    tl.fromTo(lat.querySelector(".ojas-bar"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, C.morph + 0.1);
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (cy + (V ? 210 : 200)) + "px", fontSize: (V ? 76 : 86) + "px" });
+    const w1 = K.words(hl, "Indian roots.");
+    const l2 = el("div", "", hl); l2.style.marginTop = "10px";
+    const mk = el("span", "marker", l2, "Ready for the world.");
+    tl.fromTo(w1, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.1 }, 0.3);
+    appear(tl, mk, 1.4);
+    tl.fromTo(mk, { scale: 0.5 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 1.4);
+    const ex = el("div", "pill ex abs", sc, "Example"); Object.assign(ex.style, { left: (W / 2 - 70) + "px", top: (cy - (V ? 260 : 270)) + "px" });
+    tl.fromTo(ex, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.6);
+    K.out([dv, lat, hl, ex], 2.72);
+  }
+
+  // chrome
+  {
+    const sc = $("s-chrome");
+    const p = el("div", "pill vi abs", sc, "India-Inspired naming");
+    Object.assign(p.style, { left: CA.x + "px", top: CA.y + "px" });
+    const ex = K.exPill(sc, CA.x + CA.w - 140, CA.y);
+    tl.fromTo([p, ex], { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05 }, 3.05);
+  }
+  const HY = CA.y + 80;
+
+  // ===================================================== 3-7 THE MODE
+  {
+    const sc = $("s-mode");
+    const hd = K.head(sc, "Step 1 · Naming mode", "One sentence, one mode.", V ? { y: HY } : { y: HY, w: 1680 });
+    K.headIn(hd, 3.05);
+    const ib = el("div", "card", sc);
+    const ibb = V ? { x: CA.x, y: HY + 200, w: CA.w, h: 110 } : { x: CA.x, y: HY + 150, w: 1000, h: 110 };
+    Object.assign(ib.style, { left: ibb.x + "px", top: ibb.y + "px", width: ibb.w + "px", height: ibb.h + "px", borderRadius: "22px" });
+    const T = el("div", "abs", ib); T.style.cssText = `left:28px;top:32px;font:600 ${V ? 34 : 38}px Manrope;color:var(--graphite);white-space:nowrap`;
+    const chars = typeSpans(T, "An Ayurvedic skincare brand");
+    chars.forEach((c, i) => tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001 }, C.idea + i * 0.0625));
+    tl.fromTo(ib, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 3.2);
+    const modes = ["Smart", "Short & Punchy", "Premium", "Tech / AI", "Invented", "Human", "Global", "India-Inspired", "SEO-Friendly", "Domain-First"];
+    const mb = el("div", "abs", sc);
+    mb.style.cssText = `left:${CA.x}px;width:${V ? CA.w : 1300}px;top:${ibb.y + ibb.h + 40}px;display:flex;flex-wrap:wrap;gap:12px`;
+    const me = modes.map(m => el("div", "mode", mb, m));
+    tl.fromTo(me, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.05 }, 3.9);
+    const pick = me[7];
+    tl.to(pick, { backgroundColor: "#6D4AFF", borderColor: "#6D4AFF", color: "#FFFFFF", scale: 1.08, duration: 0.25, ease: "back.out(3)" }, C.mode);
+    const note = el("div", "sub abs", sc, "“Rooted in Indian languages, ready for the world.”");
+    Object.assign(note.style, { left: CA.x + "px", width: (V ? CA.w : 1300) + "px", top: (ibb.y + ibb.h + (V ? 300 : 200)) + "px", fontSize: (V ? 30 : 32) + "px", color: "var(--graphite)" });
+    tl.fromTo(note, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35 }, C.mode + 0.3);
+    const cur = K.cursor(sc, 0, 0, C.mode);
+    const pp = posIn(pick, root);
+    Object.assign(cur.style, { left: (pp.cx - 8) + "px", top: (pp.cy - 4) + "px" });
+    K.out([hd.box, ib, mb, note, cur], 6.72);
+  }
+
+  // ===================================================== 7-13 NAMES WITH THEIR ROOTS
+  {
+    const sc = $("s-names");
+    const hd = K.head(sc, "Step 2 · Names", "Names that carry meaning.", V ? { y: HY } : { y: HY, w: 600 });
+    K.headIn(hd, 7.05);
+    const names = [["Ojas", "OH-jus", "Sanskrit", "ओजस्", "Vitality, inner radiance.", "8.8"],
+      ["Nira", "NEE-ra", "Sanskrit", "नीर", "Water: pure, clear, calm.", "8.5"],
+      ["Tvacha", "TVUH-cha", "Sanskrit", "त्वचा", "Skin, said simply.", "8.1"]];
+    const cb = V ? { x: CA.x, y: HY + 230, w: CA.w, h: 244, gap: 20 } : { x: 800, y: HY - 10, w: 1000, h: 236, gap: 22 };
+    const cards = names.map(([n, pr, lang, dv, mean, sc_], k) => {
+      const c = el("div", "card", sc);
+      Object.assign(c.style, { left: cb.x + "px", top: (cb.y + k * (cb.h + cb.gap)) + "px", width: cb.w + "px", height: cb.h + "px" });
+      const nm = el("div", "hl abs", c, n); Object.assign(nm.style, { left: "32px", top: "26px", fontSize: (V ? 62 : 66) + "px" });
+      const d = el("div", "deva abs", c, dv); Object.assign(d.style, { left: (V ? 250 : 260) + "px", top: "30px", fontSize: (V ? 46 : 50) + "px" });
+      const p = el("div", "mono abs", c, pr); Object.assign(p.style, { left: "34px", top: (V ? 104 : 108) + "px", fontSize: "18px", color: "var(--violet-d)" });
+      const rt = el("div", "root abs", c, "Root · " + lang); Object.assign(rt.style, { left: "34px", top: (V ? 140 : 144) + "px" });
+      const m = el("div", "sub abs", c, mean); Object.assign(m.style, { left: "34px", top: (V ? 184 : 186) + "px", fontSize: (V ? 25 : 27) + "px", color: "var(--graphite)" });
+      const sb = el("div", "abs", c); Object.assign(sb.style, { right: "32px", top: "34px", textAlign: "right" });
+      const od = el("div", "", sb, sc_); od.style.cssText = `font:700 ${V ? 72 : 80}px "Space Mono";color:var(--graphite);line-height:1.1`;
+      const l10 = el("div", "mono", sb, "/10"); l10.style.cssText = "font-size:16px;color:#5F5B6B;margin-top:4px";
+      return { c, od };
+    });
+    cards.forEach((cd, k) => {
+      tl.fromTo(cd.c, { rotationX: -80, y: 50, opacity: 0, transformPerspective: 900 }, { rotationX: 0, y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, C.names[k]);
+      tl.fromTo(cd.od, { scale: 1.6, opacity: 0, transformOrigin: "100% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, C.names[k] + 0.25);
+    });
+    const ref = el("div", "abs", sc);
+    ref.style.cssText = V ? `left:${CA.x}px;top:${cb.y + 3 * (cb.h + cb.gap) + 6}px;width:${CA.w}px;display:flex;gap:10px;flex-wrap:wrap;align-items:center`
+                          : `left:${CA.x}px;top:${HY + 300}px;width:600px;display:flex;gap:10px;flex-wrap:wrap;align-items:center`;
+    const rl = el("div", "mono", ref, "Refine:"); rl.style.cssText = "font-size:17px;color:#5F5B6B";
+    const re = ["More Indian", "More global", "Easier to say"].map(t => { const c = el("div", "mode", ref, t); c.style.fontSize = "17px"; c.style.padding = "7px 14px"; return c; });
+    tl.fromTo([rl, ...re], { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.08 }, 9.6);
+    tl.to(re[1], { backgroundColor: "#ECE7FF", borderColor: "#6D4AFF", duration: 0.2 }, 10.4);
+    K.out([hd.box, ...cards.map(c => c.c), ref], 12.72);
+  }
+
+  // ===================================================== 13-17 MEANING CHECKS ACROSS LANGUAGES
+  {
+    const sc = $("s-langs");
+    const hd = K.head(sc, "Step 3 · Risk flags", "Checked in other languages.", V ? { y: HY } : { y: HY, w: 1680 });
+    K.headIn(hd, 13.05);
+    const nm = B.logo(sc, V ? 110 : 120);
+    Object.assign(nm.style, { position: "absolute", left: (V ? CA.x : CA.x) + "px", top: (HY + (V ? 210 : 170)) + "px" });
+    tl.fromTo(nm, { scale: 0.7, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 13.3);
+    const langs = ["Hindi", "Spanish", "French", "German", "Portuguese", "Italian", "Arabic"];
+    const lb = el("div", "abs", sc);
+    lb.style.cssText = `left:${CA.x}px;width:${V ? CA.w : 1200}px;top:${HY + (V ? 400 : 360)}px;display:flex;flex-wrap:wrap;gap:14px`;
+    const le = langs.map(l => {
+      const c = el("div", "lang", lb);
+      const ck = el("span", "ck", c);
+      ck.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.5 L6.5 11.5 L12.5 4.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      el("span", "", c, l);
+      return { c, ck };
+    });
+    le.forEach((l, k) => {
+      tl.fromTo(l.c, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "back.out(2)" }, C.langs[k] - 0.15);
+      tl.fromTo(l.ck, { scale: 0 }, { scale: 1, duration: 0.25, ease: "back.out(3)" }, C.langs[k]);
+    });
+    const ok = el("div", "pill abs", sc, "No risk flags · no famous look-alikes");
+    ok.style.cssText += `;left:${CA.x}px;top:${HY + (V ? 700 : 560)}px;background:#D5F4EF;color:#0A5F57;font-size:20px`;
+    tl.fromTo(ok, { scale: 0.6, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, C.clear);
+    K.out([hd.box, nm, lb, ok], 16.72);
+  }
+
+  // ===================================================== 17-22 THE SHIROREKHA LOOK, and more inside
+  {
+    const sc = $("s-logo");
+    const lg = B.logo(sc, V ? 210 : 230);
+    Object.assign(lg.style, V ? { position: "absolute", left: "0", width: W + "px", textAlign: "center", top: (HY + 30) + "px" } : { position: "absolute", left: CA.x + "px", top: (HY + 40) + "px" });
+    const bar = lg.querySelector(".ojas-bar");
+    tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.inOut" }, C.logo);
+    tl.fromTo(lg, { opacity: 0 }, { opacity: 1, duration: 0.01 }, C.logo);
+    const lgChars = lg.childNodes[0];
+    tl.fromTo(lg, { y: -30 }, { y: 0, duration: 0.5, ease: "bounce.out" }, C.logo + 0.45);
+    const lab = el("div", "mono abs", sc, "Shirorekha · inspired by the Devanagari headline bar");
+    Object.assign(lab.style, V ? { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (HY + 300) + "px", fontSize: "18px", color: "var(--violet-d)" } : { left: CA.x + "px", top: (HY + 320) + "px", fontSize: "20px", color: "var(--violet-d)" });
+    tl.fromTo(lab, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.logo + 0.6);
+    const mw = V ? 400 : 420, mh = V ? 360 : 420;
+    const mocks = [mockBottle(sc, mw, mh, B), mockPalette2(sc, mw, mh, B)];
+    const spots = V ? [[CA.x, HY + 380], [CA.x + mw + 16, HY + 380]] : [[960, HY], [960 + mw + 24, HY]];
+    mocks.forEach((t, k) => Object.assign(t.style, { position: "absolute", left: spots[k][0] + "px", top: spots[k][1] + "px", border: "3px solid rgba(0,0,0,0.08)" }));
+    mocks.forEach((t, k) => tl.fromTo(t, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, C.mocks[k]));
+    const rail = featureRail(K, tl, sc, 19.6, 22, V ? HY + 800 : HY + 520, false);
+    const more = el("div", "mono abs", sc, "+ A lot more inside");
+    Object.assign(more.style, { left: CA.x + "px", top: (V ? HY + 762 : HY + 480) + "px", fontSize: "20px", color: "var(--violet-d)" });
+    tl.fromTo(more, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4 }, 19.5);
+    K.out([lg, lab, ...mocks, rail, more], 21.72);
+  }
+
+  K.endCard($("s-end"), C.end, { cta: "Find a name with roots." });
+  window.__timelines["roots"] = tl;
+});
+</script>
+</body>
+</html>

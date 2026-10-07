@@ -239,7 +239,46 @@ def score_video():
     return m.render(), SCORE_VO
 
 
-SCORES = {"inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
+# ------------------------------------------------------------------ Indian roots (26 s)
+ROOTS = dict(dur=26.0, morph=1.0, idea=3.4, mode=5.0, names=[7.4, 7.9, 8.4], langs=[13.6 + 0.25 * i for i in range(7)],
+             clear=15.6, logo=17.2, mocks=[18.6, 19.1], end=22.0)
+ROOTS_VO = [
+    (0.1, "Names with Indian roots, that work everywhere."),
+    (3.2, "Pick India-Inspired. One of ten naming modes."),
+    (7.6, "Every name shows its roots, and its meaning."),
+    (13.2, "And we check how it reads in other languages."),
+    (16.9, "Even a logo inspired by the Devanagari headline bar. And a lot more inside."),
+]
+
+
+def roots():
+    a = ROOTS
+    m = Mix(a["dur"])
+    m.add(pad_chord([40, 47, 52, 59], 3.2, 0.5, bright=900), 0.0, rev=0.4)       # a low drone under the hook
+    m.add(tabla("tin", 0.6), 0.0, rev=0.2)
+    m.add(tabla("dha", 0.7), a["morph"], rev=0.2)
+    m.add(bell(88, 0.45), a["morph"] + 0.5, rev=0.4, dly=0.15)
+    m.add(riser(1.0, 0.4), 2.0)
+    groove(m, 3.0, 9, level=0.9)
+    type_clicks(m, a["idea"], 27, S16 / 2, 0.5)
+    m.add(bell(83, 0.5), a["mode"], rev=0.3, dly=0.12)
+    for i, t in enumerate(a["names"]):
+        m.add(pop(760 + 120 * i, 0.6), t, pan=-0.3 + 0.3 * i)
+    for i, t in enumerate(a["langs"]):
+        m.add(pluck(76 + [0, 2, 4, 7, 9, 12, 14][i], 0.4), t, pan=-0.5 + 0.16 * i, rev=0.2)
+    m.add(bell(88, 0.4), a["clear"], rev=0.35)
+    m.add(riser(0.8, 0.4), a["logo"] - 0.6)
+    m.add(tabla("dha", 0.6), a["logo"] + 0.2, rev=0.2)
+    for i, t in enumerate(a["mocks"]):
+        m.add(pop(700 + 140 * i, 0.55), t)
+    for t in (3.0, 7.0, 13.0, 17.0):
+        m.add(whoosh(0.4, 0.6), t - 0.25, rev=0.1)
+    motif(m, 13.0, 0.35)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    return m.render(), ROOTS_VO
+
+
+SCORES = {"indian-roots": roots, "inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
 
 
 def build(slug):

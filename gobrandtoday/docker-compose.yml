@@ -1,0 +1,36 @@
+# Local or single-server deployment: Postgres + API + web.
+#   cp .env.example .env   (edit secrets)   →   docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gbt
+      POSTGRES_PASSWORD: gbt
+      POSTGRES_DB: gobrandtoday
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gbt -d gobrandtoday']
+      interval: 5s
+      retries: 10
+    ports: ['5432:5432']
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://gbt:gbt@db:5432/gobrandtoday
+      NODE_ENV: production
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on: { db: { condition: service_healthy } }
+    ports: ['4000:4000']
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args: { API_ORIGIN: 'http://api:4000' }
+    depends_on: [api]
+    ports: ['3000:3000']
+
+volumes:
+  pgdata:

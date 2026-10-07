@@ -1,0 +1,24 @@
+{
+  "name": "gobrandtoday",
+  "private": true,
+  "version": "1.0.0",
+  "description": "GoBrandToday — idea → name → domain → handles → score → identity → launch.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @gbt/api & npm run dev --workspace @gbt/web",
+    "dev:api": "npm run dev --workspace @gbt/api",
+    "dev:web": "npm run dev --workspace @gbt/web",
+    "build": "npm run build --workspace @gbt/api && npm run build --workspace @gbt/web",
+    "start": "npm run start --workspace @gbt/api & npm run start --workspace @gbt/web",
+    "db:migrate": "npm run db:migrate --workspace @gbt/api",
+    "db:generate": "npm run db:generate --workspace @gbt/api",
+    "test": "npm run test --workspace @gbt/shared && npm run test --workspace @gbt/api",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}

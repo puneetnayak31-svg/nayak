@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { BrandKitSchema, CreateBrandRequestSchema, AssistantRequestSchema, planById, type BrandKit, type Brief } from '@gbt/shared';
+import { BrandKitSchema, CreateBrandRequestSchema, AssistantRequestSchema, PLANS, planById, type BrandKit, type Brief } from '@gbt/shared';
 import { count, eq } from 'drizzle-orm';
 import { env } from '../config/env';
 import { db, schema } from '../db/client';
@@ -108,8 +108,15 @@ export default async function brandRoutes(app: FastifyInstance) {
     const user = await ensureUser(req, reply);
     const body = parse(CreateBrandRequestSchema, req.body);
     const [{ n }] = (await db.select({ n: count() }).from(schema.brands).where(eq(schema.brands.userId, user.id))) as [{ n: number }];
-    if (n >= planById(user.plan).limits.brandKits) {
-      throw limitReached(user.isGuest ? 'Create a free account to build more brands.' : 'You’ve reached your plan’s brand limit. Go Pro to build up to 10.');
+    const plan = planById(user.plan);
+    if (n >= plan.limits.brandKits) {
+      // Signing up keeps a guest's work but doesn't raise the limit, so only point at what actually helps.
+      const next = PLANS.find((p) => p.limits.brandKits > plan.limits.brandKits);
+      throw limitReached(
+        next
+          ? `${plan.name} includes ${plan.limits.brandKits === 1 ? '1 brand kit and you’ve used it' : `${plan.limits.brandKits} brand kits and you’ve used them all`}. ${next.name} lets you build up to ${next.limits.brandKits.toLocaleString('en-IN')}.`
+          : 'You’ve reached your plan’s brand limit.',
+      );
     }
     const brief = body.brief as Brief;
     const brand = await createBrand(user, { name: body.name, brief, projectId: body.projectId, domain: body.domain, handle: body.handle, region: regionOf(req) });

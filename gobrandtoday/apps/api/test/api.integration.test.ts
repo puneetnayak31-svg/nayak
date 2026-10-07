@@ -16,6 +16,8 @@ beforeAll(async () => {
     dbUp = true;
   } catch {
     dbUp = false;
+    // Make the skip visible: a green run without Postgres proves nothing about the HTTP flow.
+    console.warn('\n⚠ API integration tests SKIPPED: DATABASE_URL is not reachable. Start Postgres and run `npm run db:migrate`.\n');
     return;
   }
   const { buildServer } = await import('../src/server');
@@ -86,6 +88,11 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     // Another visitor cannot read it.
     const other = await app!.inject({ url: `/api/brands/${id}` });
     expect(other.statusCode).toBe(404);
+
+    // Spark allows one brand kit; the limit message points at the plan that actually raises it.
+    const second = await app!.inject({ method: 'POST', url: '/api/brands', headers: { ...H, cookie: sid }, payload: { name: 'Second', brief: { description: 'x' } } });
+    expect(second.statusCode).toBe(429);
+    expect((second.json() as { error: { message: string } }).error.message).toMatch(/Spark includes 1 brand kit.*Pro lets you build up to 10/);
   });
 
   it('signup upgrades the guest and keeps their work', async () => {

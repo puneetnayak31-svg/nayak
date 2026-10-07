@@ -54,7 +54,8 @@ Open <http://localhost:3000>. With no API keys, GoBrandToday runs on its **offli
 | `npm run build` / `npm start` | Production build / start both apps |
 | `npm run db:migrate` | Apply SQL migrations (`apps/api/drizzle`) |
 | `npm run db:generate` | Generate a new migration after editing `apps/api/src/db/schema.ts` |
-| `npm test` | Unit tests (shared + API) and the API integration test (uses `DATABASE_URL`; set `SKIP_DB_TESTS=1` to skip) |
+| `npm test` | Docs drift check, then unit tests (shared + API) and the API integration test (uses `DATABASE_URL`; skipped with a warning if Postgres is down; `SKIP_DB_TESTS=1` to skip) |
+| `npm run docs:check` | Fails if routes, env vars, tables, pages, modules, logo styles, symbol families or scripts are undocumented |
 | `npm run typecheck` | TypeScript across all workspaces |
 
 API docs (OpenAPI / Swagger UI): <http://localhost:4000/api/docs>.
@@ -85,14 +86,24 @@ gobrandtoday/
 │   ├── src/routes/      # REST endpoints
 │   └── drizzle/         # SQL migrations
 ├── apps/web/            # Next.js (App Router). Talks only to its own origin; /api/* is proxied to the API.
-└── docs/                # Architecture, API, providers, deployment, limitations
+├── scripts/             # check-docs.mjs: fails `npm test` when docs drift from the code
+├── docs/                # Scope, tech brief, workflows, decisions, changelog, architecture, API, providers, deployment, limitations
+└── AGENTS.md            # Entry point for AI coding agents (CLAUDE.md and GEMINI.md point here)
 ```
 
 ## Documentation
 
+**Working on this code with an AI coding agent (Claude Code, Codex, Antigravity…)? Start with [AGENTS.md](AGENTS.md).**
+The full index, with what each doc answers and when to update it, is [docs/README.md](docs/README.md).
+
+- [docs/SCOPE.md](docs/SCOPE.md): what is built, stubbed or copy-only; plan limits; out of scope
+- [docs/TECH_BRIEF.md](docs/TECH_BRIEF.md): stack, architecture, module index, data model
+- [docs/WORKFLOWS.md](docs/WORKFLOWS.md): every user flow end to end, plus dev recipes
+- [docs/DECISIONS.md](docs/DECISIONS.md): deliberate choices and why
+- [docs/CHANGELOG.md](docs/CHANGELOG.md): what changed, round by round
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): system design, data model, request flows, extension points
 - [docs/API.md](docs/API.md): every endpoint, with examples
-- [docs/PROVIDERS.md](docs/PROVIDERS.md): setting up Anthropic/OpenAI, RDAP, GoDaddy, Hostinger, Namecheap, GitHub, YouTube, Google OAuth, PostHog
+- [docs/PROVIDERS.md](docs/PROVIDERS.md): setting up Anthropic/OpenAI, RDAP and registrars (GoDaddy, Hostinger, Namecheap, Name.com, Porkbun), image models, GitHub, YouTube, Google OAuth, PostHog
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Docker, Render/Railway/Fly, Vercel + a Node host, plain VPS
 - [docs/LIMITATIONS.md](docs/LIMITATIONS.md): known limitations and the roadmap of extension points
 

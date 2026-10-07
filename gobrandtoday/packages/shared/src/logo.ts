@@ -1,7 +1,8 @@
 /**
- * Logo looks: eight deliberately different logo families. Every brand is
- * offered four of them (each with its own palette, type and mark) and the
- * user picks one before the full guidelines are built.
+ * Logo looks: ten deliberately different constructions (LOGO_STYLES). Every
+ * brand is offered four of them (each with its own palette, type and mark or
+ * symbol, see symbols.ts) and the user picks one before the full guidelines
+ * are built.
  *
  * Logos are rendered as SVG strings from data, so the screen, the
  * guidelines, the exports and the preview all draw the exact same thing.

@@ -16,6 +16,7 @@ Base URL: the web origin (`/api/*` is proxied) or the API directly (`http://loca
 | `POST /api/brand/refine-names` | `{ brief, projectId, feedback?, refinements?: string[], exclude?, liked? }` | same |
 | `POST /api/brand/domain-first` | `{ brief, count? }` | same + `names[].domains`, `checked` |
 | `POST /api/brand/score` | `{ name, brief?, relevance?, domains?, socials? }` | `GoBrandScore` |
+| `POST /api/brand/validate-brief` | a `brief` object | `{ brief }` (normalised with defaults) or `400` |
 
 `brief`:
 ```json

@@ -5,7 +5,7 @@
 3. **Some ccTLDs have no RDAP.** We fall back to DNS, which can prove a domain is *taken* but never that it's *available*. Those show as **Unverified**.
 4. **The GoBrand Score is a heuristic.** It's transparent and deterministic, but it isn't a trademark search, a ranking prediction or a promise of success. The UI says so wherever the score appears.
 5. **Risk detection uses a curated word list.** It covers common problem words in English, Hindi, Spanish, French, German, Portuguese, Italian, Arabic and Japanese. It isn't exhaustive, and it isn't legal clearance.
-6. **Logos are system-generated** (wordmark plus a signature mark from a fixed set of shapes), not free-form AI images. That's deliberate: they're consistent, editable and exportable as SVG. An image-generation provider can be added as a new `logo` section.
+6. **Logos are system-generated** from eight hand-designed families (with a generative symbol for one of them), not free-form AI images. That's deliberate: they're crisp, consistent, editable and exportable as SVG. An image-generation provider could be added as a ninth family.
 7. **PDF export uses the browser's print dialog** on a print-optimised guidelines page. Server-side PDF (e.g. Playwright) is an easy extension.
 8. **Payments aren't live.** Plans, prices and quotas are; checkout is stubbed (Razorpay/Stripe adapters to implement).
 9. **The offline generator is rule-based.** It's good for development and as a fallback; add an AI key for the real experience.

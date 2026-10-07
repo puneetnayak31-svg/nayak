@@ -350,6 +350,30 @@ export const FONT_TRIOS: Record<string, FontTrio> = {
     body: { family: 'Manrope', weights: [400, 500, 700], why: 'Grounds the expressive display face.' },
     data: { family: 'Space Mono', weights: [400], why: 'Mono for captions and data.' },
   },
+  signet: {
+    id: 'signet',
+    display: { family: 'Outfit', weights: [500, 700], why: 'Clean geometric capitals — made for monograms and spaced lettering.' },
+    body: { family: 'Inter', weights: [400, 500, 600], why: 'Neutral and highly legible, so the badge does the talking.' },
+    data: { family: 'DM Mono', weights: [400], why: 'Quiet mono for numbers and handles.' },
+  },
+  poster: {
+    id: 'poster',
+    display: { family: 'Anton', weights: [400], why: 'Tall, condensed poster capitals — loud on a sticker or a shop front.' },
+    body: { family: 'Manrope', weights: [400, 500, 700], why: 'Calm body copy to balance the shouty display face.' },
+    data: { family: 'Space Mono', weights: [400], why: 'Mono for prices, handles and drops.' },
+  },
+  bubbly: {
+    id: 'bubbly',
+    display: { family: 'Fredoka', weights: [600, 700], why: 'Soft, round letters that bounce — friendly at any size.' },
+    body: { family: 'Nunito', weights: [400, 600, 700], why: 'Rounded body text that keeps the warmth going.' },
+    data: { family: 'JetBrains Mono', weights: [400], why: 'Legible mono for codes and stats.' },
+  },
+  terminal: {
+    id: 'terminal',
+    display: { family: 'JetBrains Mono', weights: [700, 800], why: 'A developer’s typeface — the brand reads like a command.' },
+    body: { family: 'IBM Plex Sans', weights: [400, 500], why: 'Engineered and calm for docs and long reads.' },
+    data: { family: 'JetBrains Mono', weights: [400], why: 'The same mono for code, data and handles.' },
+  },
   technical: {
     id: 'technical',
     display: { family: 'IBM Plex Sans', weights: [600, 700], why: 'Engineered, rational and dependable.' },

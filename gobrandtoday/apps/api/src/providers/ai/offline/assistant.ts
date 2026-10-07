@@ -1,4 +1,4 @@
-import { MARK_SHAPES, type MarkShape } from '@gbt/shared';
+import { LOGO_STYLES, LOGO_STYLE_META, MARK_SHAPES, type LogoStyle, type MarkShape } from '@gbt/shared';
 import type { AssistantInput, AssistantOutput } from '../types';
 import { generateOfflineNames } from './names';
 
@@ -13,6 +13,7 @@ const empty = (): AssistantOutput['changes'] => ({
   hue: null,
   darkerPalette: null,
   markShape: null,
+  logoStyle: null,
   fontTrio: null,
   instagramBio: null,
   instagramPost: null,
@@ -65,11 +66,25 @@ export function offlineAssistant(input: AssistantInput): AssistantOutput {
       return { reply: 'Updated your palette around that colour. All five roles were regenerated and contrast-checked.', names: [], changes };
     }
   }
+  const wantStyle = (Object.entries({
+    stacked: /bold|loud|sticker|gen ?z logo/,
+    editorial: /premium logo|luxury|elegant|serif|editorial/,
+    heritage: /indian|desi|heritage|devanagari/,
+    terminal: /developer|techy logo|terminal|code/,
+    playful: /playful logo|fun logo|kids|bouncy/,
+    monogram: /monogram|badge|initials|classic/,
+    symbol: /symbol logo|geometric|abstract/,
+  }) as Array<[LogoStyle, RegExp]>).find(([, re]) => re.test(m))?.[0];
+  if (/logo|look|style/.test(m) && (wantStyle || /different|another|new|change/.test(m))) {
+    const current = input.kit.identity.style;
+    changes.logoStyle = wantStyle && wantStyle !== current ? wantStyle : LOGO_STYLES[(LOGO_STYLES.indexOf(current) + 3) % LOGO_STYLES.length]!;
+    return { reply: `Switched your logo to the ${LOGO_STYLE_META[changes.logoStyle].title} look: ${LOGO_STYLE_META[changes.logoStyle].construction} Undo any time.`, names: [], changes };
+  }
   const shape = MARK_SHAPES.find((s) => m.includes(s)) as MarkShape | undefined;
-  if (shape || /symbol|mark|logo/.test(m)) {
+  if (shape || /symbol|mark|icon/.test(m)) {
     const current = input.kit.identity.mark.shape;
     changes.markShape = shape ?? MARK_SHAPES[(MARK_SHAPES.indexOf(current) + 3) % MARK_SHAPES.length]!;
-    return { reply: `Swapped your mark to a ${changes.markShape}. The wordmark, icon tile and motion story all updated.`, names: [], changes };
+    return { reply: `Swapped your signature mark to a ${changes.markShape}. Your logo, icon and motion story updated.`, names: [], changes };
   }
   if (/position/.test(m)) {
     changes.positioning = `${name} is the simplest way for ${input.kit.audience.primary} to get started — clear, fast and genuinely helpful, without the jargon of the usual options.`;

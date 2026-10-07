@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FONT_TRIOS, MARK_SHAPES, NAME_TYPES, type AssistantReply, type BrandKit, type Brief } from '@gbt/shared';
+import { FONT_TRIOS, LOGO_STYLES, MARK_SHAPES, NAME_TYPES, type AssistantReply, type BrandKit, type Brief } from '@gbt/shared';
 
 export type Effort = 'low' | 'medium' | 'high';
 
@@ -28,13 +28,20 @@ export const NamesOutputSchema = z.object({ names: z.array(RawNameSchema) });
 
 const fontTrioIds = Object.keys(FONT_TRIOS) as [string, ...string[]];
 
-export const IdentityDraftSchema = z.object({
-  markShape: z.enum(MARK_SHAPES),
-  markConcept: z.string(),
-  /** Base hue 0–360 for the palette; contrast is enforced by our generator. */
+/** A look proposed by the model; fonts and contrast-checked palettes are filled in by our system. */
+export const DraftLookSchema = z.object({
+  title: z.string(),
+  concept: z.string(),
+  style: z.enum(LOGO_STYLES),
+  /** Base hue 0–360. */
   hue: z.number(),
-  fontTrio: z.enum(fontTrioIds),
-  logoDirections: z.array(z.object({ name: z.string(), description: z.string() })),
+  markShape: z.enum(MARK_SHAPES),
+});
+export type DraftLook = z.infer<typeof DraftLookSchema>;
+
+export const IdentityDraftSchema = z.object({
+  /** Four very different looks (different styles and hues). */
+  looks: z.array(DraftLookSchema),
   designSystem: z.object({
     buttons: z.string(),
     cards: z.string(),
@@ -49,7 +56,6 @@ export const IdentityDraftSchema = z.object({
     personality: z.string(),
   }),
   motion: z.object({ idle: z.string(), thinking: z.string(), mark: z.string(), done: z.string() }),
-  usageRules: z.object({ clearSpace: z.string(), minSize: z.string(), do: z.string(), dont: z.string() }),
 });
 export type IdentityDraft = z.infer<typeof IdentityDraftSchema>;
 
@@ -106,6 +112,8 @@ export interface KitGenInput {
   current?: BrandKit;
   /** Extra instruction, e.g. "more premium" when regenerating a section. */
   instruction?: string;
+  /** Seed for fresh offline looks ("show me 4 more"). */
+  seed?: number;
 }
 
 /* -------------------------------- assistant -------------------------------- */
@@ -125,6 +133,7 @@ export const AssistantOutputSchema = z.object({
     hue: z.number().nullable(),
     darkerPalette: z.boolean().nullable(),
     markShape: z.enum(MARK_SHAPES).nullable(),
+    logoStyle: z.enum(LOGO_STYLES).nullable(),
     fontTrio: z.enum(fontTrioIds).nullable(),
     instagramBio: nullableString,
     instagramPost: nullableString,

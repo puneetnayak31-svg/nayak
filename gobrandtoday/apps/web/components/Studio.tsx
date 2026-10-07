@@ -83,6 +83,15 @@ export function Studio() {
     if (desc) b.description = desc;
     if (mode && NAME_MODES.some((m) => m.id === mode)) b.mode = mode as Brief['mode'];
     if (p) b.personalities = p.split(',').filter((x) => (PERSONALITIES as readonly string[]).includes(x));
+    const ind = params.get('ind');
+    if (ind && (INDUSTRIES as readonly string[]).includes(ind)) b.industry = ind;
+    const st = params.get('st');
+    if (st) b.styles = st.split(',').filter((x) => (NAME_STYLES as readonly string[]).includes(x));
+    const tld = params.get('tld');
+    if (tld) b.tlds = tld.split(',').filter((x) => (TLDS as readonly string[]).includes(x)).slice(0, 5);
+    const max = Number(params.get('max'));
+    const start = params.get('start');
+    if (max >= 3 || start) b.constraints = { ...(max >= 3 ? { maxLength: Math.min(20, max) } : {}), ...(start ? { startsWith: start.replace(/[^a-z]/gi, '').slice(0, 3) } : {}) };
     setBrief(b);
     const project = params.get('project');
     if (project) {
@@ -419,7 +428,7 @@ export function Studio() {
               <span className="tiny muted">Saved ♥ names steer the next round.</span>
             </form>
 
-            <div className="names-grid wide">
+            <div className="names-grid">
               {current.names.map((n, i) => (
                 <NameCard
                   key={n.id}
@@ -541,22 +550,25 @@ function NameCard(props: {
   const socialsFree = check?.socials?.filter((s) => s.status === 'available').length ?? 0;
   const socialsDecided = check?.socials?.filter((s) => s.status === 'available' || s.status === 'taken').length ?? 0;
   const socialsManual = check?.socials?.filter((s) => s.status === 'manual').length ?? 0;
+  const len = toSlug(n.name).length + (n.name.includes(' ') ? 1 : 0);
+  const size = len <= 7 ? 34 : len <= 9 ? 30 : len <= 11 ? 26 : len <= 13 ? 23 : 20;
   return (
     <article className={`name-card ${props.selected ? 'selected' : ''}`} style={{ animationDelay: `${Math.min(props.index, 12) * 40}ms` }}>
-      <div className="row between gap-12" style={{ alignItems: 'flex-start' }}>
-        <div className="row gap-12 grow" style={{ alignItems: 'flex-start' }}>
-          <input type="checkbox" className="check-box" checked={props.selected} onChange={props.onSelect} aria-label={`Shortlist ${n.name}`} style={{ marginTop: 6 }} />
-          <div className="stack gap-4" style={{ minWidth: 0 }}>
-            <button type="button" onClick={props.onOpen} className="nm" style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 28, letterSpacing: '-0.04em', lineHeight: 1.05, overflowWrap: 'anywhere' }}>
-              {n.name}
-            </button>
-            <span className="pron">{n.pronunciation}</span>
-          </div>
-        </div>
-        <span style={{ flex: 'none' }}>
-          <ScorePill score={score} />
-        </span>
+      <div className="row between gap-8">
+        <label className="row gap-8 tiny muted" style={{ cursor: 'pointer' }}>
+          <input type="checkbox" className="check-box" checked={props.selected} onChange={props.onSelect} aria-label={`Shortlist ${n.name}`} />
+          {props.selected ? 'Shortlisted' : 'Shortlist'}
+        </label>
+        <ScorePill score={score} />
       </div>
+
+      <div className="stack gap-2" style={{ minWidth: 0 }}>
+        <button type="button" onClick={props.onOpen} className="nm-btn" style={{ fontSize: size }} title={n.name}>
+          {n.name}
+        </button>
+        <span className="pron">{n.pronunciation}</span>
+      </div>
+
       <div className="row gap-6 wrap">
         <span className="badge line">{TYPE_LABEL[n.nameType] ?? n.nameType}</span>
         {n.personality.slice(0, 2).map((p) => (
@@ -565,7 +577,7 @@ function NameCard(props: {
           </span>
         ))}
       </div>
-      <p className="why">{n.rationale}</p>
+      <p className="why clamp-3">{n.rationale}</p>
       {n.origin && <p className="tiny muted mono">{n.origin}</p>}
 
       {check?.domains ? (
@@ -593,19 +605,21 @@ function NameCard(props: {
         </span>
       ) : null}
 
-      <div className="row gap-8 wrap" style={{ marginTop: 'auto' }}>
-        <button type="button" className="btn btn-ghost btn-xs" onClick={props.onCheck} disabled={check?.loading}>
-          {check?.loading ? 'Checking…' : check?.domains ? 'Recheck' : 'Check domains & handles'}
-        </button>
-        <button type="button" className="btn btn-ghost btn-xs" onClick={props.onOpen}>
-          Details
-        </button>
-        <button type="button" className="btn btn-ghost btn-xs" onClick={props.onSave} aria-pressed={props.saved} aria-label={props.saved ? `Unsave ${n.name}` : `Save ${n.name}`}>
-          {props.saved ? '♥ Saved' : '♡ Save'}
-        </button>
-        <button type="button" className="btn btn-primary btn-xs" onClick={props.onBuild} disabled={props.building} style={{ marginLeft: 'auto' }}>
-          <Spark size={11} color="#fff" />
-          {props.building ? 'Starting…' : 'Build brand'}
+      <div className="stack gap-8" style={{ marginTop: 'auto' }}>
+        <div className="row gap-6">
+          <button type="button" className="btn btn-ghost btn-xs grow" onClick={props.onCheck} disabled={check?.loading}>
+            {check?.loading ? 'Checking…' : check?.domains ? 'Recheck' : 'Check availability'}
+          </button>
+          <button type="button" className="btn btn-ghost btn-xs" onClick={props.onSave} aria-pressed={props.saved} aria-label={props.saved ? `Unsave ${n.name}` : `Save ${n.name}`} title={props.saved ? 'Saved' : 'Save'} style={{ width: 34, padding: 0, color: props.saved ? 'var(--violet)' : undefined }}>
+            {props.saved ? '♥' : '♡'}
+          </button>
+          <button type="button" className="btn btn-ghost btn-xs" onClick={props.onOpen} aria-label={`Details for ${n.name}`} title="Details">
+            Details
+          </button>
+        </div>
+        <button type="button" className="btn btn-primary btn-sm btn-block" onClick={props.onBuild} disabled={props.building}>
+          <Spark size={12} color="#fff" />
+          {props.building ? 'Starting…' : `Build ${n.name}`}
         </button>
       </div>
     </article>

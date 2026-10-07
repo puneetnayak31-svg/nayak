@@ -54,13 +54,15 @@ Base URL: the web origin (`/api/*` is proxied) or the API directly (`http://loca
 
 | | |
 |---|---|
-| `POST /api/brands` | `{ name, brief, projectId?, domain?, handle? }` → `202 { brand }` (status `generating`) |
+| `POST /api/brands` | `{ name, brief, projectId?, domain?, handle? }` → `202 { brand }` (status `generating`). When ready, `kit.identity.looks` holds four options and `kit.identity.lookChosen` is `false` until the user picks one. |
 | `GET /api/brands` / `GET /api/brands/:id` | list / full brand incl. `kit`, `score`, `domains`, `socials`, `version` |
 | `PATCH /api/brands/:id` | `{ kit?: Partial<BrandKit>, domain?, handle?, isPublic? }` |
 | `DELETE /api/brands/:id` | |
 | `POST /api/brands/:id/retry` | retry a failed generation |
 | `POST /api/brands/:id/sections/:section` | `{ instruction? }` — regenerate `strategy \| taglines \| identity \| launch \| website` |
 | `POST /api/brand/generate-guidelines \| generate-taglines \| generate-logo-concepts \| generate-social-content \| generate-website-copy` | `{ brandId, instruction? }` (aliases of the above) |
+| `POST /api/brands/:id/look` | `{ lookId }` — pick one of the offered looks; the identity is rebuilt around it |
+| `POST /api/brands/:id/looks` | offer four new looks (different styles from those on screen) |
 | `POST /api/brands/:id/undo` | restore the previous version |
 | `GET/POST /api/brands/:id/assistant` | history / `{ message }` → `{ reply, names, changed, source, brand }` |
 | `GET /api/brands/:id/export?format=json\|md` | download |

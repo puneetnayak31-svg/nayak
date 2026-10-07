@@ -2,7 +2,7 @@
   "name": "gobrandtoday",
   "private": true,
   "version": "1.0.0",
-  "description": "GoBrandToday — idea → name → domain → handles → score → identity → launch.",
+  "description": "GoBrandToday \u2014 idea \u2192 name \u2192 domain \u2192 handles \u2192 score \u2192 identity \u2192 launch.",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -16,7 +16,8 @@
     "db:migrate": "npm run db:migrate --workspace @gbt/api",
     "db:generate": "npm run db:generate --workspace @gbt/api",
     "test": "npm run test --workspace @gbt/shared && npm run test --workspace @gbt/api",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "preview:build": "node apps/web/preview/build.mjs"
   },
   "engines": {
     "node": ">=20.11"

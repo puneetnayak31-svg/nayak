@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Currency, SystemInfo } from '@gbt/shared';
-import { api } from './api';
+import { api } from '@/lib/api';
 
 /* ---------------------------------- types --------------------------------- */
 

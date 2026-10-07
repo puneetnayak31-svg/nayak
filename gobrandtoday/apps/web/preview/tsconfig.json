@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "../*"
+      ],
+      "next/link": [
+        "./shims/next-link.tsx"
+      ],
+      "next/navigation": [
+        "./shims/next-navigation.ts"
+      ]
+    },
+    "noEmit": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": []
+}

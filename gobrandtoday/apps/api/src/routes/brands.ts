@@ -11,6 +11,8 @@ import { KIT_SECTIONS, type KitSection } from '../providers/ai';
 import { analytics } from '../providers/analytics';
 import {
   askAssistant,
+  chooseLook,
+  moreLooks,
   assistantHistory,
   createBrand,
   getBrand,
@@ -89,6 +91,8 @@ export default async function brandRoutes(app: FastifyInstance) {
         overall: r.score?.overall ?? null,
         palette: r.kit?.identity.palette ?? null,
         mark: r.kit?.identity.mark.shape ?? null,
+        style: r.kit?.identity.style ?? null,
+        seed: r.kit?.identity.seed ?? 0,
         fonts: r.kit?.identity.typography ?? null,
         tagline: r.kit?.taglines[0] ?? null,
         updatedAt: r.updatedAt,
@@ -165,6 +169,19 @@ export default async function brandRoutes(app: FastifyInstance) {
     });
   }
 
+  app.post('/api/brands/:id/look', { schema: { tags: ['brands'], summary: 'Pick one of the offered looks; the guidelines are rebuilt around it' } }, async (req, reply) => {
+    const user = await ensureUser(req, reply);
+    const { id } = req.params as { id: string };
+    const { lookId } = parse(z.object({ lookId: z.string().min(1).max(80) }), req.body);
+    return { brand: serialize(await chooseLook(user, id, lookId)) };
+  });
+
+  app.post('/api/brands/:id/looks', { ...aiLimit, schema: { tags: ['brands'], summary: 'Offer four new looks' } }, async (req, reply) => {
+    const user = await ensureUser(req, reply);
+    const { id } = req.params as { id: string };
+    return { brand: serialize(await moreLooks(user, id)) };
+  });
+
   app.post('/api/brands/:id/undo', { schema: { tags: ['brands'], summary: 'Undo the last change (versioned)' } }, async (req, reply) => {
     const user = await ensureUser(req, reply);
     const { id } = req.params as { id: string };
@@ -199,7 +216,7 @@ export default async function brandRoutes(app: FastifyInstance) {
       return reply
         .header('content-type', 'text/markdown; charset=utf-8')
         .header('content-disposition', `attachment; filename="${brand.slug}-brand-bible.md"`)
-        .send(toMarkdown(brand));
+        .send(toMarkdown({ ...brand, kit: brand.kit }));
     }
     return reply
       .header('content-disposition', `attachment; filename="${brand.slug}-brand-bible.json"`)

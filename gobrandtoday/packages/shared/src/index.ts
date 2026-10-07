@@ -7,3 +7,4 @@ export * from './handles';
 export * from './pricing';
 export * from './registrars';
 export * from './brand-system';
+export * from './logo';

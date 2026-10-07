@@ -2,7 +2,7 @@
  * Offline Brand Bible writer — template-driven, personality-aware copy so the
  * full flow works without an AI key. Clearly labelled "offline" in the UI.
  */
-import { extractKeywords, hash32, pickFonts, pickMark, rng, MARK_PATHS, toSlug } from '@gbt/shared';
+import { extractKeywords, generateLooks, hash32, pickMark, rng, MARK_PATHS, toSlug } from '@gbt/shared';
 import type { KitDraft, KitGenInput } from '../types';
 
 const GENERIC = new Set(['brand', 'company', 'platform', 'app', 'startup', 'business', 'product', 'service', 'website', 'tool', 'solution']);
@@ -39,10 +39,6 @@ const VOICES: Record<string, string> = {
   Experimental: 'Curious · Unexpected · Sharp',
 };
 
-const HUES: Record<string, number> = {
-  Futuristic: 256, Technical: 222, Minimal: 228, Premium: 38, Luxury: 345, Playful: 330, Youthful: 160,
-  Bold: 6, Human: 18, Trustworthy: 214, Creative: 290, Traditional: 28, Experimental: 300,
-};
 
 function cap(s: string) {
   return s ? s[0]!.toUpperCase() + s.slice(1) : s;
@@ -72,7 +68,6 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
   const domain = input.domain ?? `${toSlug(name)}.com`;
   const mark = pickMark({ name, personalities, industry: b.industry, geography: b.geography });
   const markInfo = MARK_PATHS[mark];
-  const fonts = pickFonts({ name, personalities, geography: b.geography, styles: b.styles });
   const voice = VOICES[lead] ?? VOICES.Human!;
   const [v1, v2, v3] = voice.split(' · ');
 
@@ -88,7 +83,7 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
 
   const draft: KitDraft = {
     strategy: {
-      meaning: `${name} is a ${markInfo.label.toLowerCase()} of an idea: short, sayable and easy to own. It points to ${markInfo.meaning} — exactly what ${what} should feel like.`,
+      meaning: `${name} is short, sayable and easy to own — a name with room to grow. It carries the feeling ${what} should have: ${markInfo.meaning}.`,
       story: `Every brand starts with a moment someone thinks, "there has to be a better way." ${name} began there — with ${what}. We kept it simple: do one thing really well, explain it in plain words, and make people feel looked after. The name is the promise; the work is everything after it.`,
       positioning: `For ${audience}, ${name} is ${articled(what)} that feels ${v1!.toLowerCase()} and ${v2!.toLowerCase()} — unlike the usual options, it ${random() > 0.5 ? 'takes minutes, not weeks' : 'is built around how you actually work'}.`,
       mission: `Make ${topic} ${random() > 0.5 ? 'effortless' : 'joyful'} for ${audience}.`,
@@ -119,16 +114,13 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
     },
     taglines,
     identity: {
-      markShape: mark,
-      markConcept: `The full stop becomes a ${markInfo.label.toLowerCase()} — ${markInfo.meaning}. One mark, used once, at the end of the wordmark.`,
-      hue: HUES[lead] ?? 256,
-      fontTrio: fonts.id,
-      logoDirections: [
-        { name: 'Minimal wordmark', description: `"${name.toLowerCase()}" in ${fonts.display.family}, tight tracking, the ${markInfo.label.toLowerCase()} as its full stop.` },
-        { name: 'Symbol + wordmark', description: `The ${markInfo.label.toLowerCase()} on a rounded tile beside the wordmark — for app icons and avatars.` },
-        { name: 'Monogram', description: `A lowercase "${name[0]!.toLowerCase()}" with the mark tucked at its baseline, on an ink tile.` },
-        { name: 'Abstract symbol', description: `The mark alone in brand colour — the smallest, most recognisable version.` },
-      ],
+      looks: generateLooks({ name, personalities, industry: b.industry, geography: b.geography, seed: input.seed }).map((l) => ({
+        title: l.title,
+        concept: l.concept,
+        style: l.style,
+        hue: l.hue,
+        markShape: l.markShape,
+      })),
       designSystem: {
         buttons: 'Solid brand-colour primary buttons with white text, 16px radius; outlined ink secondary buttons.',
         cards: 'White cards on paper, 1px soft border, 24–28px radius, generous padding.',
@@ -145,14 +137,8 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
       motion: {
         idle: 'A calm dot in brand colour.',
         thinking: 'Breathes into a soft diamond while work happens.',
-        mark: `Snaps open into the ${markInfo.label.toLowerCase()} when results land.`,
+        mark: 'Snaps open into the brand mark when results land.',
         done: 'A tiny accent twin appears for "done".',
-      },
-      usageRules: {
-        clearSpace: 'Space equal to the "o" height on every side.',
-        minSize: `Wordmark 96px wide. Smaller: the "${name[0]!.toLowerCase()}" tile or the mark alone.`,
-        do: 'Brand-colour mark on light; accent or soft mark on ink.',
-        dont: 'One mark only in the logo. No capitals, glitter, gradients or glows.',
       },
     },
     launch: {

@@ -1,8 +1,8 @@
 'use client';
 
-import { IDLE_PATH, MARK_PATHS, THINKING_PATH, onColor, swatch, toSlug, type BrandKit } from '@gbt/shared';
+import { IDLE_PATH, LOGO_STYLE_META, MARK_PATHS, THINKING_PATH, onColor, swatch, toSlug, type BrandKit } from '@gbt/shared';
 import { useApp } from '@/lib/providers';
-import { BrandWordmark, LetterTile, MarkTile, markLabel } from './BrandMarks';
+import { KitIcon, KitLogo, Logo, lookIdentity } from './Logo';
 import { Mark } from './Spark';
 import { useGoogleFonts } from './ui';
 
@@ -11,7 +11,9 @@ import { useGoogleFonts } from './ui';
  * (Direction 06 "Twinkle"): logo lockups, idea, motion, colour, type,
  * UI sample + voice, usage rules. Printable to PDF.
  */
-export function BrandGuidelines({ kit, domain, handle, version, score }: { kit: BrandKit; domain?: string | null; handle?: string | null; version?: number; score?: number | null }) {
+export function BrandGuidelines({ kit, domain, handle, version, score, onSwitchLook }: { kit: BrandKit; domain?: string | null; handle?: string | null; version?: number; score?: number | null; onSwitchLook?: (lookId: string) => void }) {
+  const markLabel = (k: BrandKit) => MARK_PATHS[k.identity.mark.shape]?.label ?? 'Mark';
+  const styleMeta = LOGO_STYLE_META[kit.identity.style ?? 'twinkle'];
   const { toast } = useApp();
   const t = kit.identity.typography;
   useGoogleFonts([t.display, t.body, t.data]);
@@ -41,7 +43,7 @@ export function BrandGuidelines({ kit, domain, handle, version, score }: { kit: 
     <div style={{ background: paper, color: ink, fontFamily: body, borderRadius: 28, border: `1px solid ${line}`, padding: 'clamp(20px, 5vw, 64px)', display: 'flex', flexDirection: 'column', gap: 'clamp(40px,5vw,60px)' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, flexWrap: 'wrap', borderBottom: `1px solid ${line}`, paddingBottom: 32 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 760 }}>
-          <div style={{ fontFamily: mono, fontSize: 13, letterSpacing: '0.12em', color: '#4D4870' }}>BRAND GUIDELINES · WORDMARK + {markLabel(kit).toUpperCase()}</div>
+          <div style={{ fontFamily: mono, fontSize: 13, letterSpacing: '0.12em', color: '#4D4870' }}>BRAND GUIDELINES · {styleMeta.title.toUpperCase()}</div>
           <h1 style={{ fontFamily: display, fontWeight: Math.max(...t.display.weights), fontSize: 'clamp(44px,6vw,72px)', lineHeight: 1, letterSpacing: '-0.04em' }}>{kit.name}</h1>
           <p style={{ fontSize: 'clamp(17px,1.8vw,21px)', lineHeight: 1.45, color: '#36315A' }}>{kit.identity.mark.concept}</p>
         </div>
@@ -54,16 +56,18 @@ export function BrandGuidelines({ kit, domain, handle, version, score }: { kit: 
 
       {/* Logo lockups */}
       <section className="gl-hero">
-        <div style={{ minHeight: 300, borderRadius: 28, background: '#fff', border: `1px solid ${line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, overflow: 'hidden' }}>
-          <BrandWordmark kit={kit} size={Math.max(40, Math.min(96, 900 / Math.max(6, kit.name.length)))} variant="light" />
+        <div style={{ minHeight: 300, borderRadius: 28, background: '#fff', border: `1px solid ${line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(24px,4vw,48px)', overflow: 'hidden' }}>
+          <KitLogo kit={kit} width="min(100%, 560px)" />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ flex: 1, minHeight: 140, borderRadius: 28, background: ink, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, overflow: 'hidden' }}>
-            <BrandWordmark kit={kit} size={Math.max(28, Math.min(40, 420 / Math.max(6, kit.name.length)))} variant="dark" />
+            <KitLogo kit={kit} variant="dark" width="min(100%, 260px)" />
           </div>
           <div style={{ flex: 1, minHeight: 140, borderRadius: 28, background: tint, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, padding: 20 }}>
-            <LetterTile kit={kit} size={88} />
-            <MarkTile kit={kit} size={52} />
+            <KitIcon kit={kit} size={88} />
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: brand, display: 'grid', placeItems: 'center' }}>
+              <Mark shape={kit.identity.mark.shape} size={28} color={onColor(brand)} />
+            </div>
             <Mark shape={kit.identity.mark.shape} size={26} color={brand} />
           </div>
         </div>
@@ -73,7 +77,7 @@ export function BrandGuidelines({ kit, domain, handle, version, score }: { kit: 
       <section style={{ display: 'grid', gap: 32, gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))' }}>
         {[
           ['The idea', kit.meaning],
-          ['The mark', `${mark.label}: ${mark.meaning}. ${kit.identity.motion.mark}`],
+          [styleMeta.title, `${styleMeta.construction} Signature mark: the ${mark.label.toLowerCase()} — ${mark.meaning}.`],
           ['Positioning', kit.positioning],
         ].map(([h, b]) => (
           <div key={h} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -247,29 +251,47 @@ export function BrandGuidelines({ kit, domain, handle, version, score }: { kit: 
         </div>
       </section>
 
-      {/* Logo directions */}
+      {/* Lockups */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {sectionHead('08', 'Logo directions')}
+        {sectionHead('08', 'Lockups')}
         <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}>
-          {kit.identity.logoDirections.map((d, i) => (
-            <div key={d.name} style={{ borderRadius: 20, background: '#fff', border: `1px solid ${line}`, padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ height: 110, borderRadius: 14, background: i % 2 ? tint : paper, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                {i === 0 && <BrandWordmark kit={kit} size={30} />}
-                {i === 1 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <MarkTile kit={kit} size={40} />
-                    <span style={{ fontFamily: display, fontWeight: 700, fontSize: 24, letterSpacing: '-0.04em', color: ink }}>{kit.name.toLowerCase()}</span>
-                  </div>
-                )}
-                {i === 2 && <LetterTile kit={kit} size={72} />}
-                {i === 3 && <Mark shape={kit.identity.mark.shape} size={56} color={brand} />}
-              </div>
-              <b style={{ fontSize: 16 }}>{d.name}</b>
-              <span style={{ fontSize: 14.5, lineHeight: 1.5, color: '#36315A' }}>{d.description}</span>
+          {[
+            { label: 'Primary', bg: '#fff', el: <KitLogo kit={kit} width="88%" /> },
+            { label: 'Reversed', bg: ink, el: <KitLogo kit={kit} variant="dark" width="88%" /> },
+            { label: 'Single colour', bg: tint, el: <KitLogo kit={kit} variant="mono" width="88%" /> },
+            { label: 'App icon', bg: paper, el: <KitIcon kit={kit} size={84} /> },
+          ].map((x) => (
+            <div key={x.label} style={{ borderRadius: 20, background: '#fff', border: `1px solid ${line}`, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ height: 130, borderRadius: 14, background: x.bg, border: x.bg === '#fff' || x.bg === paper ? `1px solid ${line}` : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>{x.el}</div>
+              <b style={{ fontSize: 15 }}>{x.label}</b>
             </div>
           ))}
         </div>
       </section>
+
+      {kit.identity.looks.length > 1 && (
+        <section className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {sectionHead('09', 'Other looks we explored')}
+          <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))' }}>
+            {kit.identity.looks
+              .filter((l) => !(l.style === kit.identity.style && l.seed === kit.identity.seed))
+              .map((l) => (
+                <div key={l.id} style={{ borderRadius: 20, background: '#fff', border: `1px solid ${line}`, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ height: 120, borderRadius: 14, background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 12 }}>
+                    <Logo id={lookIdentity(kit.name, l)} width="90%" />
+                  </div>
+                  <b style={{ fontSize: 15 }}>{l.title}</b>
+                  <span style={{ fontSize: 14, lineHeight: 1.5, color: '#36315A' }}>{l.concept}</span>
+                  {onSwitchLook && (
+                    <button type="button" className="btn btn-ghost btn-xs" style={{ alignSelf: 'flex-start' }} onClick={() => onSwitchLook(l.id)}>
+                      Switch to this look
+                    </button>
+                  )}
+                </div>
+              ))}
+          </div>
+        </section>
+      )}
 
       <footer style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, fontFamily: mono, fontSize: 12.5, color: '#4D4870', borderTop: `1px solid ${line}`, paddingTop: 22 }}>
         <span>

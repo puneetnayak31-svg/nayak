@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MARK_PATHS, swatch, toSlug, type BrandKit, type Brief, type DomainResult, type GoBrandScore, type SocialResult } from '@gbt/shared';
+import { LOGO_STYLE_META, MARK_PATHS, swatch, toSlug, type BrandKit, type Brief, type DomainResult, type GoBrandScore, type SocialResult } from '@gbt/shared';
 import { ApiError, api, track } from '@/lib/api';
-import { download, downloadLogoPNG, downloadLogoSVG, downloadMarkSVG } from '@/lib/export';
+import { download, downloadIconPNG, downloadIconSVG, downloadLogoPNG, downloadLogoSVG } from '@/lib/export';
 import { useApp } from '@/lib/providers';
 import { BrandGuidelines } from './BrandGuidelines';
-import { BrandWordmark, LetterTile, MarkTile } from './BrandMarks';
+import { KitIcon, KitLogo } from './Logo';
+import { LookPicker } from './LookPicker';
 import { Mark, Spark } from './Spark';
 import { CopyButton, DomainTable, Loading, ScoreBreakdown, ScoreCard, SocialGrid, SourceBadge, useGoogleFonts } from './ui';
 
@@ -28,6 +29,9 @@ export interface BrandDTO {
   isPublic: boolean;
   shareSlug: string | null;
 }
+
+/** True in the single-file preview build, which can't download files. */
+const PREVIEW = process.env.NEXT_PUBLIC_PREVIEW === '1';
 
 const TABS = ['Brand in a Box', 'Identity', 'Strategy', 'Launch kit', 'Website', 'Assistant'] as const;
 type Tab = (typeof TABS)[number];
@@ -73,6 +77,36 @@ export function BrandView({ id }: { id: string }) {
     }
   };
 
+  const [lookBusy, setLookBusy] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
+  const choose = async (lookId: string) => {
+    setLookBusy(lookId);
+    try {
+      const r = await api<{ brand: BrandDTO }>(`/api/brands/${id}/look`, { body: { lookId } });
+      setBrand(r.brand);
+      setPicking(false);
+      setTab('Identity');
+      toast('Look chosen — your guidelines are ready');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      toast(e instanceof ApiError ? e.message : 'Could not apply that look', 'error');
+    } finally {
+      setLookBusy(null);
+    }
+  };
+  const more = async () => {
+    setLookBusy('more');
+    try {
+      const r = await api<{ brand: BrandDTO }>(`/api/brands/${id}/looks`, { method: 'POST' });
+      setBrand(r.brand);
+      setPicking(true);
+    } catch (e) {
+      toast(e instanceof ApiError ? e.message : 'Could not design new looks', 'error');
+    } finally {
+      setLookBusy(null);
+    }
+  };
+
   if (error) {
     return (
       <div className="container" style={{ padding: '64px var(--gutter)' }}>
@@ -115,6 +149,13 @@ export function BrandView({ id }: { id: string }) {
   }
 
   const kit = brand.kit;
+  if (!kit.identity.lookChosen || picking) {
+    return (
+      <div className="container stack gap-24" style={{ padding: '28px var(--gutter) 72px' }}>
+        <LookPicker kit={kit} onChoose={choose} onMore={more} busy={lookBusy} canCancel={kit.identity.lookChosen} onCancel={() => setPicking(false)} />
+      </div>
+    );
+  }
   return (
     <div className="container stack gap-24" style={{ padding: '28px var(--gutter) 72px' }}>
       <BrandHeader brand={brand} kit={kit} onUndo={undo} onChange={setBrand} demo={system?.mode === 'demo'} />
@@ -132,7 +173,24 @@ export function BrandView({ id }: { id: string }) {
         ))}
       </div>
       {tab === 'Brand in a Box' && <BoxTab brand={brand} kit={kit} go={setTab} />}
-      {tab === 'Identity' && <BrandGuidelines kit={kit} domain={brand.domain} handle={brand.handle} version={brand.version} score={brand.score?.overall} />}
+      {tab === 'Identity' && (
+        <div className="stack gap-16">
+          <div className="row between wrap gap-12 no-print">
+            <span className="small soft">
+              Look: <strong>{LOGO_STYLE_META[kit.identity.style].title}</strong> — {LOGO_STYLE_META[kit.identity.style].construction}
+            </span>
+            <div className="row gap-8">
+              <button className="btn btn-ghost btn-sm" onClick={() => setPicking(true)} disabled={!!lookBusy}>
+                Compare looks
+              </button>
+              <button className="btn btn-outline btn-sm" onClick={more} disabled={!!lookBusy}>
+                <Spark size={12} /> {lookBusy === 'more' ? 'Designing…' : 'Explore 4 new looks'}
+              </button>
+            </div>
+          </div>
+          <BrandGuidelines kit={kit} domain={brand.domain} handle={brand.handle} version={brand.version} score={brand.score?.overall} onSwitchLook={choose} />
+        </div>
+      )}
       {tab === 'Strategy' && <StrategyTab brand={brand} kit={kit} onChange={setBrand} />}
       {tab === 'Launch kit' && <LaunchTab brand={brand} kit={kit} onChange={setBrand} />}
       {tab === 'Website' && <WebsiteTab brand={brand} kit={kit} onChange={setBrand} />}
@@ -171,11 +229,22 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
   const exportAs = async (f: string) => {
     setMenu(false);
     track('export', { format: f });
+    if (PREVIEW) {
+      // The preview runs in a sandbox that can't save files: copy instead.
+      const text = await api<string>(`/api/brands/${brand.id}/export?format=${f === 'md' ? 'md' : 'json'}`);
+      await navigator.clipboard?.writeText(typeof text === 'string' ? text : JSON.stringify(text, null, 2)).then(
+        () => toast(f === 'md' ? 'Brand Bible copied as Markdown' : 'Brand Bible copied as JSON'),
+        () => toast('Copy is blocked here — try the full app', 'error'),
+      );
+      return;
+    }
     if (f === 'pdf') window.open(`/brand/${brand.id}/guidelines?print=1`, '_blank');
     if (f === 'png') await downloadLogoPNG(kit, 'light');
     if (f === 'png-dark') await downloadLogoPNG(kit, 'dark');
     if (f === 'svg') await downloadLogoSVG(kit, 'light');
-    if (f === 'icon') downloadMarkSVG(kit);
+    if (f === 'svg-dark') await downloadLogoSVG(kit, 'dark');
+    if (f === 'icon') await downloadIconSVG(kit);
+    if (f === 'icon-png') await downloadIconPNG(kit);
     if (f === 'json' || f === 'md') {
       const res = await fetch(`/api/brands/${brand.id}/export?format=${f}`, { credentials: 'include' });
       download(`${toSlug(brand.name)}-brand-bible.${f}`, await res.blob());
@@ -193,7 +262,7 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
             {demo && <span className="badge amber">Demo data</span>}
           </div>
           <div style={{ overflow: 'hidden', maxWidth: '100%' }}>
-            <BrandWordmark kit={kit} size={Math.min(84, Math.max(40, 760 / Math.max(5, kit.name.length)))} />
+            <KitLogo kit={kit} height={92} />
           </div>
           <p className="lead" style={{ fontSize: 19 }}>
             {kit.taglines[0]}
@@ -212,19 +281,28 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
             </button>
             {menu && (
               <div role="menu" className="card sm stack" style={{ position: 'absolute', right: 0, top: 48, zIndex: 30, padding: 6, minWidth: 230, boxShadow: 'var(--shadow-lg)' }}>
-                {[
+                {(PREVIEW
+                  ? [
+                      ['md', 'Copy Brand Bible (Markdown)'],
+                      ['json', 'Copy Brand Bible (JSON)'],
+                    ]
+                  : [
                   ['pdf', 'Brand guidelines (PDF)'],
                   ['png', 'Logo — PNG (light)'],
                   ['png-dark', 'Logo — PNG (dark)'],
-                  ['svg', 'Logo — SVG'],
+                  ['svg', 'Logo — SVG (light)'],
+                  ['svg-dark', 'Logo — SVG (dark)'],
                   ['icon', 'App icon — SVG'],
+                  ['icon-png', 'App icon — PNG'],
                   ['md', 'Brand Bible — Markdown'],
                   ['json', 'Brand Bible — JSON'],
-                ].map(([k, l]) => (
+                    ]
+                ).map(([k, l]) => (
                   <button key={k} role="menuitem" className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', border: 0 }} onClick={() => exportAs(k!)}>
                     {l}
                   </button>
                 ))}
+                {PREVIEW && <span className="tiny muted" style={{ padding: '6px 10px' }}>PDF, PNG and SVG downloads work in the full app.</span>}
               </div>
             )}
           </div>
@@ -245,14 +323,14 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
     <div className="stack gap-20">
       <div className="box-grid">
         <div className="card box-hero" style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 260 }}>
-          <BrandWordmark kit={kit} size={Math.min(88, Math.max(36, 700 / Math.max(5, kit.name.length)))} />
+          <KitLogo kit={kit} width="min(100%, 520px)" />
         </div>
         <div className="card dark stack gap-12" style={{ background: swatch(p, 'ink'), alignItems: 'center', justifyContent: 'center' }}>
-          <BrandWordmark kit={kit} size={34} variant="dark" />
+          <KitLogo kit={kit} variant="dark" width="min(100%, 260px)" />
         </div>
         <div className="card row gap-16" style={{ background: swatch(p, 'tint'), borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-          <LetterTile kit={kit} size={84} />
-          <MarkTile kit={kit} size={52} />
+          <KitIcon kit={kit} size={84} />
+          <Mark shape={kit.identity.mark.shape} size={30} color={swatch(p, 'brand')} />
         </div>
       </div>
 
@@ -305,9 +383,9 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
               {kit.identity.typography.body.family} for body · {kit.identity.typography.data.family} for data
             </span>
           </div>
-          <span className="eyebrow">Logo direction</span>
+          <span className="eyebrow">Look</span>
           <p className="soft">
-            <strong>{MARK_PATHS[kit.identity.mark.shape].label}.</strong> {kit.identity.mark.concept}
+            <strong>{LOGO_STYLE_META[kit.identity.style].title}.</strong> {kit.identity.mark.concept}
           </p>
         </div>
         <div className="card stack gap-16">
@@ -549,7 +627,7 @@ function WebsiteTab({ brand, kit, onChange }: { brand: BrandDTO; kit: BrandKit; 
       {/* A live preview of the homepage in the brand's own identity */}
       <div className="card" style={{ background: swatch(p, 'paper'), padding: 0, overflow: 'hidden' }}>
         <div className="row between" style={{ padding: '16px 24px', borderBottom: '1px solid rgba(0,0,0,.06)' }}>
-          <BrandWordmark kit={kit} size={22} />
+          <KitLogo kit={kit} height={30} />
           <span style={{ background: brandColor, color: '#fff', borderRadius: 12, padding: '8px 14px', fontWeight: 700, fontSize: 14 }}>{W.cta}</span>
         </div>
         <div className="stack gap-16" style={{ padding: 'clamp(28px,5vw,64px) 24px', alignItems: 'flex-start', maxWidth: 820 }}>

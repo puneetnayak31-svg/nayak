@@ -229,6 +229,9 @@ export const MARK_SHAPES = [
 ] as const;
 export type MarkShape = (typeof MARK_SHAPES)[number];
 
+export const LOGO_STYLES = ['twinkle', 'monogram', 'editorial', 'stacked', 'symbol', 'playful', 'terminal', 'heritage'] as const;
+export type LogoStyle = (typeof LOGO_STYLES)[number];
+
 export const PALETTE_ROLES = ['ink', 'brand', 'accent', 'tint', 'paper'] as const;
 export type PaletteRole = (typeof PALETTE_ROLES)[number];
 
@@ -247,6 +250,20 @@ export const FontChoiceSchema = z.object({
   weights: z.array(z.number()).max(4),
   why: z.string().max(240),
 });
+
+/** One complete visual direction ("look") a user can pick before the guidelines are built. */
+export const LookSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  concept: z.string(),
+  style: z.enum(LOGO_STYLES),
+  hue: z.number(),
+  fontTrio: z.string(),
+  markShape: z.enum(MARK_SHAPES),
+  seed: z.number(),
+  palette: z.array(PaletteSwatchSchema),
+});
+export type Look = z.infer<typeof LookSchema>;
 
 export const BrandKitSchema = z.object({
   name: z.string(),
@@ -274,6 +291,12 @@ export const BrandKitSchema = z.object({
   identity: z.object({
     mark: z.object({ shape: z.enum(MARK_SHAPES), concept: z.string() }),
     wordmarkCase: z.enum(['lower', 'title']).default('lower'),
+    /** The logo construction — very different families, chosen by the user. */
+    style: z.enum(LOGO_STYLES).default('twinkle'),
+    seed: z.number().default(0),
+    /** The options offered; the user picks one before the guidelines are final. */
+    looks: z.array(LookSchema).default([]),
+    lookChosen: z.boolean().default(true),
     logoDirections: z.array(z.object({ name: z.string(), description: z.string() })),
     palette: z.array(PaletteSwatchSchema),
     typography: z.object({ display: FontChoiceSchema, body: FontChoiceSchema, data: FontChoiceSchema }),

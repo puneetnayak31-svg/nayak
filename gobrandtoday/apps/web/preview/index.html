@@ -1,0 +1,16 @@
+<title>GoBrandToday Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="%FONTS%">
+<link rel="stylesheet" href="app.css">
+<style>
+  /* next/font provides these variables in the Next.js app; the preview names the families directly. */
+  :root { color-scheme: light; --font-space-grotesk: 'Space Grotesk'; --font-manrope: 'Manrope'; --font-space-mono: 'Space Mono'; }
+  body { background: #FAFAF7; color: #16161A; }
+  [hidden] { display: none !important; }
+  .preview-bar { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: center; padding: 8px clamp(16px, 4vw, 40px); background: #16161A; color: #FAFAF7; font-family: 'Manrope', system-ui, sans-serif; font-size: 13px; }
+  .preview-bar .btn-link { color: #B9AEFF; }
+  .nav { top: env(safe-area-inset-top, 0px); }
+</style>
+<div id="root"></div>
+<script src="app.js"></script>

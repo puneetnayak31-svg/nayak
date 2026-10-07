@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { swatch, toSlug, type BrandKit, type DomainResult, type HandleSuggestion, type MarkShape, type PaletteSwatch, type SocialResult } from '@gbt/shared';
+import { swatch, toSlug, type BrandKit, type DomainResult, type HandleSuggestion, type LogoStyle, type MarkShape, type PaletteSwatch, type SocialResult } from '@gbt/shared';
+import { Logo } from './Logo';
 import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
 import { CurrencyToggle } from './CurrencyToggle';
@@ -43,6 +44,8 @@ export interface BrandSummary {
   overall: number | null;
   palette: PaletteSwatch[] | null;
   mark: MarkShape | null;
+  style: LogoStyle | null;
+  seed: number;
   fonts: BrandKit['identity']['typography'] | null;
   tagline: string | null;
   updatedAt: string;
@@ -77,11 +80,12 @@ export function BrandTile({ b }: { b: BrandSummary }) {
   const tint = b.palette ? swatch(b.palette, 'tint') : '#ECE7FF';
   return (
     <Link href={`/brand/${b.id}`} className="card hover stack gap-12" style={{ color: 'inherit', padding: 0, overflow: 'hidden' }}>
-      <div style={{ background: tint, height: 132, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontFamily: b.fonts ? `'${b.fonts.display.family}', var(--font-display)` : 'var(--font-display)', fontWeight: 700, fontSize: 34, letterSpacing: '-0.05em', color: ink, display: 'inline-flex', alignItems: 'baseline', gap: 3 }}>
-          {b.name.toLowerCase()}
-          {b.mark && <Mark shape={b.mark} size={15} color={brand} />}
-        </span>
+      <div style={{ background: tint, height: 132, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        {b.palette && b.fonts && b.mark ? (
+          <Logo id={{ name: b.name, style: b.style ?? 'twinkle', palette: b.palette, typography: { display: b.fonts.display, data: b.fonts.data }, mark: b.mark, seed: b.seed }} width="78%" />
+        ) : (
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 30, letterSpacing: '-0.05em', color: ink }}>{b.name.toLowerCase()}</span>
+        )}
       </div>
       <div className="stack gap-6" style={{ padding: '4px 20px 20px' }}>
         <div className="row between">

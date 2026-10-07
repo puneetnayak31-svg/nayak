@@ -5,7 +5,7 @@ import { generateOfflineKit } from '../src/providers/ai/offline/kit';
 import { offlineAssistant } from '../src/providers/ai/offline/assistant';
 import { parseModelJSON, toStrictJsonSchema } from '../src/providers/ai/llm';
 import { AssistantOutputSchema, KitDraftSchema, NamesOutputSchema } from '../src/providers/ai/types';
-import { assembleKit } from '../src/services/brand.service';
+import { applyAssistantChanges, applyLook, assembleKit } from '../src/services/kit';
 
 const brief = (o: Record<string, unknown> = {}) => ({ description: 'A cosy candle brand for Gen Z in India', personalities: ['Playful'], styles: [], tlds: ['com'], mode: 'smart' as const, ...o });
 
@@ -52,9 +52,29 @@ describe('brand kit', () => {
     const draft = generateOfflineKit({ name: 'Wicko', brief: brief(), sections: ['strategy', 'taglines', 'identity', 'launch', 'website'] });
     const parsed = KitDraftSchema.parse(draft);
     const kit = assembleKit('Wicko', brief(), parsed);
-    expect(kit.identity.palette.map((p) => p.role)).toEqual(['ink', 'brand', 'accent', 'tint', 'paper']);
+    expect(kit.identity.palette.map((p: { role: string }) => p.role)).toEqual(['ink', 'brand', 'accent', 'tint', 'paper']);
     expect(kit.launch.contentIdeas).toHaveLength(10);
     expect(kit.positioning).not.toMatch(/Gen Z in India.*Gen Z in India/);
+  });
+  it('offers four looks in four different styles and hues, then applies the chosen one', () => {
+    const draft = KitDraftSchema.parse(generateOfflineKit({ name: 'Wicko', brief: brief(), sections: ['strategy', 'taglines', 'identity', 'launch', 'website'] }));
+    const kit = assembleKit('Wicko', brief(), draft);
+    const looks = kit.identity.looks;
+    expect(looks).toHaveLength(4);
+    expect(new Set(looks.map((l) => l.style)).size).toBe(4);
+    expect(new Set(looks.map((l) => l.palette.find((p) => p.role === 'brand')!.hex)).size).toBe(4);
+    expect(kit.identity.lookChosen).toBe(false);
+    const picked = applyLook(kit, looks[2]!.id);
+    expect(picked.identity.style).toBe(looks[2]!.style);
+    expect(picked.identity.palette).toEqual(looks[2]!.palette);
+    expect(picked.identity.lookChosen).toBe(true);
+  });
+  it('assistant can switch the logo style', () => {
+    const draft = KitDraftSchema.parse(generateOfflineKit({ name: 'Wicko', brief: brief(), sections: ['strategy', 'taglines', 'identity', 'launch', 'website'] }));
+    const kit = applyLook(assembleKit('Wicko', brief(), draft), assembleKit('Wicko', brief(), draft).identity.looks[0]!.id);
+    const out = offlineAssistant({ name: 'Wicko', brief: brief(), kit, history: [], message: 'Make the logo more Indian' });
+    const patch = applyAssistantChanges(kit, brief(), out.changes)!;
+    expect(patch.identity!.style).toBe(kit.identity.style === 'heritage' ? patch.identity!.style : 'heritage');
   });
   it('offline assistant returns schema-valid changes', () => {
     const draft = KitDraftSchema.parse(generateOfflineKit({ name: 'Wicko', brief: brief(), sections: ['strategy', 'taglines', 'identity', 'launch', 'website'] }));

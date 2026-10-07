@@ -1,13 +1,5 @@
-import { MARK_PATHS, googleFontsHref, swatch, toSlug, wordmarkText, type BrandKit } from '@gbt/shared';
-
-type Variant = 'light' | 'dark';
-
-function colors(kit: BrandKit, v: Variant) {
-  const p = kit.identity.palette;
-  return v === 'dark'
-    ? { bg: swatch(p, 'ink'), text: swatch(p, 'paper'), mark: swatch(p, 'accent') }
-    : { bg: null as string | null, text: swatch(p, 'ink'), mark: swatch(p, 'brand') };
-}
+import { googleFontsHref, iconSVG, logoSVG, toSlug, type BrandKit, type LogoIdentity, type LogoVariant } from '@gbt/shared';
+import { canvasMeasure, kitIdentity } from '@/components/Logo';
 
 export function download(filename: string, data: Blob | string, type = 'text/plain') {
   const blob = typeof data === 'string' ? new Blob([data], { type }) : data;
@@ -21,87 +13,91 @@ export function download(filename: string, data: Blob | string, type = 'text/pla
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/** Measure the wordmark with the real web font so exports match the screen. */
-async function layout(kit: BrandKit, fontSize: number) {
-  const display = kit.identity.typography.display;
-  const weight = Math.max(...display.weights);
-  const font = `${weight} ${fontSize}px "${display.family}"`;
-  try {
-    await document.fonts.load(font, wordmarkText(kit.name));
-  } catch {
-    /* fall back to whatever is available */
+const toBase64 = (buf: ArrayBuffer) => {
+  let s = '';
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+
+/**
+ * Self-contained @font-face rules: the exact glyphs the logo uses, subset by
+ * Google Fonts (`text=`) and inlined, so the SVG/PNG renders anywhere.
+ */
+async function embeddedFontCss(fonts: Array<{ family: string; weights: number[] }>, text: string): Promise<string> {
+  const rules: string[] = [];
+  for (const f of fonts) {
+    try {
+      const href = `${googleFontsHref([{ family: f.family, weights: [Math.max(...f.weights)] }]).replace('&display=swap', '')}&text=${encodeURIComponent(text)}`;
+      const css = await (await fetch(href)).text();
+      for (const m of css.matchAll(/@font-face\s*{([^}]*)}/g)) {
+        const block = m[1]!;
+        const url = block.match(/url\(([^)]+)\)/)?.[1];
+        if (!url) continue;
+        const data = toBase64(await (await fetch(url)).arrayBuffer());
+        rules.push(`@font-face{${block.replace(/src:[^;]+;/, `src:url(data:font/woff2;base64,${data}) format('woff2');`)}}`);
+      }
+    } catch {
+      /* fall back to the system font for this family */
+    }
   }
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d')!;
-  ctx.font = font;
-  const spacing = -0.05 * fontSize;
-  if ('letterSpacing' in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${spacing}px`;
-  const text = wordmarkText(kit.name, kit.identity.wordmarkCase);
-  const m = ctx.measureText(text);
-  const markSize = fontSize * 0.46;
-  const gap = fontSize / 12;
-  const pad = fontSize * 0.55; // clear space ≈ the "o" height
-  const ascent = m.actualBoundingBoxAscent || fontSize * 0.75;
-  const descent = m.actualBoundingBoxDescent || fontSize * 0.22;
-  const width = Math.ceil(pad * 2 + m.width + gap + markSize);
-  const height = Math.ceil(pad * 2 + ascent + descent);
-  return { font, text, spacing, markSize, gap, pad, ascent, descent, width, height, textWidth: m.width, weight, family: display.family };
+  return rules.join('');
 }
 
-export async function downloadLogoPNG(kit: BrandKit, variant: Variant = 'light', scale = 2) {
-  const L = await layout(kit, 160);
-  const c = colors(kit, variant);
-  const canvas = document.createElement('canvas');
-  canvas.width = L.width * scale;
-  canvas.height = L.height * scale;
-  const ctx = canvas.getContext('2d')!;
-  ctx.scale(scale, scale);
-  if (c.bg) {
-    ctx.fillStyle = c.bg;
-    ctx.fillRect(0, 0, L.width, L.height);
+async function ensureFonts(id: LogoIdentity) {
+  for (const f of [id.typography.display, id.typography.data]) {
+    try {
+      await document.fonts.load(`${Math.max(...f.weights)} 100px "${f.family}"`);
+    } catch {
+      /* ignore */
+    }
   }
-  ctx.font = L.font;
-  if ('letterSpacing' in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${L.spacing}px`;
-  ctx.fillStyle = c.text;
-  ctx.textBaseline = 'alphabetic';
-  const baseline = L.pad + L.ascent;
-  ctx.fillText(L.text, L.pad, baseline);
-  const mark = MARK_PATHS[kit.identity.mark.shape];
-  ctx.save();
-  ctx.translate(L.pad + L.textWidth + L.gap, baseline - L.markSize);
-  ctx.scale(L.markSize / 64, L.markSize / 64);
-  ctx.fillStyle = c.mark;
-  ctx.fill(new Path2D(mark.d), mark.evenOdd ? 'evenodd' : 'nonzero');
-  ctx.restore();
-  const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
+}
+
+async function buildSvg(kit: BrandKit, kind: 'logo' | 'icon', variant: LogoVariant): Promise<{ svg: string; width: number; height: number }> {
+  const id = kitIdentity(kit);
+  await ensureFonts(id);
+  const css = await embeddedFontCss([id.typography.display, id.typography.data], `${kit.name}${kit.name.toUpperCase()}${kit.name.toLowerCase()}>_EST.0123456789`);
+  return kind === 'icon' ? iconSVG(id, { measure: canvasMeasure, css }) : logoSVG(id, { variant, measure: canvasMeasure, css, background: variant === 'dark' });
+}
+
+export async function downloadLogoSVG(kit: BrandKit, variant: LogoVariant = 'light') {
+  const out = await buildSvg(kit, 'logo', variant);
+  download(`${toSlug(kit.name)}-logo-${variant}.svg`, out.svg, 'image/svg+xml');
+}
+
+export async function downloadIconSVG(kit: BrandKit) {
+  const out = await buildSvg(kit, 'icon', 'light');
+  download(`${toSlug(kit.name)}-icon.svg`, out.svg, 'image/svg+xml');
+}
+
+async function svgToPng(svg: string, width: number, height: number, scale: number): Promise<Blob | null> {
+  const img = new Image();
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  try {
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Could not render the logo'));
+      img.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
+    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return await new Promise((r) => canvas.toBlob(r, 'image/png'));
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+export async function downloadLogoPNG(kit: BrandKit, variant: LogoVariant = 'light') {
+  const out = await buildSvg(kit, 'logo', variant);
+  const blob = await svgToPng(out.svg, out.width, out.height, 4);
   if (blob) download(`${toSlug(kit.name)}-logo-${variant}.png`, blob);
 }
 
-export async function downloadLogoSVG(kit: BrandKit, variant: Variant = 'light') {
-  const L = await layout(kit, 160);
-  const c = colors(kit, variant);
-  const mark = MARK_PATHS[kit.identity.mark.shape];
-  const baseline = L.pad + L.ascent;
-  const href = googleFontsHref([{ family: L.family, weights: [L.weight] }]).replace(/&/g, '&amp;');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${L.width}" height="${L.height}" viewBox="0 0 ${L.width} ${L.height}">
-  <defs><style>@import url('${href}');</style></defs>
-  ${c.bg ? `<rect width="100%" height="100%" fill="${c.bg}"/>` : ''}
-  <text x="${L.pad}" y="${baseline}" font-family="'${L.family}', sans-serif" font-weight="${L.weight}" font-size="160" letter-spacing="${L.spacing}" fill="${c.text}">${escapeXml(L.text)}</text>
-  <g transform="translate(${(L.pad + L.textWidth + L.gap).toFixed(1)} ${(baseline - L.markSize).toFixed(1)}) scale(${(L.markSize / 64).toFixed(4)})">
-    <path d="${mark.d}" fill="${c.mark}"${mark.evenOdd ? ' fill-rule="evenodd"' : ''}/>
-  </g>
-</svg>`;
-  download(`${toSlug(kit.name)}-logo-${variant}.svg`, svg, 'image/svg+xml');
-}
-
-/** The mark alone — the smallest version of the brand. */
-export function downloadMarkSVG(kit: BrandKit) {
-  const mark = MARK_PATHS[kit.identity.mark.shape];
-  const brand = swatch(kit.identity.palette, 'brand');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="${brand}"/><g transform="translate(13.5 13.5) scale(0.578)"><path d="${mark.d}" fill="#FFFFFF"${mark.evenOdd ? ' fill-rule="evenodd"' : ''}/></g></svg>`;
-  download(`${toSlug(kit.name)}-icon.svg`, svg, 'image/svg+xml');
-}
-
-function escapeXml(s: string) {
-  return s.replace(/[<>&'"]/g, (ch) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' })[ch]!);
+export async function downloadIconPNG(kit: BrandKit) {
+  const out = await buildSvg(kit, 'icon', 'light');
+  const blob = await svgToPng(out.svg, out.width, out.height, 8);
+  if (blob) download(`${toSlug(kit.name)}-icon.png`, blob);
 }

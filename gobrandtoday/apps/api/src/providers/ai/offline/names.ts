@@ -392,7 +392,7 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
     rationale: d.rationale,
     nameType: d.type,
     pronunciation: pronunciationGuide(d.name.replace(/\s+/g, '')),
-    personality: d.personality,
+    personality: [...new Set(d.personality)],
     origin: d.origin ?? '',
     relevance: d.relevance,
   }));

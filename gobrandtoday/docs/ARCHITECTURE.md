@@ -38,7 +38,8 @@ interface SocialChecker  { platform; method; check(handle): Promise<HandleCheck>
 ```
 
 * **LLM providers** implement one method, `completeJSON`. They use strict JSON-schema structured outputs, generated from the zod schemas by `toStrictJsonSchema`, and validate the result with zod again. The Anthropic adapter uses the official SDK with streaming and `fallbacks: "default"` (server-side refusal fallback), and handles `refusal` and `max_tokens` stop reasons explicitly.
-* **The model writes the words; the system makes the design decisions.** The AI chooses the mark shape, a base hue and a font trio from fixed lists. Our generator then builds the palette and enforces WCAG AA contrast for the brand colour. This keeps every kit consistent and accessible.
+* **The model writes the words; the system makes the design decisions.** For identity, the AI proposes four *looks* (logo style, base hue, signature mark, title and concept). Our system turns each one into a complete direction: a palette with WCAG AA contrast enforced, a Google Fonts pairing suited to the style, and the logo itself.
+* **Logos are rendered from data** (`packages/shared/src/logo.ts`). There are eight families: spark full stop, signet badge, editorial serif, sticker stack, generative Bauhaus tiles, bouncy letters, command line and shirorekha. Each is an SVG builder with an injected font `measure`. The browser passes a canvas measurer that uses the real web font, so the screen, the guidelines, the exports and the preview all draw the same logo. Exports inline the subset font (Google Fonts `text=`), so SVG/PNG files render anywhere.
 * **Failure is graceful.** If the AI fails, the offline generator answers and the UI says so. If a domain provider fails, the fallback (RDAP) answers. If that fails too, the result is `unknown`, which is never `available`. One platform failing never fails the whole check.
 
 ### Caching and cost control
@@ -72,6 +73,8 @@ analytics_events                      (when ANALYTICS_PROVIDER=db)
 
 **Build brand**: `POST /api/brands` returns `202` straight away. A background job checks domains and handles (so the copy uses the real domain), generates the kit, assembles the identity, scores it and saves version 1. The client polls `GET /api/brands/:id`.
 
+**Looks**: a new brand's kit carries four looks with `lookChosen: false`; the UI shows the picker. `POST /look` applies one (new version, so it can be undone). `POST /looks` offers four more.
+
 **Assistant**: the model returns `{ reply, names, changes }`, with typed nullable fields. The service maps the changes onto the kit and saves a new version, which **Undo** restores.
 
 ## Frontend
@@ -85,6 +88,7 @@ Next.js App Router with server components for marketing and SEO pages and client
 | Add an AI provider | Extend `LLMProvider`, implement `completeJSON`, add a case to `providers/ai/index.ts`. |
 | Add a registrar | Implement `DomainProvider`, register it in `providers/domain/index.ts`, add a storefront to `shared/registrars.ts`. |
 | Add a social platform | Add it to `SOCIAL_PLATFORMS` + `HANDLE_RULES` (shared), implement `SocialChecker`, register it in `providers/social/index.ts`. |
+| Add a logo family | Add an id to `LOGO_STYLES`, its metadata (fonts, marks, fit, usage) to `LOGO_STYLE_META`, and a `case` in `logoSVG` / `iconSVG`. |
 | Use Redis for cache | Implement `CacheStore` (`lib/cache.ts`) and export it as `cache`. |
 | Turn on payments | Implement `BillingProvider.createCheckout` (Razorpay for INR, Stripe for USD), add a webhook route that writes `subscriptions` and sets `users.plan`. |
 | Trademark / competitor analysis | Add a provider + service; `GoBrandScore.risks` already carries flags to the UI. |

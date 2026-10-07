@@ -12,14 +12,14 @@ India-first: ₹ pricing (switch to $), `.in` domains, Indian-language name root
 
 | | |
 |---|---|
-| **Two front doors** | “I have an idea” (AI naming) or “I have a name” (instant domain + handle + score check). |
+| **Two front doors** | “I have an idea” (AI naming, with optional quick filters: industry, name style, must-have domains, max length, starts-with) or “I have a name” (instant domain + handle + score check). |
 | **10 naming modes** | Smart, Short & Punchy, Premium, Tech/AI, Invented, Human, Global, India-Inspired, SEO-Friendly, **Domain-First** (keeps only names whose domain is free). |
 | **Conversational refinement** | Chips (“Shorter”, “More Indian”…) and plain-English feedback (“too corporate”), plus hard constraints: max length, starts-with and letters to avoid. ♥ saved names steer the next round. |
 | **Real availability** | Domains via the registries' own **RDAP** (free, keyless) or GoDaddy / Hostinger / Namecheap APIs. Handles are verified with official/public endpoints where they exist; elsewhere you get a one-tap “Check ↗” link. **Nothing is ever guessed.** |
 | **GoBrand Score™** | 0–100 internally, shown /10, with 8 explained components, published weights, an SEO explanation and risk flags (unfortunate meanings in Hindi, Spanish, German and other languages, plus names one letter away from famous brands). |
 | **Shortlist & compare** | Select up to 4, check them all, and compare every factor side by side. The app does not pick a winner for you. |
 | **Brand in a Box** | Meaning, story, positioning, mission, vision, audience, archetype, voice, taglines and messaging. |
-| **Identity in the GoBrandToday system** | Every brand gets guidelines in the same format as GoBrandToday's own (“Direction 06 Twinkle”): a lowercase wordmark whose full stop becomes a signature mark, dark/tint lockups, an app-icon tile and a 4-step motion story. It also gets a 5-role palette (contrast-checked HEX), a Google Fonts trio, a UI sample, voice, usage rules and logo directions. |
+| **Four looks, then guidelines** | Every brand is offered **four genuinely different looks**, drawn from eight logo families: Spark full stop, Signet badge, Editorial serif, Sticker stack, Bauhaus tiles (a generative symbol unique to the name), Bouncy letters, Command line and Shirorekha (a Devanagari-style headline bar). Each look has its own contrast-checked palette, Google Fonts pairing and signature mark. You pick one, or ask for four more, and the full guidelines are built around it in the GoBrandToday format: lockups, icon, motion, colour, type, UI sample, voice and usage rules. You can switch looks later. |
 | **Launch & website kit** | Instagram/X/LinkedIn/YouTube bios, launch posts, an X thread, 10 content ideas, and full homepage copy with a live preview. |
 | **AI Brand Assistant** | “Make my tagline more premium”, “darker palette”, “10 alternatives”, “Instagram carousel”. Changes apply to the kit, are versioned, and can be undone. |
 | **Export & share** | PDF guidelines, PNG/SVG logo, SVG app icon, JSON, Markdown; read-only share links; saved-name CSV/share. |
@@ -55,6 +55,14 @@ Open <http://localhost:3000>. With no API keys, GoBrandToday runs on its **offli
 | `npm run typecheck` | TypeScript across all workspaces |
 
 API docs (OpenAPI / Swagger UI): <http://localhost:4000/api/docs>.
+
+## Try it without a server (preview build)
+
+```bash
+npm run preview:build        # → apps/web/preview/dist/{index.html, app.js, app.css}
+```
+
+This bundles the real pages and components with an in-browser stand-in for the API (`apps/web/preview/local-api.ts`). It uses the same offline generator, scoring, looks and assistant, with data kept in the browser. Domain and handle results are clearly marked demo data. It's handy for design reviews and stakeholder demos: open `index.html` from any static host.
 
 ## Demo mode
 
@@ -95,10 +103,10 @@ gobrandtoday/
 
 These come from a real run in headless Chromium using the offline generator. In the sandbox where they were taken, outbound registry and social APIs were blocked, so some results read “Unverified”. That's the honest fallback working as designed.
 
-| Landing | Studio + shortlist | Compare |
+| Landing | Idea + quick filters | Studio + shortlist |
 |---|---|---|
-| ![](docs/screenshots/01-landing.png) | ![](docs/screenshots/03-shortlist.png) | ![](docs/screenshots/04-compare.png) |
+| ![](docs/screenshots/01-landing.png) | ![](docs/screenshots/02-hero-filters.png) | ![](docs/screenshots/03-shortlist.png) |
 
-| Brand in a Box | Identity (Twinkle-format guidelines) | “I have a name” check |
+| Pick one of four looks | Identity guidelines | Brand in a Box |
 |---|---|---|
-| ![](docs/screenshots/06-brand-box.png) | ![](docs/screenshots/07-brand-identity.png) | ![](docs/screenshots/10-name-check.png) |
+| ![](docs/screenshots/05-looks.png) | ![](docs/screenshots/07-brand-identity.png) | ![](docs/screenshots/06-brand-box.png) |

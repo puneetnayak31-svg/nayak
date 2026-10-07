@@ -1,4 +1,4 @@
-import { FONT_TRIOS, MARK_PATHS, NAME_MODES, type BrandKit, type Brief } from '@gbt/shared';
+import { LOGO_STYLE_META, MARK_PATHS, NAME_MODES, type BrandKit, type Brief } from '@gbt/shared';
 import type { AssistantInput, KitGenInput, NameGenInput } from './types';
 
 /**
@@ -69,26 +69,24 @@ export function namesPrompt(input: NameGenInput): string {
 export const KIT_SYSTEM = `You are the brand strategist and designer inside GoBrandToday.
 You turn a chosen name into a complete starter Brand Bible that a founder can use today.
 
-House style for every brand you create (it mirrors GoBrandToday's own system):
-- Wordmark: the name in lowercase, set in the display font, with a single signature mark
-  replacing the full stop at the end. Choose the mark shape that fits the story.
-- Motion story in four steps: idle (a calm dot), thinking (it breathes into a soft diamond),
-  the mark (snaps open when the moment lands), done (a tiny accent twin appears).
-- Palette in five named roles: ink (text), brand (the mark, CTAs), accent, tint, paper.
-  You choose the base hue (0–360); contrast is handled for you.
-- Type trio from Google Fonts: display, body, data (mono).
-- Voice: three words separated by " · " (e.g. "Light · Clever · Quietly magical"), with
-  concrete "say" lines and crossed-out "not" lines.
-- Usage rules: clear space, minimum size, one "do", one "don't".
+Visual identity — propose FOUR looks the founder will choose between. They must be genuinely
+different: four different logo styles (from the list), four clearly different base hues (at least
+60° apart), and four different marks where possible. Give each look a short evocative title and a
+one or two sentence concept that explains why it fits this brand. Order them best-fit first.
+Our system turns each look into a full kit (contrast-checked five-role palette from your hue,
+Google Fonts pairing for the style, logo, icon and usage rules).
+
+Voice: three words separated by " · " (e.g. "Light · Clever · Quietly magical"), with
+concrete "say" lines and crossed-out "not" lines.
 
 Writing rules: specific, warm and plain. No jargon, no hype words ("revolutionary",
 "synergy", "cutting-edge"). Short sentences. Write for the stated geography; India-first by default
 (₹ pricing, Indian cultural cues where natural) without stereotypes.
 Never claim trademark clearance, guaranteed SEO rankings or guaranteed success.`;
 
-const FONT_LIST = Object.values(FONT_TRIOS)
-  .map((t) => `${t.id} (${t.display.family} / ${t.body.family} / ${t.data.family})`)
-  .join('; ');
+const STYLE_LIST = Object.values(LOGO_STYLE_META)
+  .map((m) => `${m.id} — ${m.construction} Best for: ${m.fit.join(', ')}`)
+  .join('\n');
 const MARK_LIST = Object.entries(MARK_PATHS)
   .map(([k, v]) => `${k} (${v.meaning})`)
   .join('; ');
@@ -104,10 +102,10 @@ export function kitPrompt(input: KitGenInput): string {
     b.personalities?.length && `Personality: ${b.personalities.join(', ')}`,
     input.domain && `Domain: ${input.domain}`,
     input.handle && `Handle: @${input.handle}`,
-    `Available fonts (fontTrio id): ${FONT_LIST}`,
-    `Available marks (markShape): ${MARK_LIST}`,
+    `Logo styles (style):\n${STYLE_LIST}`,
+    `Marks (markShape): ${MARK_LIST}`,
     `Sections to write: ${input.sections.join(', ')}`,
-    'Taglines: 6–8 options, each under 8 words. Content ideas: exactly 10. Logo directions: 4 (Minimal wordmark, Symbol + wordmark, Monogram, Abstract symbol). Website features: 3–4. FAQ: 4. X thread: 4–5 posts.',
+    'Taglines: 6–8 options, each under 8 words. Content ideas: exactly 10. Looks: exactly 4. Website features: 3–4. FAQ: 4. X thread: 4–5 posts.',
     input.instruction && `Direction for this version: ${input.instruction}`,
     input.current && `Current brand (keep consistent with it):\n${summariseKit(input.current)}`,
   ];
@@ -120,7 +118,7 @@ content (a carousel, a campaign, a homepage), in which case put the full content
 
 When the user asks to change something in the brand, set the matching field in "changes" and leave every other
 field null. Examples: "make my tagline more premium" → taglines; "darker palette" → darkerPalette true (and/or hue);
-"different symbol" → markShape; "rewrite my positioning" → positioning; "more Gen Z" → taglines, oneLiner,
+"different symbol" → markShape; "a bolder / more premium / more Indian logo" → logoStyle; "rewrite my positioning" → positioning; "more Gen Z" → taglines, oneLiner,
 voiceSummary and instagramBio. If they ask for alternative names, put up to 10 in "names".
 Never invent domain or handle availability — tell them to use the Check button instead.`;
 
@@ -146,7 +144,7 @@ export function summariseKit(kit: BrandKit): string {
     `One-liner: ${kit.messaging.oneLiner}`,
     `Voice: ${kit.voice.summary}`,
     `Taglines: ${kit.taglines.slice(0, 5).join(' | ')}`,
-    `Mark: ${kit.identity.mark.shape} — ${kit.identity.mark.concept}`,
+    `Logo: ${kit.identity.style} style, ${kit.identity.mark.shape} mark — ${kit.identity.mark.concept}`,
     `Palette: ${kit.identity.palette.map((p) => `${p.role} ${p.name} ${p.hex}`).join(', ')}`,
     `Fonts: ${kit.identity.typography.display.family} / ${kit.identity.typography.body.family}`,
     `Archetype: ${kit.archetype.name}`,

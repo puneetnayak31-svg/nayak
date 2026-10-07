@@ -32,7 +32,7 @@ const TABS = ['thesaurus.com', 'GoDaddy', 'Hostinger', 'instagram.com/…', 'x.c
 const FAQ = [
   {
     q: 'Is the domain availability real?',
-    a: 'Yes. We check the registries directly (RDAP) or a registrar API, and we label every result with how it was checked. If we can’t verify something, we say “Unverified” — we never guess “Available”.',
+    a: 'Yes. We check the registries directly (RDAP) or a registrar API, and we label every result with how it was checked. A registry-only answer shows “Likely free” until a registrar confirms it, and anything we can’t check shows “Not checked” with a one-tap link — we never guess “Available”.',
   },
   {
     q: 'Can you check Instagram, X and TikTok handles?',

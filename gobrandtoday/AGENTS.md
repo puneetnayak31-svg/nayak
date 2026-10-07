@@ -92,6 +92,7 @@ The app runs with **zero API keys**: AI falls back to the offline generator, dom
 | A web page | Page list in `docs/TECH_BRIEF.md`; `preview/router.tsx` + `preview/main.tsx` if it should work in the preview; `app/sitemap.ts` if public. |
 | `LOGO_STYLES` or `SYMBOL_FAMILIES` | `LOGO_STYLE_META` / `SYMBOL_META`, render cases in `logo.ts`, and the lists in `docs/TECH_BRIEF.md`. |
 | Scope or a user-visible behaviour | `docs/SCOPE.md` and `docs/CHANGELOG.md`. |
+| Prices, plan limits, expert services, landing/site copy or a marketed feature | `docs/MARKETING_BRIEF.md` (including its claims guardrails, section 13). |
 | A decision recorded in `docs/DECISIONS.md` | That entry (mark it superseded and add the new decision). Don't silently reverse it. |
 
 `npm run docs:check` (also run by `npm test`) fails when routes, env vars, tables, pages, modules,

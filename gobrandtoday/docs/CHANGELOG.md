@@ -6,7 +6,9 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 ## Unreleased
 
-_Nothing yet._
+- **Added** `docs/MARKETING_BRIEF.md`: a paste-ready brief for generating marketing material (features, plans,
+  experts, GoBrandToday's own brand, demo story) with claims guardrails, so campaigns never promise what isn't built.
+- **Fixed** the landing FAQ, which still said results show “Unverified”. It now matches the UI labels (“Likely free”, “Not checked”).
 
 ## Round 5 — Agent-ready docs · 2026-10-07
 

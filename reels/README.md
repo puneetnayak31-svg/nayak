@@ -40,5 +40,5 @@ python3 music.py SLUG music.wav
 python3 render.py SLUG output/SLUG.mp4 music.wav
 python3 render.py SLUG output/SLUG-thumbnail.jpg --thumbnail
 ```
-Requires Python 3 with Pillow (with raqm) and numpy, plus ffmpeg with libx264.
+Requires Python 3 with Pillow (with raqm) and numpy (`pip install -r requirements.txt`), plus ffmpeg with libx264.
 Fonts are Cormorant Garamond, Jost and Tiro Devanagari Hindi, all under SIL OFL (see `assets/fonts`).

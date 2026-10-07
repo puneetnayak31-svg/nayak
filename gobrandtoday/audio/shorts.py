@@ -117,9 +117,9 @@ CMT = dict(dur=22.0, type0=0.4, idea="a dog café with a reading corner", post=2
 CMT_VO = [
     (0.1, "Comment an idea, and we'll turn it into a brand."),
     (4.3, "Pawse. Paws, plus pause."),
-    (6.2, "A logo with a paw for a full stop."),
+    (6.2, "A paw that says pause."),
     (8.2, "Warm, cosy colours."),
-    (10.2, "And a café that's ready to open."),
+    (10.2, "And a café ready to open. Plus a lot more inside."),
     (14.2, "Your idea could be next. Drop it in the comments."),
 ]
 

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Comment to Brand {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.panel { position: absolute; background: #FFFFFF; border: 3px solid var(--line); border-radius: 32px; box-shadow: 0 24px 60px rgba(22, 22, 26, 0.10); overflow: hidden; }
+.av { display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--violet); color: #fff; font: 800 20px Manrope; flex: none; }
+.big { font-family: "Fraunces"; font-weight: 600; letter-spacing: -0.03em; color: #3B2A20; line-height: 1; white-space: nowrap; }
+.big span { display: inline-block; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="cmt" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="22">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="4.3" data-track-index="1"></section>
+  <section class="clip" id="s-name" data-start="4" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-logo" data-start="6" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-pal" data-start="8" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-mocks" data-start="10" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-next" data-start="14" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="18" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-chrome" data-start="4" data-duration="10" data-track-index="2"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/comment-to-brand.wav" data-start="0" data-duration="22" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  const B = BRANDS.pawse;
+  const C = { type0: 0.4, post: 2.4, dot: 2.5, diamond: 3.0, spark: 3.5, twin: 4.0, name: 4.1, logo: 6.0,
+    sw: [8.0, 8.25, 8.5, 8.75, 9.0], mocks: [10.25, 10.75, 11.25], chip: 12.0, next: 14.0, end: 18.0 };
+  const F = buildField($("field"), W, H, V ? 60 : 64, "rgba(109,74,255,0.20)", 0.28, 13);
+  fieldIn(tl, F, 0, "center", 0.6, 1);
+
+  // ===================================================== 0-4 HOOK: you comment an idea; it gets picked
+  {
+    const sc = $("s-hook");
+    const hd = el("div", "hl abs", sc);
+    Object.assign(hd.style, V ? { left: CA.x + "px", top: (CA.y + 40) + "px", width: CA.w + "px", fontSize: "88px" } : { left: "120px", top: "300px", width: "760px", fontSize: "100px" });
+    const w1 = K.words(hd, "Comment an idea.");
+    const l2 = el("div", "", hd); l2.style.marginTop = "10px";
+    const mk = el("span", "marker", l2, "We'll make it a brand.");
+    mk.style.transformOrigin = "0% 50%";
+    tl.fromTo(w1, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.12 }, 0.0);
+    tl.fromTo(mk, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, 0.55);
+    const pb = V ? { x: CA.x, y: 760, w: CA.w, h: 520 } : { x: 980, y: 250, w: 820, h: 580 };
+    const pn = el("div", "panel", sc);
+    Object.assign(pn.style, { left: pb.x + "px", top: pb.y + "px", width: pb.w + "px", height: pb.h + "px" });
+    const hdr = el("div", "abs", pn, "Comments"); hdr.style.cssText = "left:34px;top:28px;font:800 30px Manrope;color:var(--graphite)";
+    const rule = el("div", "abs", pn); rule.style.cssText = `left:0;right:0;top:86px;height:2px;background:var(--line)`;
+    // the posted comment
+    const row = el("div", "abs", pn);
+    row.style.cssText = `left:34px;right:34px;top:${V ? 120 : 130}px;display:flex;gap:18px;align-items:flex-start`;
+    const av = el("div", "av", row, "You"); av.style.cssText += ";width:64px;height:64px";
+    const col = el("div", "", row);
+    const nm = el("div", "", col, "you · now"); nm.style.cssText = "font:700 22px Manrope;color:#5F5B6B";
+    const tx = el("div", "", col, B.idea.toLowerCase()); tx.style.cssText = `font:600 ${V ? 32 : 34}px Manrope;color:var(--graphite);margin-top:6px;line-height:1.25;max-width:${pb.w - 220}px`;
+    const heart = el("div", "abs", pn); heart.innerHTML = `<svg width="34" height="30" viewBox="0 0 24 22"><path d="M12 21 C5 15 1 11 1 7 A5.5 5.5 0 0 1 12 4 A5.5 5.5 0 0 1 23 7 C23 11 19 15 12 21Z" fill="none" stroke="#5F5B6B" stroke-width="2"/></svg>`;
+    heart.style.cssText = `right:34px;top:${V ? 130 : 140}px`;
+    // the input bar
+    const inp = el("div", "abs", pn);
+    inp.style.cssText = `left:24px;right:24px;bottom:24px;height:96px;border-radius:48px;background:#F4F2F8;display:flex;align-items:center;gap:16px;padding:0 16px`;
+    const av2 = el("div", "av", inp, "You"); av2.style.cssText += ";width:64px;height:64px";
+    const field = el("div", "", inp); field.style.cssText = `flex:1;font:600 ${V ? 28 : 30}px Manrope;color:var(--graphite);white-space:nowrap;overflow:hidden`;
+    const ph = el("span", "", field, "Add a comment…"); ph.style.color = "#8D889C";
+    const typed = el("span", "", field);
+    const chars = typeSpans(typed, B.idea.toLowerCase());
+    const caret = el("span", "caret", field);
+    const post = el("div", "", inp, "Post"); post.style.cssText = "font:800 28px Manrope;color:var(--violet);padding-right:14px";
+    tl.fromTo(pn, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }, 0.15);
+    tl.fromTo(ph, { display: "inline" }, { display: "none", duration: 0.001 }, C.type0);
+    chars.forEach((c, i) => tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001 }, C.type0 + i * 0.0625));
+    [[0, 0], [C.type0 - 0.1, 1], [C.post + 0.05, 0]].forEach(([t, v]) => tl.set(caret, { opacity: v }, t));
+    tl.to(post, { keyframes: [{ scale: 0.86, duration: 0.07 }, { scale: 1, duration: 0.25, ease: "back.out(3)" }] }, C.post - 0.04);
+    tl.to(typed, { opacity: 0, duration: 0.001 }, C.post + 0.04);
+    tl.fromTo(row, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(2)" }, C.post + 0.04);
+    tl.fromTo(heart, { opacity: 0 }, { opacity: 1, duration: 0.2 }, C.post + 0.1);
+    // picked: a violet dot drops on the comment, becomes the spark
+    const sx = pb.x + pb.w - 120, sy = pb.y + (V ? 180 : 190);
+    const hold = el("div", "abs", sc);
+    hold.style.cssText = `left:${sx - 50}px;top:${sy - 50}px;width:100px;height:100px`;
+    const sp = sparkSVG("var(--violet)", 0, "spark-svg"); sp.svg.style.cssText = "width:100%;height:100%"; hold.appendChild(sp.svg);
+    sp.path.setAttribute("d", sparkD(0));
+    appear(tl, hold, C.dot - 0.2);
+    tl.fromTo(hold, { y: -260, scale: 0.36 }, { y: 0, scale: 0.36, duration: 0.2, ease: "power3.in" }, C.dot - 0.2);
+    tl.to(hold, { keyframes: [{ scaleX: 0.5, scaleY: 0.24, duration: 0.06 }, { scaleX: 0.36, scaleY: 0.36, duration: 0.3, ease: "elastic.out(1,0.4)" }] }, C.dot);
+    const pk = el("div", "pill vi abs", sc, "Picked");
+    Object.assign(pk.style, { left: (pb.x + pb.w - 230) + "px", top: (pb.y + (V ? 250 : 260)) + "px" });
+    tl.fromTo(pk, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, C.dot + 0.1);
+    tl.to(pn, { borderColor: "#6D4AFF", boxShadow: "0 0 0 8px rgba(109,74,255,0.20), 0 24px 60px rgba(109,74,255,0.18)", duration: 0.3 }, C.dot);
+    morph(tl, sp.path, 0, 1, C.diamond - 0.1, 0.3, "back.out(2)");
+    tl.to(hold, { scale: 0.6, duration: 0.3, ease: "back.out(2)" }, C.diamond - 0.1);
+    fieldToDiamonds(tl, F, C.diamond - 0.08, [sx / W, sy / H], 0.6);
+    morph(tl, sp.path, 1, 2, C.spark - 0.06, 0.16, "power3.in");
+    tl.to(hold, { keyframes: [{ scale: 1.3, rotation: 90, duration: 0.16 }, { scale: 1, rotation: 90, duration: 0.45, ease: "elastic.out(1,0.45)" }] }, C.spark - 0.04);
+    burst(tl, el("div", "layer", sc), sx, sy, C.spark, { rays: 12, len: 120, r0: 40, r1: 220, ringScale: 6 });
+    fieldToSparks(tl, F, C.spark, [sx / W, sy / H], 0.7);
+    tl.to(hold, { scale: 30, rotation: 180, duration: 0.4, ease: "power3.in" }, C.twin - 0.05);
+    tl.to([hd, pn, pk], { opacity: 0, duration: 0.2 }, C.twin);
+    K.wipe("var(--paper)", C.twin + 0.1, 0.3, [sx, sy]);
+    tl.to(hold, { opacity: 0, duration: 0.15 }, C.twin + 0.25);
+    K.fieldTo(C.twin + 0.1, 0, 0.3);
+  }
+
+  // chrome 4-14: series pill + EXAMPLE
+  {
+    const sc = $("s-chrome");
+    const p = el("div", "pill vi abs", sc, "Your idea → a brand");
+    Object.assign(p.style, { left: CA.x + "px", top: CA.y + "px" });
+    const ex = K.exPill(sc, CA.x + CA.w - 140, CA.y);
+    tl.fromTo([p, ex], { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.05 }, 4.2);
+  }
+  const midY = V ? 760 : 470;
+
+  // ===================================================== 4-6 THE NAME: letters fly in from the comment
+  {
+    const sc = $("s-name");
+    const big = el("div", "big abs", sc);
+    big.style.cssText += `;left:0;width:${W}px;text-align:center;top:${midY - (V ? 200 : 170)}px;font-size:${V ? 200 : 230}px`;
+    const ls = "Pawse".split("").map(ch => el("span", "", big, ch));
+    const r = rng(3);
+    ls.forEach((l, k) => tl.fromTo(l, { x: (r() - 0.5) * 700, y: (V ? 500 : 300) + r() * 200, rotation: (r() - 0.5) * 120, opacity: 0, scale: 0.4 },
+      { x: 0, y: 0, rotation: 0, opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.6)" }, C.name + k * 0.06));
+    const pr = el("div", "mono abs", sc, "PAWS");
+    pr.style.cssText += `;left:0;width:${W}px;text-align:center;top:${midY + (V ? 30 : 90)}px;font-size:24px;color:var(--violet-d)`;
+    const mn = el("div", "sub abs", sc, "Paws + pause: a café to slow down, with your dog.");
+    mn.style.cssText += `;left:${K.SAFE.x}px;width:${K.SAFE.w}px;text-align:center;top:${midY + (V ? 76 : 136)}px;font-size:${V ? 34 : 38}px;color:var(--graphite)`;
+    const scb = el("div", "abs", sc);
+    scb.style.cssText = `left:0;width:${W}px;text-align:center;top:${midY + (V ? 200 : 210)}px`;
+    const od = K.odo(scb, "9.0"); od.o.style.cssText = `font:700 ${V ? 64 : 70}px "Space Mono";color:var(--graphite)`;
+    const s10 = el("span", "mono", scb, " /10 GoBrand Score"); s10.style.cssText = "font-size:20px;color:#5F5B6B;vertical-align:top;line-height:3.6";
+    tl.fromTo([pr, mn], { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.12 }, C.name + 0.5);
+    tl.fromTo(scb, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.name + 0.6);
+    K.roll(od, C.name + 0.65, 0.8);
+    K.out([big, pr, mn, scb], 5.72);
+  }
+
+  // ===================================================== 6-8 THE LOGO: the paw builds, the pause appears
+  {
+    const sc = $("s-logo");
+    const S = V ? 300 : 320;
+    const sym = el("div", "abs", sc);
+    sym.style.cssText = `left:${W / 2 - S / 2}px;top:${midY - S * 0.75}px;width:${S}px;height:${S}px`;
+    sym.innerHTML = `<svg viewBox="0 0 60 62" width="100%" height="100%" style="overflow:visible">${PAWSE_SYMBOL}</svg>`;
+    const parts = [...sym.querySelectorAll("ellipse, path, rect")];
+    parts.forEach(p => p.style.transformBox = "fill-box");
+    tl.fromTo(parts.slice(0, 4), { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.3, ease: "back.out(3)", stagger: 0.0625 }, C.logo);
+    tl.fromTo(parts[4], { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, ease: "back.out(2.5)" }, C.logo + 0.25);
+    tl.fromTo(parts.slice(5), { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.3, ease: "back.out(3)", stagger: 0.08 }, C.logo + 0.5);
+    const word = el("div", "big abs", sc, "pawse");
+    word.style.cssText += `;left:0;width:${W}px;text-align:center;top:${midY + S * 0.32}px;font-size:${V ? 120 : 130}px`;
+    tl.fromTo(word, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(2)" }, C.logo + 0.7);
+    const lab = el("div", "mono abs", sc, "Symbol + wordmark · AI-drawn symbol");
+    lab.style.cssText += `;left:0;width:${W}px;text-align:center;top:${midY + S * 0.32 + (V ? 160 : 170)}px;font-size:20px;color:var(--violet-d)`;
+    tl.fromTo(lab, { opacity: 0 }, { opacity: 1, duration: 0.3 }, C.logo + 0.9);
+    K.out([sym, word, lab], 7.72);
+  }
+
+  // ===================================================== 8-10 COLOURS
+  {
+    const sc = $("s-pal");
+    const names = ["Cocoa", "Terracotta", "Butter", "Sage", "Cream"];
+    const bw = V ? 150 : 300, bh = V ? 560 : 520, gap = V ? 16 : 24;
+    const x0 = (W - (5 * bw + 4 * gap)) / 2, y0 = midY - bh / 2 - (V ? 40 : 30);
+    const bars = B.pal.map((c, k) => {
+      const b = el("div", "abs", sc);
+      b.style.cssText = `left:${x0 + k * (bw + gap)}px;top:${y0}px;width:${bw}px;height:${bh}px;border-radius:24px;background:${c};border:3px solid rgba(0,0,0,0.08)`;
+      const n = el("div", "abs", b, names[k]);
+      const dark = k === 0 || k === 1;
+      n.style.cssText = `left:16px;bottom:52px;font:700 ${V ? 22 : 28}px Manrope;color:${dark ? "#FFF7EC" : "#3B2A20"}`;
+      const hx = el("div", "abs mono", b, c);
+      hx.style.cssText = `left:16px;bottom:22px;font-size:${V ? 15 : 18}px;letter-spacing:0;color:${dark ? "#FFF7EC" : "#3B2A20"}`;
+      return b;
+    });
+    bars.forEach((b, k) => tl.fromTo(b, { y: -70, clipPath: "inset(0 0 100% 0 round 24px)" }, { y: 0, clipPath: "inset(0 0 0% 0 round 24px)", duration: 0.45, ease: "bounce.out" }, C.sw[k] - 0.1));
+    const lab = el("div", "mono abs", sc, "5 colour roles · contrast-checked pairs");
+    lab.style.cssText += `;left:0;width:${W}px;text-align:center;top:${y0 + bh + 30}px;font-size:20px;color:var(--violet-d)`;
+    tl.fromTo(lab, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 9.2);
+    K.out([...bars, lab], 9.72);
+  }
+
+  // ===================================================== 10-14 READY TO OPEN, and much more inside
+  {
+    const sc = $("s-mocks");
+    const hd = K.head(sc, "Ready to open", "A café brand, done.", V ? { y: CA.y + 80 } : { y: CA.y + 80, w: 1680 });
+    K.headIn(hd, 10.02);
+    const mw = V ? 400 : 520, mh = V ? 330 : 420, gap = V ? 16 : 24;
+    const spots = V ? [[CA.x, 560], [CA.x + mw + gap, 560], [CA.x, 560 + mh + gap]] : [[CA.x, 330], [CA.x + mw + gap, 330], [CA.x + 2 * (mw + gap), 330]];
+    const mocks = [mockCup2(sc, mw, mh, B), mockSign2(sc, mw, mh, B), mockTote2(sc, mw, mh, B)];
+    mocks.forEach((t, k) => Object.assign(t.style, { position: "absolute", left: spots[k][0] + "px", top: spots[k][1] + "px", border: "3px solid rgba(0,0,0,0.08)" }));
+    mocks.forEach((t, k) => tl.fromTo(t, { y: 90, opacity: 0, rotation: (k - 1) * 5 }, { y: 0, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(1.8)" }, C.mocks[k]));
+    // the fourth slot: everything else in the box
+    const more = el("div", "card", sc);
+    const mx = V ? CA.x + mw + gap : CA.x, my = V ? 560 + mh + gap : 330 + mh + 30;
+    Object.assign(more.style, V ? { left: mx + "px", top: my + "px", width: (mw - 6) + "px", height: (mh - 6) + "px", background: "var(--graphite)", borderColor: "#2B2B33" }
+                                : { left: mx + "px", top: my + "px", width: (3 * mw + 2 * gap - 6) + "px", height: "120px", background: "var(--graphite)", borderColor: "#2B2B33" });
+    const mt = el("div", "abs", more, "+ much more inside");
+    mt.style.cssText = `left:28px;top:${V ? 30 : 22}px;font:800 ${V ? 32 : 34}px Manrope;color:#FAFAF7`;
+    const ml = el("div", "abs mono", more, V ? "Launch posts · bios · website copy · brand book · 9 mockups · AI assistant" : "Launch posts · bios · website copy · brand book · 9 mockups · AI brand assistant · exports");
+    ml.style.cssText = `left:28px;right:28px;top:${V ? 86 : 72}px;font-size:${V ? 17 : 18}px;line-height:1.7;color:#B9AEFF`;
+    tl.fromTo(more, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, C.chip);
+    K.out([hd.box, ...mocks, more], 13.72);
+  }
+
+  // ===================================================== 14-18 YOUR TURN
+  {
+    const sc = $("s-next");
+    const hl = el("div", "hl abs", sc);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 520 : 250) + "px", fontSize: (V ? 92 : 104) + "px" });
+    const ws = K.words(hl, "Your idea could be next.");
+    tl.fromTo(ws, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.08 }, 14.05);
+    const inp = el("div", "abs", sc);
+    const iw = V ? 816 : 900;
+    inp.style.cssText = `left:${(W - iw) / 2}px;top:${V ? 860 : 560}px;width:${iw}px;height:104px;border-radius:52px;background:#FFFFFF;border:3px solid var(--violet);display:flex;align-items:center;gap:18px;padding:0 20px;box-sizing:border-box`;
+    const av = el("div", "av", inp, "You"); av.style.cssText += ";width:66px;height:66px";
+    const t = el("div", "", inp, "Your idea, in one sentence…"); t.style.cssText = `font:600 ${V ? 30 : 32}px Manrope;color:#8D889C;flex:1`;
+    const cr = el("span", "caret", t); cr.style.verticalAlign = "-0.1em";
+    [[14.6, 1], [14.95, 0], [15.3, 1], [15.65, 0], [16.0, 1], [16.35, 0], [16.7, 1], [17.05, 0]].forEach(([tt, v]) => tl.set(cr, { opacity: v }, tt));
+    tl.fromTo(inp, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, 14.45);
+    const arrow = el("div", "abs", sc);
+    arrow.innerHTML = `<svg width="64" height="80" viewBox="0 0 64 80"><path d="M32 4 V66 M10 46 L32 70 L54 46" fill="none" stroke="#6D4AFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    arrow.style.cssText = `left:${W / 2 - 32}px;top:${V ? 1010 : 700}px`;
+    const lab = el("div", "mono abs", sc, "Comment below");
+    lab.style.cssText += `;left:0;width:${W}px;text-align:center;top:${V ? 1110 : 800}px;font-size:24px;color:var(--violet-d)`;
+    tl.fromTo([arrow, lab], { opacity: 0 }, { opacity: 1, duration: 0.3 }, 15.0);
+    tl.to(arrow, { y: 18, duration: 0.25, yoyo: true, repeat: 7, ease: "sine.inOut" }, 15.0);
+    K.out([hl, inp, arrow, lab], 17.72);
+  }
+
+  K.endCard($("s-end"), C.end, { cta: "Comment your idea below." });
+  window.__timelines["cmt"] = tl;
+});
+</script>
+</body>
+</html>

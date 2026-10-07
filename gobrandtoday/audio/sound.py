@@ -383,58 +383,82 @@ def type_clicks(m, t0, count, step, gain=0.6):
 
 # ------------------------------------------------------------------ cues (seconds; the videos use these)
 ANN = dict(
-    dur=36.0,
-    type_start=0.5, type_step=S16 / 2, idea="A chai subscription for remote teams.",
-    tabs=[4.0 + i * 0.25 for i in range(9)],
+    dur=38.0,
+    hook=[i * 0.25 for i in range(8)],          # 0-2   flashes of the finished brand
+    rewind=2.0,                                # 2-3   tape rewind to "5 minutes earlier"
+    type_start=3.25, type_step=S16 / 2, idea="A cosy candle brand for Gen Z.",
+    tabs=[5.5 + i * 0.125 for i in range(9)],  # 5.5   nine tabs
     vacuum=7.5, implode=8.0,
-    sting=8.5,                      # dot 8.5, diamond 9.0, spark 9.5, twin 10.0 (the drop)
+    sting=8.5,                                 # dot 8.5, diamond 9.0, spark 9.5, twin 10.0 (the drop)
     names=[10.5, 11.0, 11.5], domains=[14.5, 14.75, 15.0, 15.25], handles=[16.0 + i * 0.25 for i in range(6)],
     ring=[18.5 + i * 0.125 for i in range(8)], looks=[22.0, 22.5, 23.0, 23.5], pick=24.5,
-    book=[26.5, 27.0, 27.5, 28.0, 28.5], scenes=[14.0, 18.0, 22.0, 26.0, 30.0],
+    book=[26.25, 26.5, 26.75, 27.0, 27.25, 27.5], launch=[28.25, 28.5, 28.75], chat=[28.95, 29.2],
+    scenes=[14.0, 18.0, 22.0, 26.0, 28.0, 30.0],
     close_type=30.25, close_text="Your idea deserves a brand", close_sting=32.0,
+    url_type=34.75, url="gobrandtoday.com", enter=35.875, cta=36.0, end_hit=37.0,
 )
 LOGO = dict(dur=6.0, type_start=0.4, type_step=S16, word="gobrandtoday", sting=2.0)
+
+
+def rewind_fx(dur=1.0):
+    """Tape rewind: a squealing tone diving down, chattering reversed plucks and hiss."""
+    t = tt(dur)
+    f = 1400 * np.exp(-3.2 * t / dur) + 90
+    squeal = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.18 * (1 - t / dur) ** 0.5
+    hiss = filt(noise(dur), "band", (1500, 7000)) * 0.12
+    out = squeal + hiss
+    pos = 0.0
+    k = 0
+    while pos < dur - 0.06:
+        pl = np.flip(pluck(88 - (k * 5) % 24, 0.5, dur=0.12))
+        i = int(pos * SR)
+        out[i:i + len(pl)] += pl[: len(out) - i]
+        pos += 0.07 - 0.03 * pos / dur
+        k += 1
+    return out * adsr(len(t), a=0.01, r=0.12)
 
 
 def announcement():
     a = ANN
     m = Mix(a["dur"])
-    # 0-4  the idea is typed over a filtered pad
-    for b in range(2):
-        p = pad_chord(CHORDS[b][0], BAR + 0.2, 0.5)
-        m.add(sweep_lp(p, 500, 900 + 500 * b), b * BAR, rev=0.35, bus="duck")
+    # 0-2  hook: the groove from frame one, a chord stab on every flash, a riser into the rewind
+    groove_bar(m, 0.0, 0, level=0.95, arp=False)
+    for i, t in enumerate(a["hook"]):
+        for n in CHORDS[0][2][:4]:
+            m.add(pluck(n + (12 if i % 2 else 0), 0.32), t, pan=0.3 * np.sin(i), rev=0.2)
+        m.add(pop(600 + 70 * i, 0.35), t, pan=-0.3)
+    m.add(riser(1.0, 0.6), 1.0, rev=0.2)
+    # 2-3  rewind, then a beat of tape-stop silence
+    m.add(rewind_fx(0.9), a["rewind"], rev=0.1)
+    m.add(reverse_whoosh(0.35, 0.5), a["rewind"] + 0.55)
+    # 3-5.5  the idea is typed over a quiet, filtered pad
+    m.add(sweep_lp(pad_chord(CHORDS[0][0], 2.7, 0.5), 450, 1200), 3.0, rev=0.35, bus="duck")
     n = len(a["idea"]) - 1
     type_clicks(m, a["type_start"], n, a["type_step"], 0.75)
-    m.add(drop(76, 0.45), a["type_start"] + n * a["type_step"] + S16, rev=0.3, dly=0.1)  # the full stop
-    m.add(pluck(64, 0.35), 2.0, rev=0.4)
-    m.add(pluck(71, 0.3), 3.0, rev=0.4)
-    # 4-8  nine tabs: build, filter opening, glitches, then the vacuum
-    for b, t0 in enumerate((4.0, 6.0)):
-        m.add(sweep_lp(pad_chord(CHORDS[2 + b][0], BAR + 0.1, 0.5), 900 + 600 * b, 2000 + 2500 * b),
-              t0, rev=0.3, bus="duck")
-        for k in range(4):
-            m.kick(t0 + k * BEAT, 0.55 + 0.25 * b, depth=0.35)
-            m.add(sub(CHORDS[2 + b][1] + 12, BEAT * 0.8, 0.6), t0 + k * BEAT, bus="duck", rev=0)
+    m.add(drop(76, 0.5), a["type_start"] + n * a["type_step"] + S16, rev=0.3, dly=0.1)  # the violet full stop
+    # 5.5-8  nine tabs: pops on 16ths, the build, glitches, then the vacuum
+    m.add(sweep_lp(pad_chord(CHORDS[2][0], 2.6, 0.5), 900, 4200), 5.5, rev=0.3, bus="duck")
     for i, t in enumerate(a["tabs"]):
-        m.add(pop(520 + 60 * i, 0.9), t, pan=-0.6 + 0.15 * i, rev=0.12)
-        m.add(tabla("na" if i % 2 else "tin", 0.35), t, pan=0.3, rev=0.1)
-    for s in range(16):
-        m.add(hat(False, 0.35 + 0.03 * s), 6.0 + s * S16 / 1.0 * 0.5 + 0.0, pan=0.3)
-        m.add(hat(False, 0.3), 4.0 + s * S16 * 2, pan=0.3)
-    for s in range(12):
-        m.add(glitch(0.8), 6.0 + s * 0.125 + float(RNG.uniform(0, 0.05)), pan=float(RNG.uniform(-0.7, 0.7)), rev=0.05)
-    for s in range(8):
-        m.add(clap(0.25 + 0.06 * s), 7.0 + s * S16 / 2, rev=0.1)
+        m.add(pop(520 + 55 * i, 0.9), t, pan=-0.6 + 0.15 * i, rev=0.12)
+        m.add(tabla("na" if i % 2 else "tin", 0.3), t, pan=0.3, rev=0.1)
+    for k in range(4):
+        m.kick(6.0 + k * BEAT, 0.6 + 0.08 * k, depth=0.35)
+        m.add(sub(CHORDS[2][1] + 12, BEAT * 0.8, 0.6), 6.0 + k * BEAT, bus="duck", rev=0)
+    for s_ in range(16):
+        m.add(hat(False, 0.3 + 0.03 * s_), 6.0 + s_ * S16 / 2, pan=0.3)
+    for s_ in range(12):
+        m.add(glitch(0.8), 6.5 + s_ * 0.08 + float(RNG.uniform(0, 0.04)), pan=float(RNG.uniform(-0.7, 0.7)), rev=0.05)
+    for s_ in range(8):
+        m.add(clap(0.25 + 0.06 * s_), 7.0 + s_ * S16 / 2, rev=0.1)
     m.add(riser(1.5, 0.8), 6.0, rev=0.2)
     m.add(reverse_whoosh(a["implode"] - a["vacuum"], 0.9), a["vacuum"], rev=0.1)
-    # 8-10  implosion, a breath of silence, then the sting; the twin lands on the drop
+    # 8-10  implosion, a breath, the sting; the twin lands on the drop
     m.add(impact(0.9), a["implode"], rev=0.15)
     m.add(pad_chord(CHORDS[0][0], BAR, 0.3, bright=1200), a["implode"] + 0.3, rev=0.4)
     sting(m, a["sting"], big=True)
-    # 10-30  the groove; scene changes get a whoosh, every second phrase a tabla turnaround
+    # 10-30  the groove; whooshes on scene changes, tabla turnarounds, the motif on phrase starts
     for b in range(10):
-        t0 = 10.0 + b * BAR
-        groove_bar(m, t0, b, level=1.0, fill=(b % 2 == 1))
+        groove_bar(m, 10.0 + b * BAR, b, level=1.0, fill=(b % 2 == 1))
     for t in a["scenes"]:
         m.add(whoosh(0.5, 0.8), t - 0.3, rev=0.1)
     motif(m, 18.0, 0.45)
@@ -453,17 +477,38 @@ def announcement():
     m.add(bell(88, 0.5), a["pick"], rev=0.35, dly=0.15)
     m.add(tabla("tin", 0.6), a["pick"], rev=0.2)
     for i, t in enumerate(a["book"]):
-        m.add(pop(640 + 90 * i, 0.5), t, pan=-0.4 + 0.2 * i)
-    # 30-36  breakdown, the closing line, the final sting and a long Emaj9
+        m.add(pop(640 + 70 * i, 0.5), t, pan=-0.4 + 0.16 * i)
+    for i, t in enumerate(a["launch"]):
+        m.add(pop(980 + 90 * i, 0.5), t, pan=0.3 - 0.3 * i)
+    for i, t in enumerate(a["chat"]):
+        m.add(pop(1300 - 250 * i, 0.45), t, pan=0.4 - 0.8 * i)
+        m.add(ting(88 + 4 * i, 0.25), t, rev=0.3)
+    # 30-34  breakdown: the closing line is typed, then the final sting and a wide chord
     m.add(pad_chord(CHORDS[3][0], BAR, 0.55), 30.0, rev=0.4, bus="duck")
     m.add(sub(CHORDS[3][1] + 12, BAR, 0.6), 30.0, bus="duck")
     type_clicks(m, a["close_type"], len(a["close_text"]), S16 / 2, 0.55)
     sting(m, a["close_sting"], big=True)
     m.kick(a["close_sting"] + 2 * BEAT, 1.0, depth=0.3)
     m.add(clap(0.6), a["close_sting"] + 2 * BEAT, rev=0.3)
-    m.add(pad_chord(CHORDS[0][0] + [71, 75], 36.0 - 33.0 + 0.3, 0.65, bright=2400),
-          a["close_sting"] + 2 * BEAT, rev=0.5)
-    m.add(sub(40, 2.8, 0.7), a["close_sting"] + 2 * BEAT)
+    m.add(pad_chord(CHORDS[0][0] + [71, 75], 1.9, 0.6, bright=2400), a["close_sting"] + 2 * BEAT, rev=0.5)
+    # 34-38  the groove comes back under the call to action; the URL is typed and Enter is pressed
+    groove_bar(m, 34.0, 0, level=0.9)
+    type_clicks(m, a["url_type"], len(a["url"]), S16 / 2, 0.6)
+    m.add(key_click(1.0), a["enter"])
+    m.add(kick(0.35), a["enter"], rev=0.05)
+    m.add(pop(1200, 0.6), a["cta"], rev=0.2)
+    m.kick(36.0, 0.95)
+    m.kick(36.5, 0.95)
+    m.add(clap(0.7), 36.5, rev=0.2)
+    m.add(sub(CHORDS[1][1] + 12, 1.0, 0.8), 36.0, bus="duck")
+    m.add(pad_chord(CHORDS[1][0], 1.0, 0.5), 36.0, rev=0.3, bus="duck")
+    m.kick(a["end_hit"], 1.0, depth=0.2)
+    m.add(clap(0.7), a["end_hit"], rev=0.35)
+    for n_, p_ in ((76, 0.0), (83, -0.3), (88, 0.3), (92, 0.0)):
+        m.add(bell(n_, 0.45), a["end_hit"], pan=p_, rev=0.45, dly=0.12)
+    m.add(pad_chord(CHORDS[0][0] + [71, 75], 1.0, 0.6, bright=2600), a["end_hit"], rev=0.6)
+    m.add(sub(40, 1.0, 0.7), a["end_hit"])
+    m.add(ting(99, 0.9), a["end_hit"] + BEAT, pan=0.45, rev=0.5, dly=0.35)
     return m.render()
 
 

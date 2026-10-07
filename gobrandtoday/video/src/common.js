@@ -114,10 +114,24 @@ function buildField(layer, W, H, gap, color, sparkShare, seed, clear = []) {
 function typeSpans(container, text, cls = "ch") {
   const spans = [];
   for (const ch of text) {
-    const s = el("span", cls, container, ch === " " ? " " : ch);
+    const s = el("span", cls, container, ch);
     spans.push(s);
   }
   return spans;
+}
+
+// Typed text that wraps only between words: each word is a no-wrap span of per-glyph spans, so
+// whatever is appended to the last word (a full stop, a spark) stays on the same line as it.
+function typeWords(container, text) {
+  const chars = [], words = [];
+  text.split(" ").forEach((w, k, arr) => {
+    const ws = el("span", "", container);
+    ws.style.whiteSpace = "nowrap";
+    words.push(ws);
+    for (const ch of w) chars.push(el("span", "ch", ws, ch));
+    if (k < arr.length - 1) chars.push(el("span", "ch", container, " "));
+  });
+  return { chars, words, last: words[words.length - 1] };
 }
 
 // The gobrandtoday wordmark with its morphing spark and aqua twin. Size in px.

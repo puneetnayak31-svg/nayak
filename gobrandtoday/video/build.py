@@ -39,10 +39,11 @@ def main():
             shutil.copy(os.path.join(out, f), os.path.join(HERE, "assets", "audio", f))
     css = open(os.path.join(SRC, "common.css")).read()
     js = open(os.path.join(SRC, "common.js")).read()
+    wickd = open(os.path.join(SRC, "wickd.js")).read()
     for v in VIDEOS:
         tpl = open(os.path.join(SRC, v + ".html")).read()
         for name, (w, h, fmt) in FORMATS.items():
-            html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js)
+            html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js).replace("{{WICKD_JS}}", wickd)
                     .replace("{{W}}", str(w)).replace("{{H}}", str(h)).replace("{{FMT}}", fmt))
             proj = os.path.join(HERE, "projects", f"{v}-{name}")
             os.makedirs(proj, exist_ok=True)

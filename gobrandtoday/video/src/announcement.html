@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>gobrandtoday announcement {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+.abs { position: absolute; }
+.panel { position: absolute; inset: 0; }
+.eyebrow { color: var(--violet-d); font-size: 24px; white-space: nowrap; }
+.V .eyebrow { font-size: 22px; }
+.hl { font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 1.02; color: var(--graphite); }
+.dark .hl, .hl.light { color: var(--paper); }
+.sub { font-family: "Manrope", sans-serif; font-weight: 500; color: var(--ink-2); line-height: 1.3; }
+.card { position: absolute; background: #FFFFFF; border: 3px solid var(--line); border-radius: 28px; box-shadow: 0 18px 40px rgba(22, 22, 26, 0.08); }
+.pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 8px 18px; font-family: "Space Mono", monospace; font-size: 20px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.pill.ex { background: var(--lilac); color: var(--violet-d); }
+.marker { display: inline-block; background: var(--violet); color: #FFFFFF; padding: 0 0.14em; border-radius: 0.12em; }
+.tile { position: relative; overflow: hidden; border-radius: 22px; flex: none; }
+.wk-logo { font-family: "Syne", sans-serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; display: inline-block; }
+.wk-i { position: relative; display: inline-block; }
+.wk-flame { position: absolute; width: 0.3em; height: 0.42em; left: calc(50% - 0.15em); top: -0.2em; overflow: visible; transform-origin: 50% 100%; }
+.odo { display: inline-flex; line-height: 1; }
+.odo .col { display: inline-block; height: 1.3em; line-height: 1.3em; overflow: hidden; vertical-align: top; }
+.odo > span { line-height: 1.3em; vertical-align: top; }
+.odo .strip { display: block; }
+.odo .strip span { display: block; height: 1.3em; line-height: 1.3em; }
+.win { position: absolute; background: #FFFFFF; border: 3px solid #CFCAD9; border-radius: 18px; overflow: hidden; box-shadow: 0 16px 34px rgba(22, 22, 26, 0.14); }
+.win .bar { height: 42px; background: #F1EFF5; display: flex; align-items: center; gap: 8px; padding: 0 16px; }
+.win .bar i { width: 12px; height: 12px; border-radius: 50%; background: #C9C4D6; display: block; }
+.win .bar b { margin-left: 8px; font: 600 18px Manrope; color: var(--ink-2); white-space: nowrap; overflow: hidden; }
+.win .body { padding: 18px; }
+.win .sk { height: 14px; border-radius: 7px; background: #ECE9F2; margin-bottom: 12px; }
+.row { position: absolute; display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 3px solid var(--line); border-radius: 20px; padding: 0 26px; }
+.status { font-family: "Space Mono", monospace; font-weight: 700; font-size: 20px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px; border-radius: 12px; white-space: nowrap; }
+.st-taken { background: #EDEBF1; color: #4A4756; }
+.st-avail { background: #D5F4EF; color: #0A5F57; }
+.st-likely { background: var(--lilac); color: var(--violet-d); }
+.how { font-family: "Space Mono", monospace; font-size: 17px; color: #5F5B6B; letter-spacing: 0.02em; }
+.hud { position: absolute; }
+.seg { position: absolute; height: 10px; border-radius: 5px; background: #DCD8E8; overflow: hidden; }
+.seg b { position: absolute; inset: 0; background: var(--violet); display: block; transform-origin: 0 50%; }
+.lookcard { position: absolute; background: #FFFFFF; border: 3px solid var(--line); border-radius: 28px; overflow: hidden; }
+.lookcard .stage { position: absolute; left: 0; top: 0; right: 0; background: #FBFAF8; border-bottom: 3px solid var(--line); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 16px; font: 700 24px Manrope; white-space: nowrap; }
+.chat { position: absolute; border-radius: 22px; padding: 16px 22px; font: 600 26px Manrope; line-height: 1.25; }
+.urlbar { position: absolute; display: flex; align-items: center; gap: 18px; background: var(--paper); border-radius: 999px; padding: 0 30px; box-shadow: 0 0 0 4px rgba(143, 117, 255, 0.35); }
+.urlbar .txt { font: 600 44px Manrope; color: var(--graphite); white-space: nowrap; }
+.V .urlbar .txt { font-size: 38px; }
+.scan { background: repeating-linear-gradient(0deg, rgba(22, 22, 26, 0.10) 0 2px, rgba(22, 22, 26, 0) 2px 6px); }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="announcement" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="38">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="3" data-track-index="1"></section>
+  <section class="clip" id="s-idea" data-start="3" data-duration="5.05" data-track-index="1"></section>
+  <section class="clip" id="s-spark" data-start="8" data-duration="2.55" data-track-index="2"></section>
+  <section class="clip" id="s-names" data-start="10" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-checks" data-start="14" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-score" data-start="18" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-looks" data-start="22" data-duration="4.05" data-track-index="1"></section>
+  <section class="clip" id="s-book" data-start="26" data-duration="2" data-track-index="1"></section>
+  <section class="clip" id="s-launch" data-start="28" data-duration="2.05" data-track-index="1"></section>
+  <section class="clip" id="s-close" data-start="30" data-duration="8" data-track-index="1"></section>
+  <section class="clip" id="s-hud" data-start="10" data-duration="20" data-track-index="3"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/announcement.wav" data-start="0" data-duration="38" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}}, V = H > W;
+  const root = document.getElementById("root");
+  const tl = gsap.timeline({ paused: true });
+  const $ = (id) => document.getElementById(id);
+
+  // Instagram Reels safe area for the vertical cut (text stays out of the header, caption and
+  // button zones); title-safe margins for 16:9.
+  const SAFE = V ? { x: 90, y: 270, w: 840, h: 1210 } : { x: 120, y: 90, w: 1680, h: 900 };
+  const CA = V ? { x: 102, y: 390, w: 816, h: 1090 } : { x: 120, y: 190, w: 1680, h: 800 };   // below the HUD
+  const HL = V ? 74 : 82;          // headline size
+  const BODY = V ? 30 : 32;
+
+  // ---- cue times, from audio/sound.py ANN
+  const C = {
+    hook: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75], rewind: 2.0, type0: 3.25, step: 0.0625,
+    idea: "A cosy candle brand for Gen Z.", tabs: [5.5, 5.625, 5.75, 5.875, 6, 6.125, 6.25, 6.375, 6.5],
+    vacuum: 7.5, implode: 8.0, dot: 8.5, diamond: 9.0, spark: 9.5, twin: 10.0,
+    names: [10.5, 11.0, 11.5], domains: [14.5, 14.75, 15.0, 15.25], handles: [16, 16.25, 16.5, 16.75, 17, 17.25],
+    ring: [18.5, 18.625, 18.75, 18.875, 19, 19.125, 19.25, 19.375], looks: [22, 22.5, 23, 23.5], pick: 24.5,
+    book: [26.25, 26.5, 26.75, 27, 27.25, 27.5], launch: [28.25, 28.5, 28.75], chat: [28.95, 29.2],
+    close: 30.25, closeText: "Your idea deserves a brand", cdot: 32.0, url: 34.75, enter: 35.875, cta: 36.0, end: 37.0,
+  };
+
+  // ---- persistent layers
+  const F = buildField($("field"), W, H, V ? 60 : 64, "rgba(109,74,255,0.20)", 0.3, 21);
+  fieldIn(tl, F, 0.0, "center", 0.6, 1);
+
+  function wipe(color, at, dur, shape, from) {
+    const w = el("div", "", $("wipes"));
+    const R = Math.hypot(W, H);
+    if (shape === "circle") {
+      w.style.cssText = `position:absolute;left:${from[0] - R}px;top:${from[1] - R}px;width:${2 * R}px;height:${2 * R}px;border-radius:50%;background:${color}`;
+      appear(tl, w, at, at + dur + 0.05);
+      tl.fromTo(w, { scale: 0 }, { scale: 1, duration: dur, ease: "power3.inOut" }, at);
+    } else {
+      w.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;background:${color}`;
+      appear(tl, w, at, at + dur + 0.05);
+      tl.fromTo(w, { yPercent: 100 }, { yPercent: 0, duration: dur, ease: "power3.inOut" }, at);
+    }
+  }
+  const toDark = (at) => tl.to("#bgdark", { opacity: 1, duration: 0.001 }, at);
+  const toLight = (at) => tl.to("#bgdark", { opacity: 0, duration: 0.001 }, at);
+  function glow(at, x, y, size, op, until) {
+    const g = el("div", "", $("glows"));
+    g.style.cssText = `position:absolute;left:${x - size / 2}px;top:${y - size / 2}px;width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(closest-side, rgba(109,74,255,0.55), rgba(109,74,255,0))`;
+    appear(tl, g, at, until);
+    tl.fromTo(g, { opacity: 0, scale: 0.5 }, { opacity: op, scale: 1, duration: 0.6, ease: "sine.out" }, at);
+    return g;
+  }
+  function odo(parent, text, cls = "") {
+    const o = el("span", "odo " + cls, parent);
+    const cols = [];
+    for (const ch of text) {
+      if (/[0-9]/.test(ch)) {
+        const c = el("span", "col", o), s = el("span", "strip", c);
+        for (let d = 0; d <= 9; d++) el("span", "", s, String(d));
+        cols.push({ s, d: +ch });
+      } else el("span", "", o, ch);
+    }
+    return { o, cols };
+  }
+  const roll = (od, at, dur = 0.7) => od.cols.forEach((c, k) =>
+    tl.fromTo(c.s, { yPercent: 0 }, { yPercent: -c.d * 10, duration: dur + k * 0.12, ease: "power3.out" }, at));
+  function words(parent, text, cls) {
+    return text.split(" ").map(w => { const s = el("span", cls || "", parent, w); s.style.display = "inline-block"; s.style.marginRight = "0.24em"; return s; });
+  }
+  function head(sc, eyebrow, title, opts = {}) {
+    const box = el("div", "abs", sc);
+    const x = opts.x != null ? opts.x : CA.x, y = opts.y != null ? opts.y : CA.y, w = opts.w || (V ? CA.w : 560);
+    Object.assign(box.style, { left: x + "px", top: y + "px", width: w + "px" });
+    const e = el("div", "eyebrow mono", box, eyebrow);
+    const h = el("div", "hl" + (opts.light ? " light" : ""), box);
+    h.style.fontSize = (opts.size || HL) + "px"; h.style.marginTop = "18px";
+    const ws = words(h, title);
+    return { box, e, h, ws };
+  }
+  function headIn(hd, at) {
+    tl.fromTo(hd.e, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, at);
+    tl.fromTo(hd.ws, { yPercent: 70, opacity: 0, rotation: V ? 0 : 4 }, { yPercent: 0, opacity: 1, rotation: 0, duration: 0.5, ease: "back.out(1.8)", stagger: 0.06 }, at + 0.05);
+  }
+  function out(targets, at, dir = -1) {
+    if (V) tl.to(targets, { y: -40, opacity: 0, duration: 0.28, ease: "power2.in", stagger: 0.02 }, at);
+    else tl.to(targets, { x: dir * 80, opacity: 0, duration: 0.28, ease: "power2.in", stagger: 0.02 }, at);
+  }
+  function flicker(start, end, seed) {
+    const r = rng(seed);
+    FLAMES.forEach((f) => {
+      let t = start + r() * 0.3;
+      while (t < end - 0.3) {
+        tl.to(f, { scaleY: 0.9 + r() * 0.25, scaleX: 0.95 + r() * 0.1, skewX: (r() - 0.5) * 10, duration: 0.18 + r() * 0.12, ease: "sine.inOut" }, t);
+        t += 0.22 + r() * 0.15;
+      }
+    });
+  }
+  function exPill(parent, x, y) {
+    const p = el("div", "pill ex abs", parent, "Example");
+    Object.assign(p.style, { left: x + "px", top: y + "px" });
+    return p;
+  }
+
+  // =========================================================== 0-3  HOOK + REWIND
+  {
+    const sc = $("s-hook");
+    const T = V ? { x: SAFE.x + 12, y: SAFE.y + 26, w: SAFE.w - 24, size: 92 } : { x: SAFE.x, y: 260, w: 800, size: 100 };
+    const t1 = el("div", "hl abs", sc);
+    Object.assign(t1.style, { left: T.x + "px", top: T.y + "px", width: T.w + "px", fontSize: T.size + "px" });
+    const w1 = words(t1, "This brand didn't exist");
+    const line2 = el("div", "", t1);
+    line2.style.marginTop = "14px";
+    const mk = el("span", "marker", line2, "5 minutes ago.");
+    const cardBox = V ? { x: SAFE.x, y: 720, w: 840, h: 740 } : { x: 960, y: 140, w: 840, h: 800 };
+    const card = el("div", "abs", sc);
+    Object.assign(card.style, { left: cardBox.x + "px", top: cardBox.y + "px", width: cardBox.w + "px", height: cardBox.h + "px", borderRadius: "36px", overflow: "hidden", boxShadow: "0 30px 60px rgba(22,22,26,0.18)" });
+    const makers = [mockLogo, mockJar, mockPost, mockTote, mockApp, mockPalette, mockSign, mockCard];
+    const slides = makers.map(fn => { const t = fn(card, cardBox.w, cardBox.h); t.style.position = "absolute"; t.style.left = "0"; t.style.top = "0"; t.style.borderRadius = "0"; return t; });
+    const rslides = makers.slice().reverse().map(fn => { const t = fn(card, cardBox.w, cardBox.h); t.style.position = "absolute"; t.style.left = "0"; t.style.top = "0"; t.style.borderRadius = "0"; return t; });
+    exPill(card, 28, 28).style.zIndex = 5;
+    const tag = el("div", "pill abs", card);
+    tag.style.cssText += `;left:auto;right:28px;top:28px;background:${WK.plum};color:${WK.cream};z-index:5`;
+    tag.textContent = "Built with gobrandtoday";
+
+    // flashes on every 8th, punch-in each time
+    slides.forEach((s, i) => {
+      appear(tl, s, C.hook[i], i < 7 ? C.hook[i + 1] : C.rewind);
+      tl.fromTo(s, { scale: 1.12 }, { scale: 1, duration: 0.24, ease: "expo.out" }, C.hook[i]);
+    });
+    tl.fromTo(card, { y: 60, rotation: V ? -2 : 3, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.35, ease: "back.out(1.6)" }, 0.0);
+    tl.fromTo(w1, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.25 }, 0.0);
+    mk.style.transformOrigin = "0% 50%";
+    tl.fromTo(mk, { scale: 0.6, opacity: 0, rotation: -4 }, { scale: 1, opacity: 1, rotation: -1.5, duration: 0.35, ease: "back.out(3)" }, 1.0);
+    tl.to(t1, { x: (V ? 0 : -6), duration: 0.05, yoyo: true, repeat: 3 }, 1.75);
+
+    // REWIND 2.0-3.0: everything runs backwards fast, scanlines, tracking bars, a timecode
+    const scan = el("div", "layer scan", sc);
+    appear(tl, scan, C.rewind, 3.0);
+    const rw = el("div", "abs", sc);
+    rw.style.cssText = `left:0;width:${W}px;top:${V ? SAFE.y + 40 : 120}px;display:flex;justify-content:center;align-items:center;gap:22px;font:700 ${V ? 54 : 64}px "Space Mono";color:var(--graphite);letter-spacing:0.04em`;
+    rw.innerHTML = `<svg width="${V ? 70 : 84}" height="${V ? 44 : 52}" viewBox="0 0 84 52"><path d="M42 0 L0 26 L42 52Z M84 0 L42 26 L84 52Z" fill="#6D4AFF"/></svg><span>5 MIN EARLIER</span>`;
+    appear(tl, rw, C.rewind, 3.0);
+    tl.fromTo(rw, { scale: 1.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2, ease: "expo.out" }, C.rewind);
+    rslides.forEach((s, i) => appear(tl, s, C.rewind + i * 0.1, i < 7 ? C.rewind + (i + 1) * 0.1 : 2.9));
+    tl.to(tag, { opacity: 0, duration: 0.05 }, C.rewind);
+    tl.to([t1, card], { skewX: V ? -4 : -8, x: V ? 0 : 40, duration: 0.12, ease: "power2.out" }, C.rewind);
+    tl.to(t1, { opacity: 0, duration: 0.001 }, C.rewind + 0.06);
+    tl.to(card, { scale: 0.2, opacity: 0, rotation: -25, duration: 0.5, ease: "power3.in" }, C.rewind + 0.4);
+    for (let k = 0; k < 3; k++) {
+      const b = el("div", "abs", sc);
+      b.style.cssText = `left:0;width:${W}px;height:${18 + k * 10}px;background:rgba(255,255,255,0.85);mix-blend-mode:normal`;
+      appear(tl, b, C.rewind, 2.95);
+      tl.fromTo(b, { y: -60 - k * 200 }, { y: H + 60, duration: 0.45, ease: "none", repeat: 1 }, C.rewind + k * 0.1);
+    }
+    tl.to(rw, { scaleY: 0.05, opacity: 0, duration: 0.1, ease: "power2.in" }, 2.88);
+  }
+
+  // =========================================================== 3-8  ONE SENTENCE, NINE TABS
+  let stopPos;
+  {
+    const sc = $("s-idea");
+    const size = V ? 92 : 116;
+    const eb = el("div", "eyebrow mono abs", sc, "It starts with one sentence");
+    const box = el("div", "hl abs", sc);
+    Object.assign(box.style, { left: (V ? SAFE.x : 160) + "px", width: (V ? SAFE.w : 1240) + "px", fontSize: size + "px" });
+    const tw_ = typeWords(box, C.idea.slice(0, -1));
+    const chars = tw_.chars;
+    const stop = el("span", "", tw_.last);
+    stop.style.cssText = `display:inline-block;width:0.2em;height:0.2em;border-radius:50%;background:var(--violet);margin-left:0.06em`;
+    const caret = el("span", "caret", box);
+    const top0 = V ? 760 : 380;
+    box.style.top = top0 + "px";
+    Object.assign(eb.style, { left: (V ? SAFE.x : 160) + "px", top: (top0 - 70) + "px" });
+    const stop0 = posIn(stop, root), bx = V ? SAFE.x : 160;
+    const lift = V ? -380 : -250, ls = 0.62;
+    stopPos = { cx: bx + (stop0.cx - bx) * ls, cy: top0 + (stop0.cy - top0) * ls + lift };
+
+    tl.fromTo(eb, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" }, 3.0);
+    chars.forEach((c, i) => tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001 }, C.type0 + i * C.step));
+    const tStop = C.type0 + chars.length * C.step + 0.125;
+    tl.fromTo(stop, { display: "none" }, { display: "inline-block", duration: 0.001 }, tStop);
+    tl.fromTo(stop, { scale: 2.4 }, { scale: 1, duration: 0.35, ease: "elastic.out(1,0.4)" }, tStop);
+    [[3.0, 1], [3.12, 0], [C.type0, 1], [tStop, 0], [tStop + 0.25, 1], [5.45, 0]].forEach(([t, o]) => tl.set(caret, { opacity: o }, t));
+
+    // 5.5 the problem: the sentence lifts away, nine tabs flood in, then the full stop swallows them
+    tl.to([box, eb], { y: lift, scale: ls, transformOrigin: "0% 0%", duration: 0.45, ease: "power3.inOut" }, 5.4);
+    const p = el("div", "hl abs", sc);
+    p.style.fontSize = (V ? 84 : 104) + "px";
+    Object.assign(p.style, { left: (V ? SAFE.x : 160) + "px", width: (V ? SAFE.w : 1600) + "px", top: (V ? 1180 : 760) + "px", zIndex: 20 });
+    const pw = [el("span", "", p, "Usually: "), el("span", "marker", p, "9 tabs."), el("span", "", p, " "), el("span", "marker", p, "3 weekends.")];
+    pw.forEach(s => (s.style.display = "inline-block"));
+    tl.fromTo(pw, { yPercent: 90, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.12 }, 5.55);
+    const titles = [["Thesaurus · words for cosy", "thesaurus"], ["Domain search", "domain"], ["Hosting plans", "hosting"],
+      ["instagram.com/…", "social"], ["x.com/…", "social"], ["Logo maker · untitled-3", "logo"], ["Google Fonts", "fonts"],
+      ["Colour palettes", "colour"], ["Notes · names v7 FINAL", "notes"]];
+    const r = rng(4);
+    const ww = V ? 270 : 390, wh = V ? 180 : 214;
+    const spots = V
+      ? [[90, 590], [375, 590], [660, 590], [90, 790], [375, 790], [660, 790], [90, 990], [375, 990], [660, 990]]
+      : [[120, 300], [540, 300], [960, 300], [1380, 300], [120, 530], [540, 530], [960, 530], [1380, 530], [1380, 66]];
+    const wins = titles.map(([t, kind], k) => {
+      const w = el("div", "win", sc);
+      Object.assign(w.style, { left: (spots[k][0] - (V ? 0 : 0)) + "px", top: spots[k][1] + "px", width: ww + "px", height: wh + "px", zIndex: 10 + k });
+      const bar = el("div", "bar", w); el("i", "", bar); el("i", "", bar); el("i", "", bar); el("b", "", bar, t);
+      const body = el("div", "body", w);
+      if (kind === "colour") { const row = el("div", "", body); row.style.cssText = "display:flex;gap:8px"; ["#E86A4B", "#F2C14E", "#7AC7A4", "#6C8BE0", "#B57ED6"].forEach(c => { const s = el("i", "", row); s.style.cssText = `display:block;width:${V ? 38 : 56}px;height:${V ? 70 : 90}px;border-radius:10px;background:${c}`; }); }
+      else if (kind === "fonts") { const a = el("div", "", body, "Aa Aa"); a.style.cssText = `font:600 ${V ? 48 : 60}px Fraunces;color:#3B3846`; }
+      else if (kind === "notes") { ["Cosyco?", "Glowly?", "Wax&Co?"].forEach(n => { const s = el("div", "", body, n); s.style.cssText = `font:600 ${V ? 20 : 24}px Manrope;color:#5F5B6B;text-decoration:line-through;margin-bottom:4px`; }); }
+      else for (let q = 0; q < 4; q++) { const s = el("div", "sk", body); s.style.width = (40 + r() * 55) + "%"; }
+      return w;
+    });
+    wins.forEach((w, k) => {
+      const rot = (r() - 0.5) * 6;
+      tl.fromTo(w, { scale: 0.3, opacity: 0, rotation: rot * 2, y: 40 }, { scale: 1, opacity: 1, rotation: rot, y: 0, duration: 0.3, ease: "back.out(2.2)" }, C.tabs[k]);
+      for (let q = 0; q < 8; q++) tl.to(w, { x: (r() - 0.5) * 12, y: (r() - 0.5) * 10, rotation: rot + (r() - 0.5) * 3, duration: 0.12, ease: "sine.inOut" }, 6.55 + q * 0.12);
+    });
+    // the vacuum: everything is pulled into the violet full stop, which drifts to the centre
+    const cx = W / 2, cy = H / 2;
+    const pull = (e, at) => {
+      const q = posIn(e, root);
+      tl.to(e, { x: stopPos.cx - q.cx, y: stopPos.cy - q.cy, scale: 0, rotation: 200, opacity: 0, duration: 0.42, ease: "power3.in" }, at);
+    };
+    wins.forEach((w, k) => pull(w, C.vacuum + k * 0.012));
+    pull(p, C.vacuum + 0.02);
+    tl.to(chars, { opacity: 0, scale: 0, duration: 0.3, ease: "power3.in", stagger: { each: 0.006, from: "end" } }, C.vacuum + 0.05);
+    tl.to(eb, { opacity: 0, duration: 0.2 }, C.vacuum);
+    // the full stop: grows, then travels to the centre of the frame for the spark
+    tl.to(stop, { scale: 3.2, duration: 0.3, ease: "power2.in" }, C.vacuum);
+  }
+
+  // =========================================================== 8-10.5  THE SPARK
+  {
+    const sc = $("s-spark");
+    toDark(C.implode);
+    const S = V ? 150 : 170;
+    const holder = el("div", "abs", sc);
+    holder.style.cssText = `left:${W / 2 - S / 2}px;top:${(V ? 780 : 420) - S / 2}px;width:${S}px;height:${S}px`;
+    const sp = sparkSVG("var(--violet)", 0, "spark-svg");
+    sp.svg.style.cssText = "width:100%;height:100%";
+    holder.appendChild(sp.svg);
+    sp.path.setAttribute("d", sparkD(0));
+    const hx = W / 2, hy = V ? 780 : 420;
+    const twin = sparkSVG("var(--aqua)", 2, "spark-svg");
+    twin.svg.style.cssText = `position:absolute;left:${hx + S * 0.55 - 26}px;top:${hy - S * 0.55 - 26}px;width:52px;height:52px`;
+    sc.appendChild(twin.svg);
+    appear(tl, twin.svg, C.twin);
+    const fx = el("div", "layer", sc);
+    // the dot arrives as the full stop that ate the tabs
+    tl.fromTo(holder, { scale: 0.3, x: stopPos.cx - hx, y: stopPos.cy - hy }, { scale: 0.42, x: 0, y: 0, duration: 0.5, ease: "power3.out" }, C.implode);
+    const ring = el("div", "", fx);
+    ring.style.cssText = `position:absolute;left:${hx - 60}px;top:${hy - 60}px;width:120px;height:120px;border-radius:50%;border:4px solid var(--violet-s)`;
+    appear(tl, ring, C.implode, C.implode + 1);
+    tl.fromTo(ring, { scale: 0.3, opacity: 1 }, { scale: 12, opacity: 0, duration: 1, ease: "expo.out" }, C.implode);
+    fieldRipple(tl, F, C.implode, [hx / W, hy / H], 0.8, 2.4);
+    // dot: a little hop and land
+    tl.to(holder, { keyframes: [{ y: -50, scaleY: 0.5, scaleX: 0.36, duration: 0.18, ease: "power2.out" }, { y: 0, duration: 0.16, ease: "power2.in" }, { scaleX: 0.55, scaleY: 0.3, duration: 0.06 }, { scaleX: 0.42, scaleY: 0.42, duration: 0.3, ease: "elastic.out(1,0.4)" }] }, C.dot - 0.34);
+    // diamond
+    morph(tl, sp.path, 0, 1, C.diamond - 0.1, 0.3, "back.out(2)");
+    tl.to(holder, { scale: 0.62, duration: 0.3, ease: "back.out(2)" }, C.diamond - 0.1);
+    fieldToDiamonds(tl, F, C.diamond - 0.08, [hx / W, hy / H], 0.6);
+    glow(C.diamond - 0.1, hx, hy, V ? 1100 : 1200, 0.7, 10.5);
+    // spark
+    morph(tl, sp.path, 1, 2, C.spark - 0.06, 0.16, "power3.in");
+    tl.to(holder, { keyframes: [{ scale: 1.5, rotation: 90, duration: 0.16, ease: "power2.out" }, { scale: 1, rotation: 90, duration: 0.45, ease: "elastic.out(1,0.45)" }] }, C.spark - 0.04);
+    burst(tl, fx, hx, hy, C.spark, { rays: 14, len: 170, r0: 50, r1: 300, ringScale: 8, color: "var(--violet-s)" });
+    fieldToSparks(tl, F, C.spark, [hx / W, hy / H], 0.7);
+    const one = el("div", "hl light abs", sc);
+    one.style.cssText += `;left:0;width:${W}px;text-align:center;top:${hy + (V ? 170 : 150)}px;font-size:${V ? 100 : 120}px`;
+    const ow = words(one, "Or one tab.");
+    tl.fromTo(ow, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.1 }, C.spark + 0.05);
+    const brand = el("div", "mono abs", sc, "gobrandtoday");
+    brand.style.cssText += `;left:0;width:${W}px;text-align:center;top:${hy - (V ? 230 : 210)}px;font-size:26px;color:var(--violet-m)`;
+    brand.style.letterSpacing = "0.3em";
+    tl.fromTo(brand, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, C.spark + 0.1);
+    // twin, then the spark rushes at the camera and the paper world opens from it
+    tl.fromTo(twin.svg, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.35, ease: "back.out(4)" }, C.twin);
+    tl.to(holder, { scale: 26, rotation: 180, duration: 0.42, ease: "power3.in" }, C.twin + 0.05);
+    tl.to([one, brand, twin.svg], { opacity: 0, duration: 0.2 }, C.twin + 0.1);
+    tl.to(holder, { opacity: 0, duration: 0.2 }, C.twin + 0.3);
+    wipe("var(--paper)", C.twin + 0.22, 0.3, "circle", [hx, hy]);
+    toLight(C.twin + 0.52);
+  }
+
+  // =========================================================== HUD (10-30): what's been built so far
+  {
+    const sc = $("s-hud");
+    const steps = ["Name", "Domains & handles", "Score", "Logo", "Brand book", "Launch kit"];
+    const hy = V ? SAFE.y + 12 : SAFE.y;
+    const wm = buildWordmark(sc, V ? 34 : 38, { m: 2 });
+    const g = wm.place();
+    Object.assign(wm.wm.style, { left: SAFE.x + "px", top: hy + "px" });
+    const ex = exPill(sc, 0, hy - 2);
+    ex.style.left = (SAFE.x + SAFE.w - (V ? 150 : 160)) + "px";
+    const by = hy + (V ? 62 : 66);
+    const lab = el("div", "mono abs", sc, "Brand built");
+    Object.assign(lab.style, { left: SAFE.x + "px", top: by + "px", fontSize: "18px", color: "#5F5B6B" });
+    const pct = el("div", "abs", sc);
+    Object.assign(pct.style, { left: (SAFE.x + SAFE.w - 130) + "px", width: "120px", textAlign: "right", top: (by - 4) + "px", font: "700 26px 'Space Mono'", color: "var(--violet-d)" });
+    const segW = (SAFE.w - (V ? 300 : 360) - 5 * 8) / 6, sx0 = SAFE.x + (V ? 160 : 180);
+    const segs = steps.map((s, k) => {
+      const sg = el("div", "seg", sc);
+      Object.assign(sg.style, { left: (sx0 + k * (segW + 8)) + "px", top: (by + 8) + "px", width: segW + "px" });
+      return el("b", "", sg);
+    });
+    // per-step percentage labels (one shown at a time)
+    const ends = [14, 18, 22, 26, 28, 30];
+    const vals = [17, 33, 50, 67, 83, 100];
+    const pctEls = [el("span", "", pct, "0%")].concat(vals.map(v => el("span", "", pct, v + "%")));
+    pctEls.forEach(e => { e.style.position = "absolute"; e.style.right = "0"; e.style.transformOrigin = "100% 50%"; });
+    appear(tl, pctEls[0], 10.0, ends[0] - 0.3);
+    vals.forEach((v, k) => appear(tl, pctEls[k + 1], ends[k] - 0.3));
+    vals.forEach((v, k) => { if (k < 5) tl.to(pctEls[k + 1], { opacity: 0, duration: 0.001 }, ends[k + 1] - 0.3); });
+    tl.fromTo(segs, { scaleX: 0 }, { scaleX: 0, duration: 0.001 }, 10.0);
+    segs.forEach((s, k) => tl.to(s, { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, ends[k] - 0.6));
+    vals.forEach((v, k) => tl.fromTo(pctEls[k + 1], { scale: 1.5 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }, ends[k] - 0.3));
+    const hudEls = [wm.wm, ex, lab, pct, ...segs.map(s => s.parentNode)];
+    tl.to([wm.wm, lab], { color: "#FAFAF7", duration: 0.2 }, 17.95);
+    tl.to(segs.map(s => s.parentNode), { backgroundColor: "#3A3A44", duration: 0.2 }, 17.95);
+    tl.to(pct, { color: "#B9AEFF", duration: 0.2 }, 17.95);
+    tl.to([wm.wm, lab], { color: "#16161A", duration: 0.2 }, 21.95);
+    tl.to(segs.map(s => s.parentNode), { backgroundColor: "#DCD8E8", duration: 0.2 }, 21.95);
+    tl.to(pct, { color: "#4527D9", duration: 0.2 }, 21.95);
+    tl.fromTo(hudEls, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", stagger: 0.03 }, 10.35);
+    tl.to(hudEls, { y: -30, opacity: 0, duration: 0.25, ease: "power2.in" }, 29.75);
+  }
+
+  // =========================================================== 10-14  NAMES
+  {
+    const sc = $("s-names");
+    const hd = head(sc, "Step 1 · Names", "Names with meaning.", V ? {} : { y: CA.y + 40 });
+    headIn(hd, 10.35);
+    const meta = el("div", "mono abs", sc, "10 naming modes · 12 one-tap refinements");
+    Object.assign(meta.style, V ? { left: CA.x + "px", top: (CA.y + 210) + "px", fontSize: "19px", color: "#5F5B6B" } : { left: CA.x + "px", top: (CA.y + 300) + "px", width: "520px", fontSize: "21px", color: "#5F5B6B", lineHeight: "1.6" });
+    tl.fromTo(meta, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 10.8);
+    // the idea, as typed into the product
+    const ib = el("div", "card", sc);
+    const ibox = V ? { x: CA.x, y: CA.y + 270, w: CA.w, h: 110 } : { x: CA.x, y: CA.y + 430, w: 560, h: 200 };
+    Object.assign(ib.style, { left: ibox.x + "px", top: ibox.y + "px", width: ibox.w + "px", height: ibox.h + "px", borderRadius: "22px" });
+    const iq = el("div", "", ib, "“A cosy candle brand for Gen Z”");
+    iq.style.cssText = `position:absolute;left:26px;top:${V ? 32 : 30}px;right:${V ? 220 : 26}px;font:600 ${V ? 30 : 32}px Manrope;color:var(--graphite);line-height:1.25`;
+    const go = el("div", "btn abs", ib);
+    go.style.cssText += `;right:${V ? 18 : 26}px;bottom:${V ? 18 : 22}px;height:${V ? 68 : 64}px;padding:0 22px;background:var(--violet);color:#fff;font-size:${V ? 22 : 24}px`;
+    go.innerHTML = `<svg width="20" height="20" viewBox="-1 -1 2 2"><path d="${sparkD(2)}" fill="#fff"/></svg> Create my brand`;
+    tl.fromTo(ib, { y: 40, clipPath: "inset(0 0 100% 0)" }, { y: 0, clipPath: "inset(0 0 0% 0)", duration: 0.4, ease: "power3.out" }, 10.45);
+    tl.to(go, { keyframes: [{ scale: 0.92, duration: 0.08 }, { scale: 1, duration: 0.25, ease: "back.out(3)" }] }, 10.75);
+
+    const names = [["Wickd", "WIK-d", "Wick + wicked. Short, loud, very Gen Z.", "9.1"],
+      ["Moodwax", "MOOD-waks", "A candle for every mood.", "8.6"],
+      ["Glowpost", "GLOH-pohst", "A little glow, posted daily.", "8.2"]];
+    const cb = V ? { x: CA.x, y: CA.y + 410, w: CA.w, h: 210, gap: 22 } : { x: 760, y: CA.y + 40, w: 1040, h: 220, gap: 28 };
+    const cards = names.map(([n, pr, mean, sc_], k) => {
+      const c = el("div", "card", sc);
+      Object.assign(c.style, { left: cb.x + "px", top: (cb.y + k * (cb.h + cb.gap)) + "px", width: cb.w + "px", height: cb.h + "px" });
+      const nm = el("div", "hl abs", c, n);
+      Object.assign(nm.style, { left: "36px", top: (V ? 30 : 34) + "px", fontSize: (V ? 64 : 72) + "px" });
+      const p = el("div", "mono abs", c, pr);
+      Object.assign(p.style, { left: "38px", top: (V ? 108 : 122) + "px", fontSize: "20px", color: "var(--violet-d)" });
+      const m = el("div", "sub abs", c, mean);
+      Object.assign(m.style, { left: "38px", top: (V ? 144 : 158) + "px", width: (cb.w - 300) + "px", fontSize: (V ? 24 : 27) + "px" });
+      const s = el("div", "abs", c);
+      Object.assign(s.style, { right: "36px", top: (V ? 44 : 46) + "px", textAlign: "right" });
+      const od = odo(s, sc_);
+      od.o.style.cssText = `font:700 ${V ? 82 : 96}px "Space Mono";color:var(--graphite)`;
+      const of10 = el("div", "mono", s, "/10 · GoBrand Score");
+      of10.style.cssText = "font-size:17px;color:#5F5B6B;margin-top:8px";
+      return { c, od };
+    });
+    cards.forEach((cd, k) => {
+      tl.fromTo(cd.c, { rotationX: -80, y: 60, opacity: 0, transformPerspective: 900 }, { rotationX: 0, y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, C.names[k]);
+      roll(cd.od, C.names[k] + 0.05, 0.8);
+    });
+    // shortlist the winner
+    tl.to(cards[0].c, { borderColor: "#6D4AFF", boxShadow: "0 0 0 6px rgba(109,74,255,0.22), 0 24px 50px rgba(109,74,255,0.25)", scale: 1.02, duration: 0.35, ease: "back.out(2)" }, 12.6);
+    tl.to([cards[1].c, cards[2].c], { opacity: 0.45, scale: 0.98, duration: 0.35 }, 12.6);
+    const star = el("div", "pill abs", cards[0].c, "Shortlisted");
+    star.style.cssText += V ? `;left:auto;right:210px;top:30px;background:var(--violet);color:#fff;font-size:17px`
+                            : `;left:auto;right:36px;bottom:22px;background:var(--violet);color:#fff;font-size:17px`;
+    tl.fromTo(star, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, 12.7);
+    out([hd.box, meta, ib, ...cards.map(c => c.c)], 13.72);
+  }
+
+  // =========================================================== 14-18  HONEST CHECKS
+  {
+    const sc = $("s-checks");
+    const hd = head(sc, "Step 2 · Domains & handles", "Honestly checked. Never guessed.", V ? {} : { y: CA.y + 30, size: 74 });
+    headIn(hd, 14.05);
+    const note = el("div", "sub abs", sc, "Every result tells you how it was checked.");
+    Object.assign(note.style, V ? { left: CA.x + "px", top: (CA.y + 230) + "px", width: CA.w + "px", fontSize: "28px" } : { left: CA.x + "px", top: (CA.y + 480) + "px", width: "520px", fontSize: "30px" });
+    tl.fromTo(note, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, 14.5);
+    const doms = [["wickd.com", "Taken", "st-taken", "registry record"], ["wickd.in", "Available", "st-avail", "registrar confirmed"],
+      ["wickd.co", "Likely free", "st-likely", "no registry record yet"], ["getwickd.com", "Available", "st-avail", "registrar confirmed"]];
+    const db = V ? { x: CA.x, y: CA.y + 300, w: CA.w, h: 92, gap: 14 } : { x: 760, y: CA.y + 30, w: 1040, h: 96, gap: 16 };
+    const rows = doms.map(([d, st, cls, how], k) => {
+      const r = el("div", "row", sc);
+      Object.assign(r.style, { left: db.x + "px", top: (db.y + k * (db.h + db.gap)) + "px", width: (db.w - 58) + "px", height: db.h + "px" });
+      const l = el("div", "", r);
+      const dn = el("div", "", l, d);
+      dn.style.cssText = `font:700 ${V ? 32 : 34}px "Space Mono";color:var(--graphite);${st === "Taken" ? "text-decoration:line-through;text-decoration-thickness:3px;color:#5F5B6B" : ""}`;
+      const hw = el("div", "how", l, "✓ " + how);
+      hw.textContent = how;
+      el("div", "status " + cls, r, st);
+      return r;
+    });
+    rows.forEach((r, k) => tl.fromTo(r, { x: 120, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "back.out(1.7)" }, C.domains[k]));
+    const hs = [["YouTube", true], ["GitHub", true], ["Reddit", true], ["Instagram", false], ["X", false], ["TikTok", false]];
+    const gy = db.y + 4 * (db.h + db.gap) + (V ? 16 : 18);
+    const tw = (db.w - 2 * 16) / 3, th = V ? 128 : 130;
+    const tiles = hs.map(([n, auto], k) => {
+      const t = el("div", "card", sc);
+      Object.assign(t.style, { left: (db.x + (k % 3) * (tw + 16)) + "px", top: (gy + Math.floor(k / 3) * (th + 14)) + "px", width: (tw - 6) + "px", height: th + "px", borderRadius: "20px" });
+      const nm = el("div", "abs", t, "@wickd");
+      nm.style.cssText = `left:22px;top:18px;font:700 ${V ? 26 : 28}px Manrope;color:var(--graphite)`;
+      const pl = el("div", "abs mono", t, n);
+      pl.style.cssText = `left:22px;top:${V ? 52 : 56}px;font-size:17px;color:#5F5B6B`;
+      const s = el("div", "status abs " + (auto ? "st-avail" : "st-likely"), t, auto ? "Free" : "One-tap check");
+      s.style.cssText += `;left:20px;bottom:16px;font-size:${V ? 16 : 17}px;padding:6px 10px`;
+      return t;
+    });
+    tiles.forEach((t, k) => tl.fromTo(t, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" }, C.handles[k]));
+    const foot = el("div", "mono abs", sc, "No scraping. No fake answers.");
+    Object.assign(foot.style, V ? { left: CA.x + "px", top: (gy + 2 * (th + 14) + 10) + "px", fontSize: "20px", color: "var(--violet-d)" } : { left: CA.x + "px", top: (CA.y + 660) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(foot, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5 }, 17.3);
+    out([hd.box, note, ...rows, ...tiles, foot], 17.6);
+  }
+
+  // =========================================================== 18-22  THE SCORE (dark)
+  {
+    const sc = $("s-score");
+    const rc = V ? { x: 540, y: 905, r: 250 } : { x: 520, y: 590, r: 300 };
+    wipe("var(--graphite)", 17.72, 0.35, "circle", [rc.x, rc.y]);
+    toDark(18.07);
+    const hd = head(sc, "Step 3 · GoBrand Score", "A score that shows its working.", V ? { light: true } : { x: 960, y: CA.y + 40, w: 840, light: true });
+    hd.e.style.color = "var(--violet-m)";
+    headIn(hd, 18.1);
+    const svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", W); svg.setAttribute("height", H);
+    svg.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+    sc.appendChild(svg);
+    const comps = [["Brandability", 18], ["Memorability", 15], ["Pronunciation", 13], ["Domain availability", 13],
+      ["Distinctiveness", 12], ["SEO potential", 11], ["Global usability", 9], ["Social availability", 9]];
+    const colors = ["#6D4AFF", "#8F75FF", "#B9AEFF", "#6D4AFF", "#8F75FF", "#B9AEFF", "#6D4AFF", "#19C3B4"];
+    const circ = 2 * Math.PI * rc.r;
+    let acc = 0;
+    const arcs = comps.map(([n, wgt], k) => {
+      const c = document.createElementNS(SVGNS, "circle");
+      c.setAttribute("cx", rc.x); c.setAttribute("cy", rc.y); c.setAttribute("r", rc.r);
+      c.setAttribute("fill", "none"); c.setAttribute("stroke", colors[k]); c.setAttribute("stroke-width", V ? 44 : 52);
+      const len = circ * wgt / 100 - 6;
+      c.setAttribute("stroke-dasharray", `${len} ${circ}`);
+      c.setAttribute("transform", `rotate(${-90 + acc * 3.6} ${rc.x} ${rc.y})`);
+      acc += wgt;
+      svg.appendChild(c);
+      return { c, len };
+    });
+    arcs.forEach((a, k) => tl.fromTo(a.c, { attr: { "stroke-dashoffset": a.len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "power2.out" }, C.ring[k]));
+    const ctr = el("div", "abs", sc);
+    ctr.style.cssText = `left:${rc.x - 200}px;width:400px;top:${rc.y - (V ? 90 : 105)}px;text-align:center`;
+    const od = odo(ctr, "9.1");
+    od.o.style.cssText = `font:700 ${V ? 150 : 176}px "Space Grotesk";color:var(--paper);letter-spacing:-0.04em`;
+    const sub10 = el("div", "mono", ctr, "/10 · Wickd · example");
+    sub10.style.cssText = "font-size:20px;color:var(--violet-m);margin-top:10px";
+    roll(od, 18.5, 1.3);
+    tl.fromTo(ctr, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 18.4);
+    // the legend: every component, every weight
+    const lg = el("div", "abs", sc);
+    const lgb = V ? { x: CA.x, y: 1190, w: CA.w, cols: 2 } : { x: 960, y: CA.y + 330, w: 840, cols: 2 };
+    Object.assign(lg.style, { left: lgb.x + "px", top: lgb.y + "px", width: lgb.w + "px" });
+    const items = comps.map(([n, wgt], k) => {
+      const it = el("div", "abs", lg);
+      const colW = lgb.w / 2;
+      it.style.cssText = `left:${(k % 2) * colW}px;top:${Math.floor(k / 2) * (V ? 62 : 70)}px;width:${colW - 20}px;display:flex;align-items:center;gap:14px;font:600 ${V ? 23 : 26}px Manrope;color:var(--paper)`;
+      const dot = el("i", "", it); dot.style.cssText = `display:block;width:16px;height:16px;border-radius:5px;background:${colors[k]};flex:none`;
+      el("span", "", it, n);
+      const wv = el("span", "", it, String(wgt)); wv.style.cssText = "margin-left:auto;font:700 22px 'Space Mono';color:var(--violet-m)";
+      return it;
+    });
+    items.forEach((it, k) => tl.fromTo(it, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, C.ring[k] + 0.05));
+    const gn = el("div", "mono abs", sc, "Guidance, not a guarantee.");
+    Object.assign(gn.style, V ? { left: CA.x + "px", top: "1440px", fontSize: "19px", color: "var(--violet-m)" } : { left: "960px", top: (CA.y + 640) + "px", fontSize: "22px", color: "var(--violet-m)" });
+    tl.fromTo(gn, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 20.2);
+    glow(18.3, rc.x, rc.y, rc.r * 3.2, 0.5, 22.1);
+    tl.to(svg, { rotation: 8, transformOrigin: `${rc.x}px ${rc.y}px`, duration: 3.4, ease: "sine.inOut" }, 18.4);
+    out([hd.box, ctr, lg, gn], 21.65, 1);
+    tl.to(svg, { scale: 0.6, opacity: 0, duration: 0.3, ease: "power2.in" }, 21.65);
+    wipe("var(--paper)", 21.75, 0.3, "rect");
+    toLight(22.06);
+  }
+
+  // =========================================================== 22-26  FOUR LOOKS
+  let chosen;
+  {
+    const sc = $("s-looks");
+    const hd = head(sc, "Step 4 · Logo", "Four looks. Pick yours.", V ? {} : { y: CA.y + 10, w: 1680 });
+    headIn(hd, 22.05);
+    const note = el("div", "sub abs", sc, "Real vector logos, not clip-art.");
+    Object.assign(note.style, V ? { left: CA.x + "px", top: (CA.y + 215) + "px", fontSize: "28px" } : { left: (CA.x + 1060) + "px", top: (CA.y + 110) + "px", fontSize: "30px" });
+    tl.fromTo(note, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 22.4);
+    const g = V ? { x: CA.x, y: CA.y + 280, w: 410, h: 385, gap: 20, cols: 2 } : { x: CA.x, y: CA.y + 210, w: 405, h: 520, gap: 20, cols: 4 };
+    const cards = LOOKS.map((lk, k) => {
+      const c = el("div", "lookcard", sc);
+      const cx = g.x + (k % g.cols) * (g.w + g.gap), cy = g.y + Math.floor(k / g.cols) * (g.h + g.gap);
+      Object.assign(c.style, { left: cx + "px", top: cy + "px", width: g.w + "px", height: g.h + "px" });
+      const stH = g.h * (V ? 0.56 : 0.58);
+      const st = el("div", "stage", c); st.style.height = stH + "px";
+      lk.draw(st, g.w, stH);
+      const nm = el("div", "mono abs", c, lk.name);
+      Object.assign(nm.style, { left: "24px", top: (stH + 20) + "px", fontSize: "18px", color: "var(--violet-d)" });
+      const pal = el("div", "abs", c);
+      pal.style.cssText = `left:24px;top:${stH + 56}px;display:flex;gap:6px`;
+      lk.pal.forEach(col => { const s = el("i", "", pal); s.style.cssText = `display:block;width:${(g.w - 48 - 24) / 5}px;height:22px;border-radius:7px;background:${col};border:2px solid rgba(36,19,50,0.12)`; });
+      const fn = el("div", "abs", c, lk.fonts);
+      fn.style.cssText = `left:24px;top:${stH + 96}px;font:600 ${V ? 20 : 22}px Manrope;color:var(--ink-2)`;
+      const b = el("div", "btn abs", c, "Use this look");
+      b.style.cssText += `;left:24px;right:24px;bottom:20px;height:${V ? 50 : 58}px;background:var(--graphite);color:#fff;font-size:${V ? 19 : 21}px`;
+      return { c, b, cx, cy, st };
+    });
+    cards.forEach((cd, k) => tl.fromTo(cd.c, { rotationY: -100, opacity: 0, transformPerspective: 1200 }, { rotationY: 0, opacity: 1, duration: 0.55, ease: "back.out(1.4)" }, C.looks[k]));
+    chosen = cards[3];
+    tl.to(chosen.b, { keyframes: [{ scale: 0.92, duration: 0.08 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }] }, C.pick);
+    tl.to(chosen.b, { backgroundColor: "#6D4AFF", duration: 0.15 }, C.pick);
+    tl.to(chosen.c, { borderColor: "#6D4AFF", boxShadow: "0 0 0 8px rgba(109,74,255,0.22)", duration: 0.3 }, C.pick);
+    tl.to(cards.slice(0, 3).map(c => c.c), { opacity: 0.35, scale: 0.96, duration: 0.35 }, C.pick + 0.05);
+    // cursor taps the chosen look
+    const cur = el("div", "abs", sc);
+    cur.innerHTML = `<svg width="54" height="54" viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12.5 22 L15.5 20.6 L12 13.8 L19 13.8 Z" fill="#16161A" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+    const bx = chosen.cx + g.w / 2, byy = chosen.cy + g.h - 40;
+    Object.assign(cur.style, { left: bx + "px", top: byy + "px", zIndex: 30 });
+    tl.fromTo(cur, { x: 260, y: 240, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, C.pick - 0.55);
+    tl.to(cur, { scale: 0.85, duration: 0.08, yoyo: true, repeat: 1 }, C.pick - 0.04);
+    tl.to(cur, { opacity: 0, duration: 0.2 }, C.pick + 0.6);
+    out([hd.box, note, ...cards.slice(0, 3).map(c => c.c)], 25.6);
+    tl.to(chosen.c, { scale: 1.08, y: -20, duration: 0.5, ease: "power2.inOut" }, 25.2);
+    tl.to(chosen.c, { opacity: 0, scale: 1.25, duration: 0.25, ease: "power2.in" }, 25.75);
+  }
+
+  // =========================================================== 26-28  BRAND BOOK
+  {
+    const sc = $("s-book");
+    const hd = head(sc, "Step 5 · Brand book", "Then, the whole brand.", V ? {} : { y: CA.y + 10, w: 1680 });
+    headIn(hd, 26.02);
+    const cnt = el("div", "pill ex abs", sc, "9 mockups in every brand book");
+    Object.assign(cnt.style, V ? { left: CA.x + "px", top: (CA.y + 215) + "px" } : { left: (CA.x + 1180) + "px", top: (CA.y + 118) + "px" });
+    cnt.style.transformOrigin = "0% 50%";
+    tl.fromTo(cnt, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.5)" }, 26.6);
+    const tiles = [];
+    if (V) {
+      const tw = 410, th = 250, gx = 20, y0 = CA.y + 280;
+      const make = [mockLogo, mockPalette, mockJar, mockTote, mockApp, mockSign];
+      make.forEach((fn, k) => { const t = fn(sc, tw, th); Object.assign(t.style, { position: "absolute", left: (CA.x + (k % 2) * (tw + gx)) + "px", top: (y0 + Math.floor(k / 2) * (th + 18)) + "px" }); tiles.push(t); });
+    } else {
+      const y0 = CA.y + 200, tw = 405, th = 280, gx = 20;
+      const lay = [[mockLogo, 0, 0, 2], [mockPalette, 2, 0, 1], [mockType, 3, 0, 1], [mockJar, 0, 1, 1], [mockTote, 1, 1, 1], [mockApp, 2, 1, 1], [mockSign, 3, 1, 1]];
+      lay.forEach(([fn, cx, cy, span]) => { const w = tw * span + gx * (span - 1); const t = fn(sc, w, th); Object.assign(t.style, { position: "absolute", left: (CA.x + cx * (tw + gx)) + "px", top: (y0 + cy * (th + 20)) + "px" }); tiles.push(t); });
+    }
+    tiles.forEach(t => t.style.border = "3px solid rgba(36,19,50,0.10)");
+    tl.fromTo(tiles[0], { scale: 0.75, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }, 26.0);
+    tiles.slice(1).forEach((t, k) => tl.fromTo(t, { y: 80, opacity: 0, rotation: (k % 2 ? 4 : -4) }, { y: 0, opacity: 1, rotation: 0, duration: 0.4, ease: "back.out(1.8)" }, C.book[Math.min(k, 5)]));
+    out([hd.box, cnt, ...tiles], 27.7);
+  }
+
+  // =========================================================== 28-30  LAUNCH KIT + AI ASSISTANT
+  {
+    const sc = $("s-launch");
+    const hd = head(sc, "Step 6 · Launch kit", "Launch-ready on day one.", V ? {} : { y: CA.y + 10, w: 1680 });
+    headIn(hd, 28.02);
+    const cw = V ? CA.w : 540, ch = V ? 240 : 470, y0 = V ? CA.y + 225 : CA.y + 200;
+    const pos = (k) => V ? [CA.x, y0 + k * (ch + 22)] : [CA.x + k * (cw + 30), y0];
+    // 1  Instagram bio
+    const c1 = el("div", "card", sc);
+    let [x, y] = pos(0);
+    Object.assign(c1.style, { left: x + "px", top: y + "px", width: cw + "px", height: ch + "px" });
+    const av = el("div", "abs", c1); av.style.cssText = `left:30px;top:30px;width:${V ? 96 : 110}px;height:${V ? 96 : 110}px;border-radius:50%;background:${WK.plum}`;
+    const af = flameSVG(WK.ember, WK.peach); af.style.cssText = `position:absolute;left:30%;top:20%;width:40%;height:60%;overflow:visible`; av.appendChild(af);
+    const h1 = el("div", "abs mono", c1, "Instagram bio"); h1.style.cssText = `left:${V ? 150 : 165}px;top:36px;font-size:18px;color:var(--violet-d)`;
+    const h2 = el("div", "abs", c1, "@wickd"); h2.style.cssText = `left:${V ? 150 : 165}px;top:${V ? 66 : 70}px;font:800 32px Manrope;color:var(--graphite)`;
+    const bio = el("div", "abs sub", c1, "Cosy candles for main-character nights. Small batch, big glow.");
+    bio.style.cssText += `;left:30px;right:30px;top:${V ? 146 : 170}px;font-size:${V ? 26 : 28}px;color:var(--graphite)`;
+    if (!V) { const more = el("div", "abs mono", c1, "+ X · LinkedIn · YouTube bios"); more.style.cssText = "left:30px;bottom:30px;font-size:18px;color:#5F5B6B"; }
+    // 2  launch post
+    const c2 = el("div", "card", sc);
+    [x, y] = pos(1);
+    Object.assign(c2.style, { left: x + "px", top: y + "px", width: cw + "px", height: ch + "px", overflow: "hidden" });
+    const lp = el("div", "abs mono", c2, "Launch post"); lp.style.cssText = "left:30px;top:30px;font-size:18px;color:var(--violet-d)";
+    const lt = el("div", "abs hl", c2, "Meet Wickd. Candles that match your mood.");
+    lt.style.cssText += `;left:30px;right:30px;top:72px;font-size:${V ? 40 : 46}px`;
+    const lm = el("div", "abs mono", c2, V ? "+ X thread · 30 days of ideas" : "+ LinkedIn post · X thread · website copy · 30 days of content ideas");
+    lm.style.cssText = `left:30px;right:30px;bottom:28px;font-size:18px;color:#5F5B6B;line-height:1.5`;
+    // 3  AI brand assistant
+    const c3 = el("div", "card", sc);
+    [x, y] = pos(2);
+    Object.assign(c3.style, { left: x + "px", top: y + "px", width: cw + "px", height: ch + "px", background: "var(--graphite)", borderColor: "#2B2B33" });
+    const ah = el("div", "abs mono", c3, "AI brand assistant"); ah.style.cssText = "left:30px;top:30px;font-size:18px;color:var(--violet-m)";
+    const q1 = el("div", "chat", c3, "Make the tagline more Gen Z");
+    q1.style.cssText += `;right:30px;top:${V ? 70 : 84}px;background:var(--violet);color:#fff;font-size:${V ? 24 : 26}px`;
+    const a1 = el("div", "chat", c3, "“Burn bright. Stay cosy.” Saved as v3");
+    a1.style.cssText += `;left:30px;top:${V ? 146 : 190}px;right:${V ? 140 : 60}px;background:#2B2B33;color:var(--paper);font-size:${V ? 24 : 26}px`;
+    [c1, c2, c3].forEach((c, k) => tl.fromTo(c, { y: 90, opacity: 0, rotation: (k - 1) * 3 }, { y: 0, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(1.7)" }, C.launch[k]));
+    tl.fromTo(q1, { scale: 0.5, opacity: 0, transformOrigin: "100% 100%" }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" }, C.chat[0]);
+    tl.fromTo(a1, { scale: 0.5, opacity: 0, transformOrigin: "0% 100%" }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" }, C.chat[1]);
+    const ex = el("div", "mono abs", sc, "Export · PDF · PNG · SVG · JSON · Markdown");
+    Object.assign(ex.style, V ? { left: CA.x + "px", top: (y0 + 3 * (ch + 22)) + "px", fontSize: "19px", color: "var(--violet-d)" } : { left: CA.x + "px", top: (y0 + ch + 34) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(ex, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5 }, 28.9);
+    // collapse everything into dots for the close
+    const all = [c1, c2, c3];
+    tl.to(all, { scale: 0.04, borderRadius: "50%", x: (i) => W / 2 - pos(i)[0] - cw / 2, y: (i) => (V ? 860 : 540) - pos(i)[1] - ch / 2, duration: 0.4, ease: "power3.in", stagger: 0.04 }, 29.6);
+    tl.to([hd.box, ex], { opacity: 0, duration: 0.25 }, 29.6);
+    wipe("var(--graphite)", 29.8, 0.35, "circle", [W / 2, V ? 860 : 540]);
+    toDark(30.16);
+  }
+
+  // =========================================================== 30-38  CLOSE + CALL TO ACTION
+  {
+    const sc = $("s-close");
+    const size = V ? 104 : 116;
+    const box = el("div", "hl light abs", sc);
+    box.style.fontSize = size + "px";
+    // lay out the final line to measure it, then type it
+    const lineW = V ? SAFE.w : 1600;
+    Object.assign(box.style, { left: (V ? SAFE.x : (W - lineW) / 2) + "px", width: lineW + "px", textAlign: V ? "left" : "center" });
+    const tw2 = typeWords(box, C.closeText);
+    const chars = tw2.chars;
+    const holder = el("span", "", tw2.last);
+    holder.style.cssText = "display:inline-block;position:relative;width:0.62em;height:0.5em";
+    const sp = sparkSVG("var(--violet-s)", 0, "spark-svg");
+    sp.svg.style.cssText = "position:absolute;left:0.06em;top:-0.04em;width:0.56em;height:0.56em;overflow:visible";
+    sp.path.setAttribute("d", sparkD(0));
+    holder.appendChild(sp.svg);
+    const tw = sparkSVG("var(--aqua)", 2, "spark-svg");
+    tw.svg.style.cssText = "position:absolute;left:0.58em;top:-0.3em;width:0.24em;height:0.24em;overflow:visible";
+    holder.appendChild(tw.svg);
+    const caret = el("span", "caret", box);
+    caret.style.background = "var(--violet-s)";
+    const ty = V ? 760 : 400;
+    box.style.top = ty + "px";
+    const hp = posIn(holder, root);
+    chars.forEach((c, i) => tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001 }, C.close + i * C.step));
+    [[30.0, 1], [C.cdot - 0.1, 0]].forEach(([t, o]) => tl.set(caret, { opacity: o }, t));
+    const scx = hp.x + size * 0.06 + size * 0.28, scy = hp.y - size * 0.04 + size * 0.28;
+    appear(tl, sp.svg, C.cdot - 0.2);
+    tl.fromTo(sp.svg, { y: -260, scaleX: 0.35, scaleY: 0.6 }, { y: 0, scaleX: 0.42, scaleY: 0.42, duration: 0.2, ease: "power3.in" }, C.cdot - 0.2);
+    tl.to(sp.svg, { keyframes: [{ scaleX: 0.6, scaleY: 0.28, duration: 0.06 }, { scaleX: 0.42, scaleY: 0.42, duration: 0.3, ease: "elastic.out(1,0.4)" }] }, C.cdot);
+    fieldRipple(tl, F, C.cdot, [scx / W, scy / H], 0.8, 2.2);
+    morph(tl, sp.path, 0, 1, C.cdot + 0.4, 0.3, "back.out(2)");
+    tl.to(sp.svg, { scale: 0.62, duration: 0.3, ease: "back.out(2)" }, C.cdot + 0.4);
+    morph(tl, sp.path, 1, 2, C.cdot + 0.94, 0.16, "power3.in");
+    tl.to(sp.svg, { keyframes: [{ scale: 1.5, rotation: 90, duration: 0.16 }, { scale: 1, rotation: 90, duration: 0.45, ease: "elastic.out(1,0.45)" }] }, C.cdot + 0.96);
+    const fx = el("div", "layer", sc);
+    burst(tl, fx, scx, scy, C.cdot + 1.0, { rays: 14, len: 150, r0: 40, r1: 260, ringScale: 7, color: "var(--violet-s)" });
+    fieldToSparks(tl, F, C.cdot + 1.0, [scx / W, scy / H], 0.7);
+    glow(C.cdot + 0.4, scx, scy, 1100, 0.55, 34.2);
+    appear(tl, tw.svg, C.cdot + 1.5);
+    tl.fromTo(tw.svg, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.35, ease: "back.out(4)" }, C.cdot + 1.5);
+
+    // 34.0  the sentence steps aside for the brand and the address
+    tl.to(box, { y: V ? -120 : -90, opacity: 0, duration: 0.18, ease: "power2.in" }, 33.92);
+    const eb = el("div", "mono abs", sc, "AI brand studio");
+    const wmSize = V ? 112 : 140;
+    const wm = buildWordmark(sc, wmSize, { color: "var(--paper)", spark: "var(--violet-s)", m: 2 });
+    const g = wm.place();
+    const wy = V ? 660 : 330;
+    const wx = (W - g.width) / 2;
+    Object.assign(wm.wm.style, { left: wx + "px", top: wy + "px" });
+    Object.assign(eb.style, { left: "0px", width: W + "px", textAlign: "center", top: (wy - 70) + "px", fontSize: "24px", color: "var(--violet-m)" });
+    eb.style.letterSpacing = "0.12em";
+    tl.fromTo(eb, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 34.1);
+    tl.fromTo(wm.chars, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.35, ease: "back.out(2)", stagger: 0.025 }, 34.12);
+    tl.fromTo(wm.mark.svg, { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.5)" }, 34.35);
+    tl.fromTo(wm.twin.svg, { scale: 0 }, { scale: 1, duration: 0.35, ease: "back.out(4)" }, 34.6);
+    // the address bar: typed, then Enter
+    const ub = el("div", "urlbar", sc);
+    const uw = V ? 840 : 920, uh = V ? 112 : 120, uy = wy + wmSize + (V ? 90 : 100);
+    Object.assign(ub.style, { left: (W - uw) / 2 + "px", top: uy + "px", width: uw + "px", height: uh + "px", boxSizing: "border-box" });
+    ub.innerHTML = `<svg width="30" height="36" viewBox="0 0 30 36"><rect x="3" y="15" width="24" height="19" rx="4" fill="#16161A"/><path d="M8 15 V10 a7 7 0 0 1 14 0 V15" fill="none" stroke="#16161A" stroke-width="3.5"/></svg>`;
+    const ut = el("span", "txt", ub);
+    const uch = typeSpans(ut, "gobrandtoday.com", "u");
+    const ucaret = el("span", "caret", ut);
+    const enter = el("div", "btn", ub);
+    enter.style.cssText += `;margin-left:auto;height:${uh - 30}px;padding:0 ${V ? 22 : 28}px;background:var(--violet);color:#fff;font-size:${V ? 24 : 26}px`;
+    enter.innerHTML = `Go <svg width="26" height="20" viewBox="0 0 26 20"><path d="M2 10 H22 M14 2 L22 10 L14 18" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    tl.fromTo(ub, { y: 40, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 34.45);
+    uch.forEach((c, i) => tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001 }, C.url + i * C.step));
+    tl.set(ucaret, { opacity: 0 }, C.enter + 0.05);
+    const cur = el("div", "abs", sc);
+    cur.innerHTML = `<svg width="58" height="58" viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12.5 22 L15.5 20.6 L12 13.8 L19 13.8 Z" fill="#FAFAF7" stroke="#16161A" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+    const ex = (W + uw) / 2 - (V ? 70 : 80), eyy = uy + uh / 2;
+    Object.assign(cur.style, { left: ex + "px", top: eyy + "px", zIndex: 40 });
+    tl.fromTo(cur, { x: 200, y: 260, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, C.enter - 0.55);
+    tl.to(cur, { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1 }, C.enter - 0.02);
+    tl.to(enter, { keyframes: [{ scale: 0.9, duration: 0.07 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }] }, C.enter - 0.02);
+    tl.to(ub, { boxShadow: "0 0 0 14px rgba(25,195,180,0.0), 0 0 0 4px rgba(25,195,180,0.9)", duration: 0.2 }, C.enter);
+    // 36.0  the promise and the action
+    const cta = el("div", "hl light abs", sc);
+    cta.style.cssText += `;left:0;width:${W}px;text-align:center;top:${uy + uh + (V ? 70 : 60)}px;font-size:${V ? 64 : 72}px`;
+    const cw_ = words(cta, "Start free. No sign-up.");
+    tl.fromTo(cw_, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.07 }, C.cta);
+    if (V) {
+      const lib = el("div", "pill abs", sc, "Link in bio");
+      lib.style.cssText += `;left:${W / 2 - 110}px;top:${uy + uh + 190}px;background:var(--violet);color:#fff;font-size:22px`;
+      tl.fromTo(lib, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, C.cta + 0.35);
+      tl.to(lib, { y: -10, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, C.end);
+    }
+    tl.to([wm.wm], { keyframes: [{ scale: 1.04, duration: 0.12 }, { scale: 1, duration: 0.5, ease: "elastic.out(1,0.5)" }] }, C.end);
+    tl.to(wm.twin.svg, { keyframes: [{ scale: 1.6, rotation: 45, duration: 0.15 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)" }] }, C.end + 0.5);
+    fieldRipple(tl, F, C.end, "center", 0.7, 1.8);
+    fieldTwinkle(tl, F, 33.6, 38, 41);
+  }
+
+  flicker(0, 38, 9);
+  window.__timelines["announcement"] = tl;
+});
+</script>
+</body>
+</html>

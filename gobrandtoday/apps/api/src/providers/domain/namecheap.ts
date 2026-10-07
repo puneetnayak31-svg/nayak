@@ -44,6 +44,7 @@ export function parseNamecheapResult(xml: string, domain: string): DomainCheck |
     domain,
     status: available ? (premium ? 'premium' : 'available') : 'taken',
     verified: true,
+    confirmed: available,
     source: 'namecheap',
     price: premium && premiumPrice > 0 ? { amount: premiumPrice, currency: 'USD', renewal: Number(attr('PremiumRenewalPrice') ?? 0) || undefined } : undefined,
     note: premium ? 'Premium domain — priced above standard registration.' : undefined,

@@ -41,6 +41,7 @@ export class HostingerProvider implements DomainProvider {
           domain,
           status: item.is_available ? 'available' : 'taken',
           verified: true,
+          confirmed: item.is_available,
           source: 'hostinger',
           note: item.restriction ?? undefined,
         });

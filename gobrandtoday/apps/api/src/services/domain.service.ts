@@ -5,8 +5,8 @@ import { cache, cached } from '../lib/cache';
 import { logger } from '../lib/logger';
 import { createDomainProvider, type DomainCheck } from '../providers/domain';
 
-const { primary, fallback } = createDomainProvider();
-export const domainProviderInfo = { id: primary.id, live: primary.live, fallback: fallback?.id ?? null };
+const { primary, fallback, confirm } = createDomainProvider();
+export const domainProviderInfo = { id: primary.id, live: primary.live, fallback: fallback?.id ?? null, confirm: confirm?.id ?? null };
 
 const AFFILIATES: Record<string, string> = Object.fromEntries(
   [
@@ -39,12 +39,39 @@ async function checkWithFallback(domains: string[]): Promise<DomainCheck[]> {
         return out.map((c) => filled.find((f) => f.domain === c.domain && f.status !== 'unknown') ?? c);
       }
     }
-    return out;
+    return await confirmAvailable(out);
   } catch (err) {
     logger.warn({ provider: primary.id, err: (err as Error).message }, 'domain provider failed');
     if (fallback && fallback !== primary) return fallback.check(domains);
     return domains.map((domain) => ({ domain, status: 'unknown' as const, verified: false, source: primary.id, note: "We couldn't verify this one right now." }));
   }
+}
+
+/**
+ * The registry says "nobody owns it"; ask a registrar whether it will
+ * actually sell it, and at what price. Registry-reserved names come back
+ * "taken" here, premium ones come back with their real price. If the
+ * registrar can't answer, keep the registry result (marked unconfirmed).
+ */
+async function confirmAvailable(checks: DomainCheck[]): Promise<DomainCheck[]> {
+  if (!confirm) return checks;
+  const todo = checks.filter((c) => c.status === 'available' && !c.confirmed);
+  if (!todo.length) return checks;
+  let answers: DomainCheck[] = [];
+  try {
+    answers = await confirm.check(todo.map((c) => c.domain));
+  } catch (err) {
+    logger.warn({ provider: confirm.id, err: (err as Error).message }, 'domain confirm failed');
+    return checks;
+  }
+  return checks.map((c) => {
+    const a = answers.find((x) => x.domain === c.domain);
+    if (!a || a.status === 'unknown') return c;
+    if (a.status === 'taken') {
+      return { ...a, note: 'The registry lists no owner, but registrars won’t sell it right now (reserved, held or in a drop cycle).' };
+    }
+    return { ...a, verified: true, confirmed: true };
+  });
 }
 
 export async function checkDomains(name: string, tlds: string[], region: 'IN' | 'US'): Promise<DomainResult[]> {
@@ -80,6 +107,7 @@ export async function checkDomains(name: string, tlds: string[], region: 'IN' | 
       status: r.status,
       source: r.source,
       verified: r.verified,
+      confirmed: r.confirmed ?? false,
       price: r.price,
       note: r.note,
       checkedAt: now,

@@ -272,7 +272,9 @@ export function seoScore(
   return { value, explanation: `${bits.join(' ')} This is a naming heuristic, not a ranking prediction.` };
 }
 
-export function domainScore(domains: DomainResult[] | undefined, preferred: string[] = []): { value: number | null; note: string } {
+export function domainScore(all: DomainResult[] | undefined, preferred: string[] = []): { value: number | null; note: string } {
+  // Sample/demo results never move the score: only real checks count.
+  const domains = all?.filter((d) => d.source !== 'demo');
   if (!domains || domains.length === 0) return { value: null, note: 'Check domains to complete this score.' };
   const verified = domains.filter((d) => d.status !== 'unknown');
   if (verified.length === 0) return { value: null, note: 'We could not verify domains yet — try again.' };
@@ -309,7 +311,8 @@ export function domainScore(domains: DomainResult[] | undefined, preferred: stri
   return { value: round1(clamp(s)), note };
 }
 
-export function socialScore(socials: SocialResult[] | undefined): { value: number | null; note: string } {
+export function socialScore(all: SocialResult[] | undefined): { value: number | null; note: string } {
+  const socials = all?.filter((s) => s.method !== 'demo');
   if (!socials || socials.length === 0) return { value: null, note: 'Check handles to complete this score.' };
   const decided = socials.filter((s) => s.status === 'available' || s.status === 'taken');
   if (decided.length === 0) return { value: null, note: 'No platform could be verified automatically — use the quick links.' };

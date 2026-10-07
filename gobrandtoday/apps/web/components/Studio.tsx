@@ -21,7 +21,8 @@ import {
 import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
 import { Spark } from './Spark';
-import { Alternatives, DemoBanner, DomainTable, Empty, Loading, Risks, ScoreBreakdown, ScorePill, SocialGrid, SourceBadge } from './ui';
+import { AvailabilityPanel, CoreTag, DomainChips } from './Availability';
+import { DemoBanner, Empty, Loading, Risks, ScoreBreakdown, ScorePill, SourceBadge } from './ui';
 
 interface NamesResponse {
   projectId: string;
@@ -547,9 +548,6 @@ function NameCard(props: {
   onBuild: () => void;
 }) {
   const { n, score, check } = props;
-  const socialsFree = check?.socials?.filter((s) => s.status === 'available').length ?? 0;
-  const socialsDecided = check?.socials?.filter((s) => s.status === 'available' || s.status === 'taken').length ?? 0;
-  const socialsManual = check?.socials?.filter((s) => s.status === 'manual').length ?? 0;
   const len = toSlug(n.name).length + (n.name.includes(' ') ? 1 : 0);
   const size = len <= 7 ? 34 : len <= 9 ? 30 : len <= 11 ? 26 : len <= 13 ? 23 : 20;
   return (
@@ -569,6 +567,7 @@ function NameCard(props: {
         <span className="pron">{n.pronunciation}</span>
       </div>
 
+      {n.tagline && <p className="nm-tagline">“{n.tagline}”</p>}
       <div className="row gap-6 wrap">
         <span className="badge line">{TYPE_LABEL[n.nameType] ?? n.nameType}</span>
         {n.personality.slice(0, 2).map((p) => (
@@ -577,24 +576,12 @@ function NameCard(props: {
           </span>
         ))}
       </div>
-      <p className="why clamp-3">{n.rationale}</p>
-      {n.origin && <p className="tiny muted mono">{n.origin}</p>}
+      <p className="why clamp-3">{n.meaning ?? n.rationale}</p>
 
-      {check?.domains ? (
-        <div className="stack gap-6">
-          <div className="mini-domains">
-            {check.domains.map((d) => (
-              <span key={d.domain} className={`mini-domain ${d.status}`} title={d.note}>
-                .{d.tld}
-              </span>
-            ))}
-          </div>
-          {check.socials && (
-            <span className="tiny muted">
-              Handles: {socialsDecided ? `${socialsFree}/${socialsDecided} verified free` : 'not verified yet'}
-              {socialsManual ? ` · ${socialsManual} to check` : ''}
-            </span>
-          )}
+      {check?.domains || check?.socials ? (
+        <div className="stack gap-8 nm-avail">
+          {check.domains && <DomainChips results={check.domains} />}
+          <CoreTag name={n.name} domains={check.domains} socials={check.socials} size="sm" />
         </div>
       ) : check?.error ? (
         <span className="tiny" style={{ color: 'var(--danger)' }}>
@@ -650,22 +637,41 @@ function NameDetail({ n, score, check, onClose, onBuild, onRecheck, building }: 
             </button>
           </div>
         </div>
-        <p className="lead" style={{ fontSize: 18 }}>
-          {n.rationale}
-        </p>
-        <Risks score={score} />
-        <div className="grid-2" style={{ alignItems: 'start' }}>
-          <div className="stack gap-16">
-            <div className="row between">
-              <h3 className="h3">Domains</h3>
-              <button className="btn btn-ghost btn-xs" onClick={onRecheck} disabled={check?.loading}>
-                {check?.loading ? 'Checking…' : 'Recheck'}
-              </button>
+        {n.tagline && <p className="nm-detail-tagline">“{n.tagline}”</p>}
+        <div className="grid-2" style={{ alignItems: 'start', gap: 20 }}>
+          <div className="stack gap-12">
+            {n.meaning && (
+              <div className="stack gap-4">
+                <span className="eyebrow">What it means</span>
+                <p style={{ margin: 0, fontSize: 16.5 }}>{n.meaning}</p>
+              </div>
+            )}
+            <div className="stack gap-4">
+              <span className="eyebrow">Why it fits</span>
+              <p className="soft" style={{ margin: 0 }}>{n.rationale}</p>
             </div>
-            {check?.domains ? <DomainTable results={check.domains} /> : <div className="skeleton" style={{ height: 160 }} />}
-            <h3 className="h3">Social handles</h3>
-            {check?.socials ? <SocialGrid results={check.socials} /> : <div className="skeleton" style={{ height: 220 }} />}
-            {check?.alternatives && <Alternatives items={check.alternatives} />}
+            {n.origin && <span className="tiny muted mono">{n.origin}</span>}
+          </div>
+          <div className="stack gap-12">
+            {n.whyItWorks?.length ? (
+              <ul className="ticks">
+                {n.whyItWorks.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            ) : null}
+            {n.watchOut && (
+              <div className="notice warn small">
+                <strong>Watch out:</strong> {n.watchOut}
+              </div>
+            )}
+          </div>
+        </div>
+        <Risks score={score} />
+        <AvailabilityPanel name={n.name} domains={check?.domains} socials={check?.socials} alternatives={check?.alternatives} busy={check?.loading} onRecheck={onRecheck} />
+        <div className="grid-2" style={{ alignItems: 'start' }}>
+          <div className="card sm">
+            <ScoreBreakdown score={score} />
           </div>
           <div className="stack gap-16">
             <div className="scorecard">
@@ -676,9 +682,6 @@ function NameDetail({ n, score, check, onClose, onBuild, onRecheck, building }: 
                   <small> / 10</small>
                 </span>
               </div>
-            </div>
-            <div className="card sm">
-              <ScoreBreakdown score={score} />
             </div>
             <div className="card sm stack gap-8">
               <strong>SEO potential · {score.seo.value.toFixed(1)}</strong>
@@ -774,13 +777,7 @@ function CompareModal({
                 {names.map((n) => (
                   <td key={n.id}>
                     {checks[n.id]?.domains ? (
-                      <div className="mini-domains">
-                        {checks[n.id]!.domains!.map((d) => (
-                          <span key={d.domain} className={`mini-domain ${d.status}`}>
-                            .{d.tld}
-                          </span>
-                        ))}
-                      </div>
+                      <DomainChips results={checks[n.id]!.domains!} />
                     ) : (
                       <span className="tiny muted">Checking…</span>
                     )}
@@ -788,17 +785,12 @@ function CompareModal({
                 ))}
               </tr>
               <tr>
-                <td>Social</td>
-                {names.map((n) => {
-                  const s = checks[n.id]?.socials;
-                  const free = s?.filter((x) => x.status === 'available').length ?? 0;
-                  const decided = s?.filter((x) => x.status === 'available' || x.status === 'taken').length ?? 0;
-                  return (
-                    <td key={n.id} className="small">
-                      {s ? (decided ? `${free}/${decided} verified free` : 'Not auto-verifiable — use the links') : '…'}
-                    </td>
-                  );
-                })}
+                <td>Core 5</td>
+                {names.map((n) => (
+                  <td key={n.id}>
+                    {checks[n.id]?.socials ? <CoreTag name={n.name} domains={checks[n.id]!.domains} socials={checks[n.id]!.socials} size="sm" /> : <span className="tiny muted">…</span>}
+                  </td>
+                ))}
               </tr>
               <tr>
                 <td>Length</td>

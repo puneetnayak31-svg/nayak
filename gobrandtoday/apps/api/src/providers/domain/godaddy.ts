@@ -40,6 +40,7 @@ export class GoDaddyProvider implements DomainProvider {
         domain,
         status: d.available ? 'available' : 'taken',
         verified: d.definitive !== false,
+        confirmed: d.available && d.definitive !== false,
         source: 'godaddy',
         // GoDaddy prices are in micro-units.
         price: d.available && d.price ? { amount: d.price / 1_000_000, currency: d.currency ?? 'USD' } : undefined,

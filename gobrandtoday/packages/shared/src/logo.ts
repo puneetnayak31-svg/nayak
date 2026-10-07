@@ -9,6 +9,7 @@
  * a canvas measurer that uses the real web font; tests use `approxMeasure`.
  */
 import { FONT_TRIOS, MARK_PATHS, generatePalette, onColor, swatch, type FontTrio } from './brand-system';
+import { SYMBOL_META, drawSymbol, pickFamily, type SymbolFamily, type SymbolSpec } from './symbols';
 import { hash32, rng, syllables } from './text';
 import type { Look, LogoStyle, MarkShape, PaletteSwatch } from './types';
 
@@ -82,16 +83,44 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   symbol: {
     id: 'symbol',
-    title: 'Bauhaus tiles',
-    construction: 'A generative symbol of four geometric tiles, unique to this name, beside a clean wordmark.',
-    fonts: ['trust', 'swiss', 'technical'],
+    title: 'Symbol + wordmark',
+    construction: 'A generative symbol unique to this name, beside a clean wordmark.',
+    fonts: ['trust', 'swiss', 'technical', 'grotesk', 'avant', 'bold'],
     marks: ['square', 'ring', 'arc'],
     fit: ['Technical', 'Futuristic', 'Minimal', 'Trustworthy', 'saas', 'ai', 'fintech', 'education'],
     usage: {
       clearSpace: 'Half a tile on every side.',
       minSize: 'Lockup 100px wide. Smaller: the symbol alone.',
       do: 'Symbol left, name right; use the symbol alone as the app icon.',
-      dont: 'Don’t recolour single tiles or rotate the symbol.',
+      dont: 'Don’t recolour parts of the symbol or rotate it.',
+    },
+  },
+  emblem: {
+    id: 'emblem',
+    title: 'Emblem',
+    construction: 'A centred symbol over the name in spaced capitals, like a seal or a badge on a product.',
+    fonts: ['signet', 'swiss', 'editorial', 'trust', 'avant'],
+    marks: ['ring', 'sun', 'petal'],
+    fit: ['Premium', 'Traditional', 'Trustworthy', 'Luxury', 'food', 'beauty', 'fashion', 'hospitality'],
+    usage: {
+      clearSpace: 'Half the symbol’s height on every side.',
+      minSize: 'Full emblem 72px tall. Smaller: the symbol alone.',
+      do: 'Centre everything; keep the name in spaced capitals under the symbol.',
+      dont: 'Don’t put the name beside the symbol or squash the spacing.',
+    },
+  },
+  lettermark: {
+    id: 'lettermark',
+    title: 'Lettermark',
+    construction: 'The initial cut out of a bold shape, beside the name: compact enough for an app icon.',
+    fonts: ['grotesk', 'bold', 'rounded', 'avant', 'swiss', 'editorial'],
+    marks: ['dot', 'square', 'diamond'],
+    fit: ['Bold', 'Minimal', 'Trustworthy', 'Youthful', 'saas', 'fintech', 'consumer', 'education'],
+    usage: {
+      clearSpace: 'A third of the shape’s width on every side.',
+      minSize: 'Lockup 96px wide. Smaller: the lettermark alone.',
+      do: 'Initial knocked out in the background colour; shape always in brand colour.',
+      dont: 'Don’t outline the letter or swap the shape.',
     },
   },
   playful: {
@@ -140,12 +169,14 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
 
 /* ----------------------------------- looks ----------------------------------- */
 
-const CONCEPTS: Record<LogoStyle, (name: string) => string> = {
+const CONCEPTS: Record<LogoStyle, (name: string, family?: SymbolFamily) => string> = {
   twinkle: (n) => `${n} ends every line with a spark: quiet, lowercase and a little magical.`,
   monogram: (n) => `A signet for ${n}: initials in a badge, spaced capitals beside it. It feels established from day one.`,
   editorial: (n) => `${n} set like a magazine masthead: confident serif, a fine rule and room to breathe.`,
   stacked: (n) => `${n} as a sticker you’d put on your laptop: loud capitals in a tilted block.`,
-  symbol: (n) => `A symbol of four tiles generated from the letters of ${n}. No other brand has this one.`,
+  symbol: (n, f) => `${SYMBOL_META[f ?? 'tiles'].label}: ${SYMBOL_META[f ?? 'tiles'].idea}. Generated from the letters of ${n}, so no other brand has this exact mark.`,
+  emblem: (n, f) => `${n} as an emblem: a ${SYMBOL_META[f ?? 'sprout'].label.toLowerCase()} symbol (${SYMBOL_META[f ?? 'sprout'].idea}) crowning the name in spaced capitals.`,
+  lettermark: (n) => `The ${n[0]?.toUpperCase()} of ${n}, cut out of a bold shape. Works at 16 pixels and on a billboard.`,
   playful: (n) => `${n} in letters that bounce and swap colours. Warm, friendly and impossible to take too seriously.`,
   terminal: (n) => `${n}, typed at a prompt. Speaks fluent developer and looks great in a README.`,
   heritage: (n) => `${n} hangs from one headline bar like Devanagari script. Rooted in India, crowned with a small mark.`,
@@ -159,6 +190,8 @@ export interface LookInput {
   seed?: number;
   /** Styles to avoid (e.g. the ones already shown). */
   exclude?: LogoStyle[];
+  /** Symbol families already shown. */
+  excludeFamilies?: string[];
   count?: number;
 }
 
@@ -175,29 +208,58 @@ export function generateLooks(input: LookInput): Look[] {
       return { id, score: fit * 1.5 + random() * 2.2 - penalty };
     })
     .sort((a, b) => b.score - a.score);
-  const styles = scored.slice(0, count).map((s) => s.id);
+  let styles = scored.slice(0, count).map((s) => s.id);
+  // At least two looks carry a real symbol, so the set never feels like four wordmarks.
+  const SYMBOLIC: LogoStyle[] = ['symbol', 'emblem', 'lettermark'];
+  const symbolic = styles.filter((st) => SYMBOLIC.includes(st)).length;
+  if (count >= 3 && symbolic < 2) {
+    const extra = scored.filter((x) => SYMBOLIC.includes(x.id) && !styles.includes(x.id)).slice(0, 2 - symbolic);
+    styles = [...styles.filter((st) => !SYMBOLIC.includes(st)).slice(0, count - symbolic - extra.length), ...styles.filter((st) => SYMBOLIC.includes(st)), ...extra.map((x) => x.id)];
+  }
   // Spread hues around the wheel so the four options never look alike.
   const baseHue = Math.floor(random() * 360);
   const step = 360 / count;
-  return styles.map((style, i) => buildLook(input, style, baseHue + i * step + (random() - 0.5) * 30, seed + i));
+  const used: SymbolFamily[] = [...((input.excludeFamilies ?? []) as SymbolFamily[])];
+  return styles.map((style, i) => {
+    const look = buildLook(input, style, baseHue + i * step + (random() - 0.5) * 30, seed + i, { usedFamilies: used, tags });
+    if (look.symbol?.family) used.push(look.symbol.family as SymbolFamily);
+    return look;
+  });
 }
 
-export function buildLook(input: { name: string; personalities?: string[]; industry?: string }, style: LogoStyle, hue: number, seed: number, overrides: Partial<Pick<Look, 'title' | 'concept' | 'markShape'>> = {}): Look {
+export function buildLook(
+  input: { name: string; personalities?: string[]; industry?: string },
+  style: LogoStyle,
+  hue: number,
+  seed: number,
+  overrides: Partial<Pick<Look, 'title' | 'concept' | 'markShape' | 'fontTrio' | 'symbol' | 'case' | 'origin'>> & { usedFamilies?: SymbolFamily[]; tags?: string[] } = {},
+): Look {
   const meta = LOGO_STYLE_META[style];
   const r = rng(hash32(`look:${input.name}:${style}:${seed}`));
-  const fontTrio = meta.fonts[Math.floor(r() * meta.fonts.length)]!;
+  const fontTrio = overrides.fontTrio && FONT_TRIOS[overrides.fontTrio] ? overrides.fontTrio : meta.fonts[Math.floor(r() * meta.fonts.length)]!;
   const markShape = overrides.markShape ?? meta.marks[Math.floor(r() * meta.marks.length)]!;
   const h = ((Math.round(hue) % 360) + 360) % 360;
+  const tags = overrides.tags ?? [...(input.personalities ?? []), input.industry ?? ''];
+  let symbol: SymbolSpec | undefined = overrides.symbol;
+  if (!symbol && (style === 'symbol' || style === 'emblem')) {
+    symbol = { family: pickFamily(`${input.name}:${seed}`, tags, overrides.usedFamilies) };
+  }
+  const family = symbol?.family as SymbolFamily | undefined;
+  const wordCase = overrides.case ?? (style === 'symbol' || style === 'lettermark' ? (['lower', 'title', 'title'] as const)[Math.floor(r() * 3)] : undefined);
+  const title = overrides.title ?? (style === 'symbol' && family ? SYMBOL_META[family].label : meta.title);
   return {
     id: `${style}-${h}-${seed}`,
-    title: overrides.title ?? meta.title,
-    concept: overrides.concept ?? CONCEPTS[style](input.name),
+    title,
+    concept: overrides.concept ?? CONCEPTS[style](input.name, family),
     style,
     hue: h,
     fontTrio,
     markShape,
     seed,
     palette: generatePalette({ name: input.name, personalities: input.personalities, industry: input.industry, hue: h, seed: String(seed) }),
+    ...(symbol ? { symbol: symbol as Look['symbol'] } : {}),
+    ...(wordCase ? { case: wordCase } : {}),
+    origin: overrides.origin ?? 'generative',
   };
 }
 
@@ -239,13 +301,15 @@ export interface LogoIdentity {
   typography: { display: { family: string; weights: number[] }; data: { family: string; weights: number[] } };
   mark: MarkShape;
   seed: number;
+  symbol?: SymbolSpec;
+  case?: 'lower' | 'title' | 'upper';
 }
 
 export type LogoVariant = 'light' | 'dark' | 'mono';
 
 export function lookToIdentity(name: string, look: Look): LogoIdentity {
   const t = lookFonts(look);
-  return { name, style: look.style, palette: look.palette, typography: { display: t.display, data: t.data }, mark: look.markShape, seed: look.seed };
+  return { name, style: look.style, palette: look.palette, typography: { display: t.display, data: t.data }, mark: look.markShape, seed: look.seed, symbol: look.symbol as SymbolSpec | undefined, case: look.case };
 }
 
 interface Colors {
@@ -312,27 +376,34 @@ function splitStack(name: string): string[] {
   return [w.slice(0, best), w.slice(best)];
 }
 
-/** Four generative tiles, seeded by the name: quarter circles, half circles, circles and squares. */
-function symbolTiles(id: LogoIdentity, c: Colors, x: number, y: number, size: number): string {
-  const r = rng(hash32(`symbol:${id.name}:${id.seed}`));
-  const cell = size / 2;
-  const fills = [c.brand, c.accent, c.text, c.brand];
-  const out: string[] = [];
-  for (let i = 0; i < 4; i++) {
-    const cx = x + (i % 2) * cell;
-    const cy = y + Math.floor(i / 2) * cell;
-    const kind = Math.floor(r() * 4);
-    const rot = Math.floor(r() * 4) * 90;
-    const fill = fills[(i + Math.floor(r() * 4)) % 4]!;
-    const mid = `${f1(cx + cell / 2)} ${f1(cy + cell / 2)}`;
-    if (kind === 0) out.push(`<path d="M${f1(cx)} ${f1(cy)}H${f1(cx + cell)}A${f1(cell)} ${f1(cell)} 0 0 1 ${f1(cx)} ${f1(cy + cell)}Z" fill="${fill}" transform="rotate(${rot} ${mid})"/>`);
-    else if (kind === 1) out.push(`<path d="M${f1(cx)} ${f1(cy + cell)}A${f1(cell / 2)} ${f1(cell / 2)} 0 0 1 ${f1(cx + cell)} ${f1(cy + cell)}Z" fill="${fill}" transform="rotate(${rot} ${mid})"/>`);
-    else if (kind === 2) out.push(`<circle cx="${f1(cx + cell / 2)}" cy="${f1(cy + cell / 2)}" r="${f1(cell * 0.46)}" fill="${fill}"/>`);
-    else out.push(`<rect x="${f1(cx + cell * 0.04)}" y="${f1(cy + cell * 0.04)}" width="${f1(cell * 0.92)}" height="${f1(cell * 0.92)}" rx="${f1(cell * 0.12)}" fill="${fill}"/>`);
-  }
-  // Guarantee at least one brand-coloured tile.
-  if (!out.some((s) => s.includes(c.brand))) out[0] = out[0]!.replace(/fill="[^"]+"/, `fill="${c.brand}"`);
-  return out.join('');
+/** The brand symbol (generative family or AI-drawn) at (x, y). */
+function symbolAt(id: LogoIdentity, c: Colors, x: number, y: number, size: number): string {
+  return drawSymbol(id.symbol ?? { family: 'tiles' }, `${id.name}:${id.seed}`, { brand: c.brand, accent: c.accent, ink: c.text, tint: c.tint, paper: c.bg ?? c.paper }, x, y, size);
+}
+
+/** The small signature mark: the AI-drawn symbol when there is one, else the classic mark shape. */
+function signatureMark(id: LogoIdentity, c: Colors, x: number, y: number, size: number, fill: string): string {
+  if (id.symbol?.svg) return symbolAt(id, { ...c, brand: fill }, x, y, size);
+  return markPath(id.mark, x, y, size, fill);
+}
+
+function cased(name: string, mode: 'lower' | 'title' | 'upper' | undefined, fallback: 'lower' | 'title' | 'upper'): string {
+  const m = mode ?? fallback;
+  return m === 'upper' ? name.trim().toUpperCase() : m === 'title' ? titleCase(name) : name.trim().toLowerCase();
+}
+
+/** Container shapes for lettermarks, in a 100×100 box. */
+const CONTAINERS = [
+  (fill: string) => `<circle cx="50" cy="50" r="50" fill="${fill}"/>`,
+  (fill: string) => `<path d="M50 0C88 0 100 12 100 50S88 100 50 100 0 88 0 50 12 0 50 0Z" fill="${fill}"/>`,
+  (fill: string) => `<path d="M50 2L93 26V74L50 98L7 74V26Z" fill="${fill}" stroke="${fill}" stroke-width="4" stroke-linejoin="round"/>`,
+  (fill: string) => `<path d="M8 6H92V52C92 76 72 92 50 98C28 92 8 76 8 52Z" fill="${fill}"/>`,
+  (fill: string) => `<rect width="100" height="100" rx="22" fill="${fill}"/>`,
+  (fill: string) => `<path d="M0 50A50 50 0 0 1 100 50V100H0Z" fill="${fill}"/>`,
+];
+
+function containerFor(id: LogoIdentity): (fill: string) => string {
+  return CONTAINERS[hash32(`container:${id.name}:${id.seed}`) % CONTAINERS.length]!;
 }
 
 export interface SvgResult {
@@ -432,13 +503,47 @@ export function logoSVG(id: LogoIdentity, opts: { variant?: LogoVariant; measure
       const pad = 0.2 * F;
       const S = 1.1 * F;
       const size = 0.58 * F;
-      const t = titleCase(id.name);
+      const t = cased(id.name, id.case, 'title');
       const tw = w(t, size) - 0.02 * size * (t.length - 1);
-      const gap = 0.32 * F;
+      const gap = 0.3 * F;
       const width = pad * 2 + S + gap + tw;
       const height = pad * 2 + S;
       const body =
-        symbolTiles(id, c, pad, pad, S) +
+        symbolAt(id, c, pad, pad, S) +
+        `<text x="${f1(pad + S + gap)}" y="${f1(pad + S / 2 + size * 0.36)}" font-family="${dfam}" font-weight="${dw}" font-size="${f1(size)}" letter-spacing="${f1(-0.02 * size)}" fill="${c.text}">${esc(t)}</text>`;
+      return wrap(width, height, c, body, o);
+    }
+    case 'emblem': {
+      const pad = 0.24 * F;
+      const S = 1.25 * F;
+      const size = 0.34 * F;
+      const ls = 0.22 * size;
+      const t = cased(id.name, id.case, 'upper');
+      const tw = w(t, size) + ls * (t.length - 1);
+      const width = pad * 2 + Math.max(S, tw);
+      const gap = 0.22 * F;
+      const baseline = pad + S + gap + size * 0.74;
+      const height = baseline + pad + 0.04 * F;
+      const cx = width / 2;
+      const body =
+        symbolAt(id, c, cx - S / 2, pad, S) +
+        `<text x="${f1(cx + ls / 2)}" y="${f1(baseline)}" text-anchor="middle" font-family="${dfam}" font-weight="${dw}" font-size="${f1(size)}" letter-spacing="${f1(ls)}" fill="${c.text}">${esc(t)}</text>`;
+      return wrap(width, height, c, body, o);
+    }
+    case 'lettermark': {
+      const pad = 0.2 * F;
+      const S = 1.1 * F;
+      const size = 0.56 * F;
+      const t = cased(id.name, id.case, 'lower');
+      const tw = w(t, size) - 0.02 * size * (t.length - 1);
+      const gap = 0.3 * F;
+      const width = pad * 2 + S + gap + tw;
+      const height = pad * 2 + S;
+      const letter = initials(id.name).slice(0, 1);
+      const knock = v === 'mono' ? '#FFFFFF' : onColor(c.brand);
+      const body =
+        `<g transform="translate(${f1(pad)} ${f1(pad)}) scale(${(S / 100).toFixed(4)})">${containerFor(id)(c.brand)}` +
+        `<text x="50" y="${f1(50 + 62 * 0.36)}" text-anchor="middle" font-family="${dfam}" font-weight="${dw}" font-size="62" fill="${knock}">${esc(letter)}</text></g>` +
         `<text x="${f1(pad + S + gap)}" y="${f1(pad + S / 2 + size * 0.36)}" font-family="${dfam}" font-weight="${dw}" font-size="${f1(size)}" letter-spacing="${f1(-0.02 * size)}" fill="${c.text}">${esc(t)}</text>`;
       return wrap(width, height, c, body, o);
     }
@@ -497,7 +602,7 @@ export function logoSVG(id: LogoIdentity, opts: { variant?: LogoVariant; measure
       const body =
         `<text x="${f1(pad + over)}" y="${f1(baseline)}" font-family="${fam(display.family, 'serif')}" font-weight="${dw}" font-size="${F}" fill="${c.text}">${esc(t)}</text>` +
         `<rect x="${f1(pad)}" y="${f1(barY)}" width="${f1(tw + over * 2)}" height="${f1(barH)}" fill="${c.text}"/>` +
-        markPath(id.mark, pad + tw + over * 2 - markS * 1.05, barY - markS - 0.04 * F, markS, c.brand);
+        signatureMark(id, c, pad + tw + over * 2 - markS * 1.05, barY - markS - 0.04 * F, markS, c.brand);
       return wrap(width, height, c, body, o);
     }
     case 'twinkle':
@@ -514,7 +619,7 @@ export function logoSVG(id: LogoIdentity, opts: { variant?: LogoVariant; measure
       const height = baseline + 0.24 * F + pad;
       const body =
         `<text x="${f1(pad)}" y="${f1(baseline)}" font-family="${dfam}" font-weight="${dw}" font-size="${F}" letter-spacing="${f1(ls)}" fill="${c.text}">${esc(t)}</text>` +
-        markPath(id.mark, pad + tw + gap, baseline - markS, markS, c.brand);
+        signatureMark(id, c, pad + tw + gap, baseline - markS, markS, c.brand);
       return wrap(width, height, c, body, o);
     }
   }
@@ -542,7 +647,13 @@ export function iconSVG(id: LogoIdentity, opts: { measure?: Measurer; css?: stri
       body = `<g transform="rotate(-6 64 64)">${tile(c.brand, text(letter.toUpperCase(), 84, onColor(c.brand), display.family, 'Impact, sans-serif', 94), 22)}</g>`;
       return wrap(S, S, c, body, { css: opts.css });
     case 'symbol':
-      body = tile('#FFFFFF', symbolTiles(id, c, 22, 22, 84));
+      body = tile('#FFFFFF', symbolAt(id, { ...c, bg: '#FFFFFF' }, 20, 20, 88));
+      break;
+    case 'emblem':
+      body = tile(c.tint, symbolAt(id, { ...c, bg: c.tint }, 20, 20, 88));
+      break;
+    case 'lettermark':
+      body = tile(c.paper, `<g transform="translate(18 18) scale(0.92)">${containerFor(id)(c.brand)}<text x="50" y="${f1(50 + 62 * 0.36)}" text-anchor="middle" font-family="${fam(display.family, 'sans-serif')}" font-weight="${dw}" font-size="62" fill="${onColor(c.brand)}">${esc(initials(id.name).slice(0, 1))}</text></g>`);
       break;
     case 'playful':
       body = tile(c.tint, text(letter.toLowerCase(), 86, c.brand, display.family, 'sans-serif', 92), 64);
@@ -553,12 +664,12 @@ export function iconSVG(id: LogoIdentity, opts: { measure?: Measurer; css?: stri
     case 'heritage':
       {
         const xh = (opts.measure ?? approxMeasure).xHeight?.({ family: display.family, weight: dw, size: 76 }) ?? 0.52 * 76;
-        body = tile(c.tint, text(letter.toLowerCase(), 76, c.ink, display.family, 'serif', 98) + `<rect x="26" y="${f1(98 - xh - 4)}" width="76" height="6" fill="${c.ink}"/>` + markPath(id.mark, 74, f1n(98 - xh - 32), 24, c.brand));
+        body = tile(c.tint, text(letter.toLowerCase(), 76, c.ink, display.family, 'serif', 98) + `<rect x="26" y="${f1(98 - xh - 4)}" width="76" height="6" fill="${c.ink}"/>` + signatureMark(id, c, 74, f1n(98 - xh - 32), 24, c.brand));
       }
       break;
     case 'twinkle':
     default:
-      body = tile(c.ink, text(letter.toLowerCase(), 72, c.paper, display.family, 'sans-serif', 84).replace(`x="${S / 2}"`, 'x="56"') + markPath(id.mark, 82, 70, 22, c.accent));
+      body = tile(c.ink, text(letter.toLowerCase(), 72, c.paper, display.family, 'sans-serif', 84).replace(`x="${S / 2}"`, 'x="56"') + signatureMark(id, { ...c, bg: c.ink }, 82, 70, 22, c.accent));
   }
   return wrap(S, S, c, body, { css: opts.css });
 }

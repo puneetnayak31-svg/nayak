@@ -7,13 +7,15 @@ import { requireAdmin } from '../plugins/auth';
 import { ai } from '../providers/ai';
 import { billing } from '../providers/billing';
 import { domainProviderInfo } from '../services/domain.service';
+import { images } from '../providers/image';
 import { socialLive, socialProviderInfo } from '../services/social.service';
 
 export function systemInfo(): SystemInfo {
   return {
     mode: env.DEMO_MODE ? 'demo' : 'live',
     ai: { provider: ai.id, model: ai.model, live: ai.live },
-    domains: { provider: domainProviderInfo.id, live: domainProviderInfo.live },
+    domains: { provider: domainProviderInfo.id, live: domainProviderInfo.live, confirm: domainProviderInfo.confirm },
+    images: { provider: images.id, live: images.live },
     social: { live: socialLive, platforms: socialProviderInfo },
   };
 }

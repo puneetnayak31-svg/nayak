@@ -1,4 +1,4 @@
-import { LOGO_STYLE_META, MARK_PATHS, NAME_MODES, type BrandKit, type Brief } from '@gbt/shared';
+import { FONT_TRIOS, LOGO_STYLE_META, MARK_PATHS, NAME_MODES, SYMBOL_META, type BrandKit, type Brief } from '@gbt/shared';
 import type { AssistantInput, KitGenInput, NameGenInput } from './types';
 
 /**
@@ -23,8 +23,18 @@ Mix name types inside every batch: invented words, blends, real evocative words,
 and (where it fits) Indian-language roots that travel globally. Explain Indian roots in "origin"
 (e.g. "Sanskrit: tara = star"). Leave "origin" as an empty string when there is none.
 
+For every name also write:
+- "meaning": what the name means or evokes, in one plain sentence a customer would understand
+  (e.g. "Sounds like 'lumen' and 'aura': light that surrounds you.").
+- "rationale": one or two sentences on why it fits THIS brief: the audience, the category and the feeling.
+  Be specific to the brief; never generic praise like "memorable and modern".
+- "tagline": a 3–7 word tagline written for this name and brief.
+- "whyItWorks": exactly three short, concrete reasons (sound, length, category fit, story, domain-friendliness).
+- "watchOut": one honest caveat (a spelling people may get wrong, a crowded category, a similar-sounding
+  brand, a hard sound in some languages), or an empty string if there is genuinely none.
+
 "pronunciation" is a simple respelling with the stressed syllable in capitals, e.g. "loo-MOR-uh".
-"relevance" is 0–10: how well the name fits the brief.
+"relevance" is 0–10: how well the name fits the brief. Be strict; most names are 5–8.
 "personality" is two or three adjectives.
 Return names exactly as they should be written (capitalised, no domain suffix, no @).
 Never repeat a name from the exclude list.`;
@@ -69,12 +79,26 @@ export function namesPrompt(input: NameGenInput): string {
 export const KIT_SYSTEM = `You are the brand strategist and designer inside GoBrandToday.
 You turn a chosen name into a complete starter Brand Bible that a founder can use today.
 
-Visual identity — propose FOUR looks the founder will choose between. They must be genuinely
-different: four different logo styles (from the list), four clearly different base hues (at least
-60° apart), and four different marks where possible. Give each look a short evocative title and a
-one or two sentence concept that explains why it fits this brand. Order them best-fit first.
-Our system turns each look into a full kit (contrast-checked five-role palette from your hue,
-Google Fonts pairing for the style, logo, icon and usage rules).
+Visual identity — propose FOUR looks the founder will choose between, like a design studio's first
+presentation. They must be genuinely different: four different logo styles (from the list), four clearly
+different base hues (at least 60° apart), different font pairings, and different symbols. Give each look
+a short evocative title (not the style name) and a one or two sentence concept that ties the form to the
+brand's meaning. Order them best-fit first.
+
+Symbols: at least TWO of the four looks must carry a symbol you design yourself in "symbolSvg":
+- SVG shapes only (path, circle, ellipse, rect, polygon, line, g), inside a 100×100 box, no <svg> wrapper.
+- Colours ONLY as palette roles: fill="brand", fill="accent", fill="ink", fill="paper" or fill="none"
+  (same for stroke). Two or three colours at most.
+- Simple, bold and memorable at 32px: 2–6 shapes, no text, no gradients, no thin hairlines (stroke ≥ 6).
+- Draw an idea from the brand (its meaning, product or origin), not a generic swoosh, globe or lightbulb.
+For looks without a custom symbol set symbolSvg to "". For "symbol" and "emblem" styles without a custom
+symbol, pick a generative "symbolFamily"; otherwise use "none".
+
+Also write the brand "essence" (a one-line promise and three values, each with what it means in practice)
+and a "moodboard" of four imagery directions: a short caption for the guidelines plus a detailed prompt an
+image model could render (subject, setting, light, palette mood, camera; no text or logos in the image).
+Our system turns each look into a full kit (contrast-checked palette from your hue, logo lockups, icon,
+mockups and usage rules).
 
 Voice: three words separated by " · " (e.g. "Light · Clever · Quietly magical"), with
 concrete "say" lines and crossed-out "not" lines.
@@ -87,6 +111,12 @@ Never claim trademark clearance, guaranteed SEO rankings or guaranteed success.`
 const STYLE_LIST = Object.values(LOGO_STYLE_META)
   .map((m) => `${m.id} — ${m.construction} Best for: ${m.fit.join(', ')}`)
   .join('\n');
+const FONT_LIST = Object.values(FONT_TRIOS)
+  .map((t) => `${t.id} (${t.display.family} + ${t.body.family})`)
+  .join('; ');
+const FAMILY_LIST = Object.entries(SYMBOL_META)
+  .map(([k, v]) => `${k} (${v.idea})`)
+  .join('; ');
 const MARK_LIST = Object.entries(MARK_PATHS)
   .map(([k, v]) => `${k} (${v.meaning})`)
   .join('; ');
@@ -103,7 +133,9 @@ export function kitPrompt(input: KitGenInput): string {
     input.domain && `Domain: ${input.domain}`,
     input.handle && `Handle: @${input.handle}`,
     `Logo styles (style):\n${STYLE_LIST}`,
-    `Marks (markShape): ${MARK_LIST}`,
+    `Marks (markShape, the small signature shape): ${MARK_LIST}`,
+    `Font pairings (fontTrio): ${FONT_LIST}`,
+    `Generative symbol families (symbolFamily): ${FAMILY_LIST}`,
     `Sections to write: ${input.sections.join(', ')}`,
     'Taglines: 6–8 options, each under 8 words. Content ideas: exactly 10. Looks: exactly 4. Website features: 3–4. FAQ: 4. X thread: 4–5 posts.',
     input.instruction && `Direction for this version: ${input.instruction}`,
@@ -144,7 +176,7 @@ export function summariseKit(kit: BrandKit): string {
     `One-liner: ${kit.messaging.oneLiner}`,
     `Voice: ${kit.voice.summary}`,
     `Taglines: ${kit.taglines.slice(0, 5).join(' | ')}`,
-    `Logo: ${kit.identity.style} style, ${kit.identity.mark.shape} mark — ${kit.identity.mark.concept}`,
+    `Logo: ${kit.identity.style} style${kit.identity.symbol?.family ? `, ${kit.identity.symbol.family} symbol` : kit.identity.symbol?.svg ? ', custom symbol' : `, ${kit.identity.mark.shape} mark`} — ${kit.identity.mark.concept}`,
     `Palette: ${kit.identity.palette.map((p) => `${p.role} ${p.name} ${p.hex}`).join(', ')}`,
     `Fonts: ${kit.identity.typography.display.family} / ${kit.identity.typography.body.family}`,
     `Archetype: ${kit.archetype.name}`,

@@ -9,6 +9,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/`, lastModified: now, changeFrequency: 'weekly', priority: 1 },
     { url: `${SITE}/create`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${SITE}/pricing`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE}/tools`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE}/experts`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     ...SEO_PAGES.map((p) => ({ url: `${SITE}/tools/${p.slug}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.8 })),
   ];
 }

@@ -17,9 +17,11 @@ import DashboardLayout from '../app/dashboard/layout';
 import { BrandView } from '../components/BrandView';
 import { DashAssistant, DashBrands, DashDomains, DashHandles, DashHome, DashSaved, DashSettings } from '../components/Dashboard';
 import { NameCheck } from '../components/NameCheck';
+import { ExpertsPage } from '../components/ExpertsPage';
 import { ToolContent } from '../components/ToolContent';
+import { ToolsIndex } from '../components/ToolsIndex';
 import { Shell } from '../components/ui';
-import { Providers } from '../lib/providers';
+import { Providers, useApp } from '../lib/providers';
 import { SEO_PAGES } from '../lib/seo-pages';
 import { resetPreview } from './local-api';
 import { isInternal, match, navigate, useRoute } from './router';
@@ -67,6 +69,14 @@ function Page() {
       return <LoginPage />;
     case '/signup':
       return <SignupPage />;
+    case '/tools':
+      return <ToolsIndex />;
+    case '/experts':
+      return (
+        <Shell>
+          <ExpertsPage />
+        </Shell>
+      );
     case '/tools/:slug': {
       const p = SEO_PAGES.find((x) => x.slug === params.slug);
       return p ? <ToolContent p={p} /> : <NotFound />;
@@ -108,10 +118,17 @@ function useLinkInterceptor() {
 }
 
 function PreviewBar() {
+  const { system, toast } = useApp();
+  const ai = !!system?.ai.live;
+  useEffect(() => {
+    const on = (e: Event) => toast(String((e as CustomEvent).detail), 'error');
+    window.addEventListener('gbt-toast', on);
+    return () => window.removeEventListener('gbt-toast', on);
+  }, [toast]);
   return (
     <div className="preview-bar" role="note">
       <span>
-        <b>Preview</b> · runs fully in your browser. Names come from the offline generator; domain and handle results are demo data.
+        <b>Preview</b> · runs in your browser. {ai ? 'Names, brand bibles and logo symbols come from Claude.' : 'Names come from the offline generator.'} Domain and handle checks run on the server version, so here you get prices and one-tap links, never a guess.
       </span>
       <span className="row gap-8">
         <button type="button" className="btn-link tiny" onClick={() => navigate('/dashboard')}>
@@ -144,6 +161,29 @@ function App() {
     </Providers>
   );
 }
+
+/** Downloads: a sandboxed page can't follow <a download>, so files go through the viewer's save dialog. */
+(globalThis as { __gbtSave?: (filename: string, blob: Blob) => Promise<void> }).__gbtSave = async (filename, blob) => {
+  const c = (globalThis as { claude?: { use?: (n: string) => Promise<unknown> } }).claude;
+  const downloads = (c?.use ? await c.use('downloads').catch(() => null) : null) as { save: (r: { filename: string; data: Blob }) => Promise<unknown> } | null;
+  if (downloads) {
+    try {
+      await downloads.save({ filename, data: blob });
+    } catch (e) {
+      const code = (e as { code?: string })?.code;
+      if (code !== 'declined') window.dispatchEvent(new CustomEvent('gbt-toast', { detail: 'This view can’t save files. Try the full app.' }));
+    }
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

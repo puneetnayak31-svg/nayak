@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LOGO_STYLE_META, MARK_PATHS, lookFonts, swatch, type BrandKit, type Look } from '@gbt/shared';
+import { LOGO_STYLE_META, MARK_PATHS, SYMBOL_META, lookFonts, swatch, type BrandKit, type Look } from '@gbt/shared';
 import { Logo, LogoIcon, lookIdentity } from './Logo';
 import { Spark } from './Spark';
 
@@ -33,7 +33,7 @@ export function LookPicker({
             Four ways {kit.name} could look.
           </h1>
           <p className="soft" style={{ maxWidth: 620 }}>
-            Each one is a different logo style with its own colours and fonts. Pick the one that feels right and we’ll build the full guidelines around it. You can switch later.
+            Each one is a different construction with its own symbol, colours and fonts, generated for {kit.name} alone. Pick the one that feels right and we’ll build the full guidelines around it. You can switch later.
           </p>
         </div>
         <div className="row gap-8 wrap">
@@ -66,11 +66,11 @@ function LookCard({ name, look, index, busy, onChoose }: { name: string; look: L
   return (
     <article className="look-card" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ animationDelay: `${index * 70}ms` }}>
       <div className="look-hero" style={{ background: '#fff' }}>
-        <Logo id={id} width="82%" />
+        <Logo id={id} width="82%" maxHeight={150} />
       </div>
       <div className="look-strip">
         <div style={{ background: ink }} className="look-dark">
-          <Logo id={id} variant="dark" width="86%" />
+          <Logo id={id} variant="dark" width="86%" maxHeight={70} />
         </div>
         <div style={{ background: tint }} className="look-icon">
           <LogoIcon id={id} size={64} />
@@ -83,14 +83,22 @@ function LookCard({ name, look, index, busy, onChoose }: { name: string; look: L
           ))}
         </div>
         <div className="stack gap-4">
-          {look.title !== meta.title && <span className="eyebrow" style={{ fontSize: 11 }}>{meta.title}</span>}
+          <div className="row gap-6 wrap">
+            {look.title !== meta.title && <span className="eyebrow" style={{ fontSize: 11 }}>{meta.title}</span>}
+            {look.origin === 'ai' && (
+              <span className="badge" title="This symbol was drawn by AI for your brand">
+                <Spark size={9} /> AI-drawn symbol
+              </span>
+            )}
+          </div>
           <strong className="display" style={{ fontSize: 22 }}>
             {look.title}
           </strong>
         </div>
         <p className="small soft">{look.concept}</p>
         <p className="tiny muted mono">
-          {fonts.display.family} · {fonts.body.family} · {MARK_PATHS[look.markShape].label.toLowerCase()} mark
+          {fonts.display.family} · {fonts.body.family} ·{' '}
+          {look.symbol?.svg ? 'custom symbol' : look.symbol?.family ? `${(SYMBOL_META[look.symbol.family as keyof typeof SYMBOL_META]?.label ?? look.symbol.family).toLowerCase()} symbol` : `${MARK_PATHS[look.markShape].label.toLowerCase()} mark`}
         </p>
         <button type="button" className={`btn ${hover ? 'btn-primary' : 'btn-dark'} btn-sm`} onClick={onChoose} disabled={!!busy} style={{ marginTop: 4 }}>
           {busy === look.id ? 'Building guidelines…' : 'Use this look'}

@@ -2,10 +2,11 @@ import { randomBytes } from 'node:crypto';
 import { scoreName, toSlug, type BrandKit, type Brief } from '@gbt/shared';
 import { and, asc, desc, eq } from 'drizzle-orm';
 import { db, schema } from '../db/client';
-import { notFound } from '../lib/errors';
+import { AppError, notFound } from '../lib/errors';
 import { logger } from '../lib/logger';
 import { ai, offlineAI, type AssistantOutput, type KitDraft, type KitSection } from '../providers/ai';
 import { analytics } from '../providers/analytics';
+import { images } from '../providers/image';
 import type { User } from './auth.service';
 import { checkDomains } from './domain.service';
 import { checkHandle } from './social.service';
@@ -140,7 +141,7 @@ export async function regenerateSection(user: User, id: string, section: KitSect
   if (section === 'identity') {
     // New looks to choose from; the current identity stays until the user picks.
     const looks = completeLooks(brand.name, brand.brief, merged.identity.looks, Date.now() % 100000);
-    kit = withFreshLooks({ ...brand.kit, identity: { ...brand.kit.identity, designSystem: merged.identity.designSystem, motion: merged.identity.motion } }, brand.brief, looks);
+    kit = withFreshLooks({ ...brand.kit, identity: { ...brand.kit.identity, designSystem: merged.identity.designSystem, essence: merged.identity.essence, moodboard: merged.identity.moodboard } }, brand.brief, looks);
   } else {
     const fresh = assembleKit(brand.name, brand.brief, merged);
     kit = { ...fresh, identity: brand.kit.identity };
@@ -246,4 +247,81 @@ export async function publicBrand(slug: string): Promise<Brand> {
   const brand = await db.query.brands.findFirst({ where: and(eq(schema.brands.shareSlug, slug), eq(schema.brands.isPublic, true)) });
   if (!brand) throw notFound('Brand');
   return brand;
+}
+
+/* --------------------------------- imagery -------------------------------- */
+
+/**
+ * Moodboard photos and logo concept sketches from the configured image model.
+ * Images are stored as brand assets (or kept as the provider's URL) and linked
+ * from the kit, so the guidelines, exports and share page all show them.
+ */
+export async function generateImagery(user: User, id: string, kind: 'moodboard' | 'concepts'): Promise<Brand> {
+  const brand = await getBrand(user, id);
+  if (!brand.kit) throw notFound('Brand kit');
+  const kit = brand.kit;
+  const brandHex = kit.identity.palette.find((p) => p.role === 'brand');
+  const accentHex = kit.identity.palette.find((p) => p.role === 'accent');
+  const mood = `${kit.personality.slice(0, 3).join(', ').toLowerCase()} mood, colour accents of ${brandHex?.name ?? 'brand colour'} (${brandHex?.hex}) and ${accentHex?.name ?? 'accent'} (${accentHex?.hex})`;
+  const seedBase = Date.now() % 100_000;
+
+  const jobs =
+    kind === 'moodboard'
+      ? (kit.identity.moodboard?.length ? kit.identity.moodboard : defaultMoodboard(kit)).slice(0, 4).map((m, i) => ({
+          caption: m.caption,
+          prompt: `${m.prompt}, ${mood}, no text, no logos, professional photography`,
+          seed: seedBase + i,
+          width: 768,
+          height: 960,
+        }))
+      : [
+          'a single bold geometric symbol',
+          'a hand-drawn monoline emblem',
+          'a playful abstract mark',
+        ].map((approach, i) => ({
+          caption: ['Geometric symbol', 'Monoline emblem', 'Playful abstract mark'][i]!,
+          prompt: `logo concept sketch: ${approach} for a brand called "${kit.name}" (${kit.messaging.oneLiner}). Idea: ${kit.identity.mark.concept}. Flat vector style, ${brandHex?.hex} and ${accentHex?.hex} on an off-white background, centred, lots of negative space, no text, no letters, no words`,
+          seed: seedBase + 10 + i,
+          width: 768,
+          height: 768,
+        }));
+
+  const results = await Promise.all(
+    jobs.map(async (j) => {
+      try {
+        const img = await images.generate({ prompt: j.prompt, width: j.width, height: j.height, seed: j.seed });
+        if (img.kind === 'url') return { caption: j.caption, prompt: j.prompt, imageUrl: img.url };
+        const [asset] = await db
+          .insert(schema.brandAssets)
+          .values({ brandId: brand.id, kind, format: img.contentType.split('/')[1] ?? 'png', contentType: img.contentType, data: img.data.toString('base64'), meta: { prompt: j.prompt, provider: images.id } })
+          .returning({ id: schema.brandAssets.id });
+        return { caption: j.caption, prompt: j.prompt, imageUrl: `/api/assets/${asset!.id}` };
+      } catch (err) {
+        logger.warn({ err: (err as Error).message, provider: images.id }, 'image generation failed');
+        return null;
+      }
+    }),
+  );
+  const ok = results.filter((r): r is NonNullable<typeof r> => !!r);
+  if (!ok.length) throw new AppError(502, 'image_failed', 'The image model didn’t answer. Try again in a minute.');
+  const identity =
+    kind === 'moodboard'
+      ? { ...kit.identity, moodboard: ok }
+      : { ...kit.identity, concepts: ok };
+  return saveVersion(brand, { ...kit, identity }, kind === 'moodboard' ? 'Generated moodboard' : 'Generated concept sketches');
+}
+
+function defaultMoodboard(kit: BrandKit) {
+  const what = kit.messaging.oneLiner;
+  return [
+    { caption: 'People and moments', prompt: `candid lifestyle photograph for ${what}, ${kit.identity.designSystem.photography}` },
+    { caption: 'Texture and detail', prompt: `macro texture photograph that suits ${what}, minimal and calm` },
+    { caption: 'Product in use', prompt: `hands using the product of ${what}, flat lay, soft shadows` },
+    { caption: 'Place', prompt: `quiet modern Indian setting at golden hour that suits ${what}, cinematic` },
+  ];
+}
+
+export async function getAsset(id: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  return db.query.brandAssets.findFirst({ where: eq(schema.brandAssets.id, id) });
 }

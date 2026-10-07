@@ -8,3 +8,7 @@ export * from './pricing';
 export * from './registrars';
 export * from './brand-system';
 export * from './logo';
+export * from './domain-pricing';
+export * from './symbols';
+export * from './experts';
+export * from './mockups';

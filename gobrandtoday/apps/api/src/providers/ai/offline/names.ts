@@ -106,6 +106,89 @@ interface Draft {
   origin?: string;
   relevance: number;
   personality: string[];
+  /** What the name means or evokes. */
+  meaning: string;
+  /** The parts it was built from (for the "why it works" notes). */
+  parts?: string[];
+}
+
+/** What common evocative words suggest, for plain-English meanings. */
+const WORD_SENSE: Record<string, string> = {
+  ember: 'a glow that keeps burning', atlas: 'a map of everything', orbit: 'everything moving around one centre', harbor: 'a safe place to land',
+  pebble: 'small, smooth and friendly', lumen: 'a unit of light', kite: 'lightness and lift', compass: 'always knowing the way', lantern: 'light you carry with you',
+  maple: 'warmth and nature', cedar: 'strength that lasts', juniper: 'fresh and botanical', saffron: 'India’s most precious spice', indigo: 'the deep blue India gave the world',
+  velvet: 'softness and luxury', canvas: 'a blank space to create on', meadow: 'calm, open and green', willow: 'flexible and graceful', sparrow: 'small, quick and everywhere',
+  falcon: 'speed and precision', otter: 'playful and clever', fable: 'a story worth retelling', echo: 'a voice that carries', nimbus: 'a bright cloud or halo',
+  aurora: 'the first light of day', zenith: 'the highest point', vertex: 'where lines meet', prism: 'one light split into many colours', quill: 'writing and craft',
+  anchor: 'steadiness you can trust', beacon: 'a guiding light', ripple: 'small actions that spread', tandem: 'working together', wander: 'curiosity and travel',
+  mosaic: 'many pieces making one picture', tapestry: 'many threads woven into one', marble: 'timeless and solid', cobalt: 'a vivid, confident blue', amber: 'warm, golden light',
+  onyx: 'dark, polished and strong', jade: 'calm and precious', relay: 'passing things on, fast', clove: 'a warm, familiar spice', tamarind: 'tangy, playful and Indian',
+  mango: 'India’s favourite fruit', nectar: 'the sweetest part', cardamom: 'the queen of spices', honey: 'natural sweetness', ledger: 'every number in its place',
+  abacus: 'counting made simple', lotus: 'beauty that rises from mud', banyan: 'India’s great sheltering tree', monsoon: 'the season everything grows', peacock: 'colour and pride',
+};
+
+const TAGLINE_TEMPLATES: Array<(n: string, subject: string) => string> = [
+  (_n, s) => `${cap(s)}, made simple.`,
+  (_n, s) => `Your ${s}, sorted.`,
+  (_n, s) => `Where ${s} feels easy.`,
+  (_n, s) => `Small name. Big ${s}.`,
+  (_n, s) => `${cap(s)} with a little soul.`,
+  (n) => `Say it once. Remember ${n}.`,
+  (_n, s) => `Better ${s}, every day.`,
+  (_n, s) => `${cap(s)}, the way it should be.`,
+  (_n, s) => `Made for ${s} lovers.`,
+  (_n, s) => `The calm side of ${s}.`,
+];
+
+/** Respelling ambiguity people will trip over when they hear the name. */
+function spellingRisk(slug: string): string | null {
+  if (/ph/.test(slug)) return 'People may spell the "ph" with an "f" after hearing it.';
+  if (/(.)\1/.test(slug)) return 'Double letters get dropped when people type it from memory; grab the single-letter domain too.';
+  if (/[kc]/.test(slug) && /^[^aeiou]*[aeiou]/.test(slug) && /c[aou]|k[aou]/.test(slug)) return 'Heard aloud, the "k"/"c" sound could be spelt either way.';
+  if (/y/.test(slug.slice(1))) return 'Some people will write the "y" as an "i".';
+  if (/(x|q)/.test(slug)) return 'Letters like x and q look techy but are slower to type and say on a call.';
+  return null;
+}
+
+function syllableCount(slug: string): number {
+  const groups = (slug.match(/[aeiouy]+/g) ?? []).length;
+  // A final consonant + "e" is usually silent ("lane", "office").
+  const silentE = /[^aeiou]e$/.test(slug) && groups > 1 ? 1 : 0;
+  return Math.max(1, groups - silentE);
+}
+
+/** Meaning, tagline, three reasons and one caveat for every offline name. */
+function enrich(d: Draft, subject: string, audience: string, usedTaglines: Set<number>): { tagline: string; whyItWorks: string[]; watchOut: string } {
+  const slug = toSlug(d.name);
+  const display = d.name.includes(' ') ? d.name : cap(d.name);
+  // Spread taglines across the batch: start from the name's own hash, skip ones already used.
+  let ti = hash32(slug) % TAGLINE_TEMPLATES.length;
+  for (let k = 0; k < TAGLINE_TEMPLATES.length && usedTaglines.has(ti); k++) ti = (ti + 1) % TAGLINE_TEMPLATES.length;
+  usedTaglines.add(ti);
+  if (usedTaglines.size >= TAGLINE_TEMPLATES.length) usedTaglines.clear();
+  const tagline = TAGLINE_TEMPLATES[ti]!(display, subject);
+  const reasons: string[] = [];
+  const syl = syllableCount(slug);
+  reasons.push(`${slug.length} letters, ${syl} syllable${syl > 1 ? 's' : ''}: fits on a phone screen, a shop sign and a social handle.`);
+  if (d.type === 'descriptive') reasons.push(`Contains words ${audience} already search for, which helps people find you early on.`);
+  else if (d.type === 'indian') reasons.push(`Carries real meaning (${d.origin ?? 'an Indian root'}), a story you can tell on the packaging and in your first post.`);
+  else if (d.type === 'abstract' || d.type === 'invented') reasons.push('Not a dictionary word, so it’s easier to own: domains, handles and trademark searches tend to be clearer.');
+  else if (d.type === 'blend') reasons.push(`Two ideas in one word (${d.parts?.join(' + ') ?? 'a blend'}), so the name explains itself once you hear it.`);
+  else if (d.type === 'real_word') reasons.push('A real word people already know and like, so it feels familiar on day one.');
+  else reasons.push('Paints a picture instantly, so people remember it after hearing it once.');
+  if (/([aiou]|ee)$/.test(slug)) reasons.push('Ends on an open vowel, which sounds friendly and is easy to say in Hindi and English.');
+  else if (pronunciationScore(slug).value >= 8.5) reasons.push('Spelt the way it sounds: easy to say over a call or a WhatsApp voice note.');
+  else reasons.push(`Feels ${d.personality.map((p) => p.toLowerCase()).join(' and ')}, which matches the brief.`);
+
+  let watchOut = spellingRisk(slug) ?? '';
+  if (!watchOut) {
+    if (d.type === 'descriptive') watchOut = 'Descriptive names are harder to trademark and can feel generic as you grow.';
+    else if (d.type === 'real_word') watchOut = 'Real words are popular: expect the .com to be taken and plan for a prefix like “get” or a .in.';
+    else if (d.type === 'abstract') watchOut = 'A brand-new word has no meaning yet: your tagline and first posts need to tell its story.';
+    else if (d.type === 'indian') watchOut = 'Outside India, add a one-line explanation of the meaning so the story travels.';
+    else if (slug.length > 9) watchOut = 'On the longer side; check how it looks as an Instagram handle and app icon.';
+  }
+  return { tagline, whyItWorks: reasons.slice(0, 3), watchOut };
 }
 
 function cap(s: string): string {
@@ -220,7 +303,10 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
   };
 
   const feel = FEEL[mode] ?? 'modern';
-  const subject = ctx.keywords.find((k) => k.length > 3) ?? 'your idea';
+  // The subject is a thing (candles, chai, invoices), not a quality ("cosy", "affordable").
+  const ADJ = /^(cosy|cozy|simple|smart|fast|easy|best|new|modern|affordable|quick|fresh|cheap|premium|luxury|small|local|online|busy|healthy|organic|natural|handmade|sustainable|beautiful|creative|personal|daily|instant)$/;
+  const subject = ctx.keywords.find((k) => k.length > 3 && !WEAK_WORDS.has(k) && !ADJ.test(k)) ?? ctx.keywords.find((k) => k.length > 3) ?? 'your idea';
+  const audienceWord = (input.brief.audience ?? input.brief.description.match(/\bfor ([a-z][a-z\s-]{2,40}?)(?:[.,;]|$| who| in| that| to)/i)?.[1] ?? 'your customers').trim();
   const specific = [...new Set(ctx.categories.flatMap((c) => EVOCATIVE_BY_CONCEPT[c] ?? []))];
   const evocativePool = specific.length >= 3 ? specific : [...new Set([...specific, ...[...EVOCATIVE_WORDS].slice(0, 16)])];
 
@@ -234,7 +320,9 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name,
           type: 'invented',
-          rationale: `Coined from "${word}" with a ${feel} "-${suf}" ending — it hints at ${subject} without spelling it out.`,
+          meaning: `Built on "${word}"${WORD_SENSE[word] ? ` (${WORD_SENSE[word]})` : ''}, softened with a ${feel} "-${suf}" ending.`,
+          parts: [word, `-${suf}`],
+          rationale: `It hints at ${subject} without spelling it out, so it can grow with ${audienceWord} as the business does.`,
           relevance: ctx.concepts.includes(word) || ctx.keywords.includes(word) ? 7.6 : 6.4,
           personality: ['Modern', cap(feel.split(',')[0]!)],
         };
@@ -256,7 +344,9 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name,
           type: 'blend',
-          rationale: `A blend of "${a}" and "${b}" — two ideas folded into one short word.`,
+          meaning: `"${a}"${WORD_SENSE[a] ? ` (${WORD_SENSE[a]})` : ''} folded into "${b}"${WORD_SENSE[b] ? ` (${WORD_SENSE[b]})` : ''}.`,
+          parts: [a, b],
+          rationale: `Two ideas behind ${subject} in one short word: it feels coined, not borrowed.`,
           relevance: 7.4,
           personality: ['Clever', 'Fresh'],
         };
@@ -269,7 +359,9 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name,
           type: 'compound',
-          rationale: `"${cap(a)}" + "${noun}" — a clear picture that feels like a place you'd want to be.`,
+          meaning: `"${cap(a)}"${WORD_SENSE[a] ? ` (${WORD_SENSE[a]})` : ''} + "${noun}": a place where that happens.`,
+          parts: [a, noun],
+          rationale: `Paints a clear, friendly picture for ${audienceWord}: it sounds like somewhere you'd want to be.`,
           relevance: 7,
           personality: ['Friendly', 'Clear'],
         };
@@ -279,7 +371,8 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name: w,
           type: 'real_word',
-          rationale: `A real word with the right feeling: "${w}" evokes ${wantsPremium ? 'quality and calm' : 'something vivid and memorable'} for ${subject}.`,
+          meaning: WORD_SENSE[w] ? `${cap(w)}: ${WORD_SENSE[w]}.` : `The everyday word "${w}", used as a brand.`,
+          rationale: `Borrows a feeling customers already have: ${WORD_SENSE[w] ?? (wantsPremium ? 'quality and calm' : 'something vivid')}, which suits ${subject}.`,
           relevance: 6.8,
           personality: ['Evocative', 'Human'],
         };
@@ -298,7 +391,8 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name,
           type: 'abstract',
-          rationale: `A brand-new word with no baggage — easy to own and easy to trademark-search, and its ${feel} sound gives ${subject} room to grow.`,
+          meaning: `A new word with no dictionary meaning: its ${feel} sound does the work.`,
+          rationale: `No baggage and lots of room: you decide what it stands for, and it's easier to own than a word everyone in ${subject} already uses.`,
           relevance: 5.8,
           personality: ['Ownable', 'Fresh'],
         };
@@ -324,7 +418,8 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
           name,
           type: 'indian',
           origin: `${r.lang}: ${r.root} = ${r.meaning}`,
-          rationale: `Rooted in India — ${how}. Simple enough for anyone, anywhere, to say.`,
+          meaning: `${cap(how)}.`,
+          rationale: `Rooted in India but simple enough for anyone, anywhere, to say: a quiet nod to where ${subject} comes from.`,
           relevance: 6.4,
           personality: ['Rooted', 'Warm'],
         };
@@ -337,7 +432,9 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
         return {
           name,
           type: 'descriptive',
-          rationale: `Says what it does — "${k}" is a word your customers already search for, so discovery comes easier.`,
+          meaning: `Says what it is: "${k}" + "${noun}".`,
+          parts: [k, noun],
+          rationale: `"${k}" is a word ${audienceWord} already search for, so discovery comes easier from day one.`,
           relevance: 8.8,
           personality: ['Clear', 'Practical'],
         };
@@ -387,6 +484,7 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
     }
   }
 
+  const usedTaglines = new Set<number>();
   return out.map((d) => ({
     name: d.name.includes(' ') ? d.name : cap(d.name),
     rationale: d.rationale,
@@ -395,5 +493,7 @@ export function generateOfflineNames(input: NameGenInput): RawName[] {
     personality: [...new Set(d.personality)],
     origin: d.origin ?? '',
     relevance: d.relevance,
+    meaning: d.meaning,
+    ...enrich(d, subject, audienceWord, usedTaglines),
   }));
 }

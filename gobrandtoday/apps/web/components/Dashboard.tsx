@@ -9,7 +9,9 @@ import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
 import { CurrencyToggle } from './CurrencyToggle';
 import { Mark, Spark } from './Spark';
-import { Alternatives, DomainTable, Empty, SocialGrid } from './ui';
+import { DomainList, HandleIdeas, HandleList } from './Availability';
+import { ExpertsBox } from './Experts';
+import { Empty } from './ui';
 
 const NAV = [
   ['/dashboard', 'Home'],
@@ -46,6 +48,8 @@ export interface BrandSummary {
   mark: MarkShape | null;
   style: LogoStyle | null;
   seed: number;
+  symbol?: BrandKit['identity']['symbol'] | null;
+  case?: BrandKit['identity']['case'] | null;
   fonts: BrandKit['identity']['typography'] | null;
   tagline: string | null;
   updatedAt: string;
@@ -82,7 +86,7 @@ export function BrandTile({ b }: { b: BrandSummary }) {
     <Link href={`/brand/${b.id}`} className="card hover stack gap-12" style={{ color: 'inherit', padding: 0, overflow: 'hidden' }}>
       <div style={{ background: tint, height: 132, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
         {b.palette && b.fonts && b.mark ? (
-          <Logo id={{ name: b.name, style: b.style ?? 'twinkle', palette: b.palette, typography: { display: b.fonts.display, data: b.fonts.data }, mark: b.mark, seed: b.seed }} width="78%" />
+          <Logo id={{ name: b.name, style: b.style ?? 'twinkle', palette: b.palette, typography: { display: b.fonts.display, data: b.fonts.data }, mark: b.mark, seed: b.seed, symbol: b.symbol ?? undefined, case: b.case ?? undefined }} width="78%" maxHeight={90} />
         ) : (
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 30, letterSpacing: '-0.05em', color: ink }}>{b.name.toLowerCase()}</span>
         )}
@@ -188,6 +192,7 @@ export function DashHome() {
           <p className="muted small">Your idea briefs and every round of names are saved here.</p>
         )}
       </section>
+      <ExpertsBox brandId={brands?.[0]?.id} brandName={brands?.[0]?.name} />
     </div>
   );
 }
@@ -345,7 +350,7 @@ export function DashDomains() {
           </button>
         </div>
         {results && (
-          <DomainTable
+          <DomainList
             results={results}
             onWatch={(d) =>
               api<{ item: (typeof watch)[number] | null }>('/api/watch', { body: { domain: d.domain, status: d.status } }).then((r) => {
@@ -447,8 +452,8 @@ export function DashHandles() {
         <p className="tiny muted">Verified automatically on GitHub, Reddit and YouTube. Platforms without a public check get a one-tap link — we never guess.</p>
         {res && (
           <>
-            <SocialGrid results={res.results} />
-            <Alternatives items={res.alternatives} />
+            <HandleList results={res.results} />
+            <HandleIdeas items={res.alternatives} />
           </>
         )}
       </form>

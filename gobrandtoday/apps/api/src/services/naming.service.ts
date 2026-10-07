@@ -28,6 +28,10 @@ function toCandidate(raw: RawName, brief: Brief, source: 'ai' | 'offline'): Name
     personality: raw.personality.slice(0, 3),
     origin: raw.origin || undefined,
     relevance: Math.max(0, Math.min(10, raw.relevance)),
+    tagline: raw.tagline?.trim() || undefined,
+    meaning: raw.meaning?.trim() || undefined,
+    whyItWorks: raw.whyItWorks?.filter(Boolean).slice(0, 3),
+    watchOut: raw.watchOut?.trim() || undefined,
     source,
     score: scoreName({ name, brief: brief.description, relevance: raw.relevance, preferredTlds: brief.tlds }),
   };

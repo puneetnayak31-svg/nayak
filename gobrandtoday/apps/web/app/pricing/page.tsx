@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ExpertsBox } from '@/components/Experts';
 import { PricingCards } from '@/components/PricingCards';
 import { Shell } from '@/components/ui';
 
@@ -21,6 +22,7 @@ export default function PricingPage() {
             <p className="lead">India-first pricing in rupees. Prefer dollars? Flip the switch.</p>
           </div>
           <PricingCards />
+          <ExpertsBox compact={false} title="Beyond the plans: bespoke work by experts" />
         </div>
       </section>
     </Shell>

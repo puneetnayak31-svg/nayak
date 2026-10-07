@@ -20,6 +20,10 @@ export const ANALYTICS_EVENTS = [
   'purchase_link_clicked',
   'assistant_message',
   'plan_interest',
+  'expert_viewed',
+  'expert_requested',
+  'imagery_generated',
+  'tool_used',
 ] as const;
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[number];
 

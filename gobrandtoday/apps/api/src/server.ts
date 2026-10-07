@@ -14,6 +14,7 @@ import authRoutes from './routes/auth';
 import brandRoutes from './routes/brands';
 import domainRoutes from './routes/domains';
 import eventRoutes from './routes/events';
+import expertRoutes from './routes/experts';
 import nameRoutes from './routes/names';
 import projectRoutes from './routes/projects';
 import socialRoutes from './routes/social';
@@ -59,6 +60,7 @@ export async function buildServer() {
         { name: 'social' },
         { name: 'brands' },
         { name: 'assistant' },
+        { name: 'experts' },
         { name: 'projects' },
         { name: 'saved' },
         { name: 'auth' },
@@ -91,6 +93,7 @@ export async function buildServer() {
   await app.register(nameRoutes);
   await app.register(domainRoutes);
   await app.register(socialRoutes);
+  await app.register(expertRoutes);
   await app.register(brandRoutes);
   await app.register(projectRoutes);
   await app.register(eventRoutes);

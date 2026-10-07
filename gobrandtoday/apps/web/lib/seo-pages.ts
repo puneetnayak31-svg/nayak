@@ -10,6 +10,8 @@ export interface SeoPage {
   example: string;
   points: Array<{ t: string; b: string }>;
   faq: Array<{ q: string; a: string }>;
+  /** An interactive widget replaces the naming composer on utility pages. */
+  widget?: 'social' | 'domain' | 'bible';
 }
 
 const commonFaq = [
@@ -139,5 +141,68 @@ export const SEO_PAGES: SeoPage[] = [
       { t: 'Yours to keep', b: 'Export everything — no lock-in.' },
     ],
     faq: commonFaq,
+  },
+  {
+    slug: 'social-media-username-checker',
+    short: 'Username checker',
+    title: 'Social Media Username Checker — Instagram, X, YouTube, LinkedIn & more',
+    h1: 'Social media username checker',
+    description: 'Check one username across Instagram, X, YouTube, LinkedIn, TikTok, GitHub, Reddit and more. Verified where platforms allow it, one-tap links everywhere else, plus smart alternatives.',
+    intro: 'Type a handle once. We verify it where platforms offer a public check, give you one-tap links where they don’t, and suggest clean alternatives if it’s gone.',
+    mode: 'smart',
+    example: 'lumora',
+    widget: 'social',
+    points: [
+      { t: 'Ten platforms at once', b: 'Instagram, X, YouTube, LinkedIn, TikTok, Facebook, Threads, Pinterest, Reddit and GitHub.' },
+      { t: 'Honest results', b: 'Verified where a public check exists. Everywhere else, a one-tap link: we never guess.' },
+      { t: 'The core five', b: 'One tag tells you whether .com, Instagram, X, YouTube and LinkedIn are clear.' },
+    ],
+    faq: [
+      { q: 'Why can’t you verify Instagram or X automatically?', a: 'They don’t offer a public availability check, and scraping them breaks their terms. We give you a direct link to the profile URL instead: if it shows “page not found”, the handle is likely free.' },
+      { q: 'What are the rules for usernames?', a: 'Each platform differs: Instagram allows letters, numbers, dots and underscores up to 30 characters; X allows up to 15 letters, numbers and underscores; YouTube handles can be 3–30 characters. We validate each one for you.' },
+      ...commonFaq.slice(0, 1),
+    ],
+  },
+  {
+    slug: 'domain-availability-checker',
+    short: 'Domain checker',
+    title: 'Domain Availability Checker with Prices — .com, .in, .ai, .io (India)',
+    h1: 'Domain availability checker',
+    description: 'Check .com, .in, .co.in, .ai, .io, .co, .app and more in one go, straight from the registries. See typical first-year and renewal prices in ₹ or $, then buy at Hostinger, GoDaddy or Namecheap.',
+    intro: 'We ask the registries directly, then a registrar confirms it can actually be bought. You see the price before you click, in rupees or dollars.',
+    mode: 'domain_first',
+    example: 'kettlo',
+    widget: 'domain',
+    points: [
+      { t: 'Straight from the registry', b: 'RDAP lookups at Verisign, NIXI and others: the source of truth, not a cached guess.' },
+      { t: 'Prices up front', b: 'Live registrar prices where connected; clearly labelled estimates otherwise. Renewal prices too.' },
+      { t: 'Buy anywhere', b: 'One click to Hostinger, GoDaddy or Namecheap with the name already filled in.' },
+    ],
+    faq: [
+      { q: 'Why does a registrar sometimes show a different result?', a: 'A name can be unregistered at the registry but still reserved or priced as “premium” by the registry. That’s why we confirm with a registrar where possible and label registry-only results “Likely free”.' },
+      { q: 'Are the prices exact?', a: 'Live prices come from the registrar. Where we show “est.”, it’s the typical first-year price at Indian/US registrars; the final price, taxes and any promotion are shown at checkout.' },
+      ...commonFaq.slice(2),
+    ],
+  },
+  {
+    slug: 'brand-bible-generator',
+    short: 'Brand bible generator',
+    title: 'Brand Bible Generator — free brand guidelines with logo, colours & voice',
+    h1: 'Brand bible generator',
+    description: 'Turn your brand name into a complete brand bible: story, positioning, voice, four logo looks, colour palette, Google Fonts pairing, mockups and launch content. Free to start.',
+    intro: 'Got a name? In about a minute you get a studio-style brand book: essence, logo system, colours with HEX/RGB/CMYK, type scale, voice, imagery and real mockups.',
+    mode: 'smart',
+    example: 'Chaiwala',
+    widget: 'bible',
+    points: [
+      { t: 'Four looks first', b: 'Pick from four genuinely different logo directions before the book is built around your choice.' },
+      { t: 'A real brand book', b: 'Clear space, minimum sizes, misuse, accessible colour pairings, type scale and mockups.' },
+      { t: 'Launch-ready', b: 'Bios, launch posts, an X thread, 10 content ideas and homepage copy in your voice.' },
+    ],
+    faq: [
+      { q: 'What is a brand bible?', a: 'A single document that defines how your brand looks, sounds and behaves: logo, colours, type, voice and examples. It keeps everyone (and every freelancer) consistent.' },
+      { q: 'Can I edit it?', a: 'Yes. Edit any text, switch looks, regenerate sections or ask the AI Brand Assistant (“make it more premium”). Every change is versioned.' },
+      ...commonFaq.slice(2),
+    ],
   },
 ];

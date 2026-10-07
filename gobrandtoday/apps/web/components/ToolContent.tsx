@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { ExpertsBox } from '@/components/Experts';
 import { HeroComposer } from '@/components/HeroComposer';
 import { Spark } from '@/components/Spark';
+import { ToolWidget } from '@/components/ToolWidgets';
 import { Shell } from '@/components/ui';
 import { SEO_PAGES, type SeoPage } from '@/lib/seo-pages';
 
@@ -32,11 +34,13 @@ export function ToolContent({ p }: { p: SeoPage }) {
               <Spark size={34} className="twinkle" style={{ display: 'inline-block', marginLeft: 6 }} />
             </h1>
             <p className="lead">{p.intro}</p>
-            <p className="small muted">
-              Try: <Link href={`/create?brief=${encodeURIComponent(p.example)}&mode=${p.mode}&go=1`}>“{p.example}”</Link>
-            </p>
+            {!p.widget && (
+              <p className="small muted">
+                Try: <Link href={`/create?brief=${encodeURIComponent(p.example)}&mode=${p.mode}&go=1`}>“{p.example}”</Link>
+              </p>
+            )}
           </div>
-          <HeroComposer defaultMode={p.mode} />
+          {p.widget ? <ToolWidget kind={p.widget} example={p.example} /> : <HeroComposer defaultMode={p.mode} />}
         </div>
       </section>
       <section className="section" style={{ paddingTop: 0 }}>
@@ -51,6 +55,11 @@ export function ToolContent({ p }: { p: SeoPage }) {
         </div>
       </section>
       <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <ExpertsBox />
+        </div>
+      </section>
+      <section className="section" style={{ paddingTop: 0 }}>
         <div className="container stack gap-16" style={{ maxWidth: 820 }}>
           <h2 className="h2">FAQ</h2>
           {p.faq.map((f) => (
@@ -62,6 +71,9 @@ export function ToolContent({ p }: { p: SeoPage }) {
             </details>
           ))}
           <div className="row gap-8 wrap" style={{ marginTop: 16 }}>
+            <Link href="/tools" className="chip sm">
+              All free tools
+            </Link>
             {SEO_PAGES.filter((x) => x.slug !== p.slug).map((x) => (
               <Link key={x.slug} href={`/tools/${x.slug}`} className="chip sm">
                 {x.short}

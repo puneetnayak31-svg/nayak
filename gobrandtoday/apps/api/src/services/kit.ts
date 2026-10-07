@@ -7,12 +7,15 @@ import {
   LOGO_STYLES,
   LOGO_STYLE_META,
   MARK_PATHS,
+  SYMBOL_FAMILIES,
+  SYMBOL_META,
   buildLook,
   generateLooks,
   generatePalette,
   hash32,
   hexToRgb,
   lookFonts,
+  sanitizeSymbolSvg,
   toSlug,
   type BrandKit,
   type Brief,
@@ -27,17 +30,36 @@ type Identity = BrandKit['identity'];
 
 /* ---------------------------------- looks ---------------------------------- */
 
+/** A model's look proposal → the overrides buildLook understands (symbols sanitised here). */
+export function draftOverrides(d: DraftLook): Parameters<typeof buildLook>[4] {
+  const svg = d.symbolSvg ? sanitizeSymbolSvg(d.symbolSvg) : null;
+  const family = (SYMBOL_FAMILIES as readonly string[]).includes(d.symbolFamily) ? d.symbolFamily : undefined;
+  const symbol = svg ? { svg } : family ? { family } : undefined;
+  return {
+    title: d.title,
+    concept: d.concept,
+    markShape: d.markShape,
+    fontTrio: FONT_TRIOS[d.fontTrio] ? d.fontTrio : undefined,
+    case: d.wordCase,
+    symbol,
+    origin: svg ? 'ai' : 'generative',
+  };
+}
+
 /** Turn the model's (or offline) look proposals into full looks: always 4, always different styles. */
 export function completeLooks(name: string, brief: Brief, draft: DraftLook[], seed = hash32(name)): Look[] {
   const out: Look[] = [];
   const used = new Set<LogoStyle>();
+  const usedFamilies: string[] = [];
   draft.forEach((d, i) => {
     if (out.length >= 4 || used.has(d.style) || !LOGO_STYLES.includes(d.style)) return;
     used.add(d.style);
-    out.push(buildLook({ name, personalities: brief.personalities, industry: brief.industry }, d.style, d.hue, seed + i, { title: d.title, concept: d.concept, markShape: d.markShape }));
+    const look = buildLook({ name, personalities: brief.personalities, industry: brief.industry }, d.style, d.hue, seed + i, draftOverrides(d));
+    if (look.symbol?.family) usedFamilies.push(look.symbol.family);
+    out.push(look);
   });
   if (out.length < 4) {
-    const extra = generateLooks({ name, personalities: brief.personalities, industry: brief.industry, geography: brief.geography, seed: seed + 97, exclude: [...used], count: 8 });
+    const extra = generateLooks({ name, personalities: brief.personalities, industry: brief.industry, geography: brief.geography, seed: seed + 97, exclude: [...used], excludeFamilies: usedFamilies, count: 8 });
     for (const l of extra) {
       if (out.length >= 4) break;
       if (!used.has(l.style)) {
@@ -49,28 +71,52 @@ export function completeLooks(name: string, brief: Brief, draft: DraftLook[], se
   return out;
 }
 
+/** A look as a draft (for regenerating sections without losing it). */
+export function lookToDraft(l: Look): DraftLook {
+  return {
+    title: l.title,
+    concept: l.concept,
+    style: l.style,
+    hue: l.hue,
+    markShape: l.markShape,
+    fontTrio: l.fontTrio,
+    wordCase: l.case ?? 'lower',
+    symbolFamily: l.symbol?.family ?? 'none',
+    symbolSvg: l.symbol?.svg ?? '',
+  };
+}
+
 /** Everything in the identity that follows from the chosen look. */
-export function identityFromLook(look: Look, base: Pick<Identity, 'designSystem' | 'motion'>, looks: Look[], chosen: boolean): Identity {
+export function identityFromLook(look: Look, base: Pick<Identity, 'designSystem' | 'essence' | 'moodboard'>, looks: Look[], chosen: boolean): Identity {
   const meta = LOGO_STYLE_META[look.style];
   const trio = lookFonts(look);
   const mark = MARK_PATHS[look.markShape];
+  const fam = look.symbol?.family as keyof typeof SYMBOL_META | undefined;
+  const symbolLine = look.symbol?.svg
+    ? 'A custom symbol drawn for this brand. Use it alone as the avatar, favicon, sticker and pattern.'
+    : fam && SYMBOL_META[fam]
+      ? `${SYMBOL_META[fam].label}: ${SYMBOL_META[fam].idea}. Use it alone as the avatar, favicon and pattern.`
+      : `The ${mark.label.toLowerCase()}: ${mark.meaning}. Use it on its own as a bullet, loader or sticker.`;
   return {
     mark: { shape: look.markShape, concept: look.concept },
     wordmarkCase: 'lower',
     style: look.style,
     seed: look.seed,
+    ...(look.symbol ? { symbol: look.symbol } : {}),
+    ...(look.case ? { case: look.case } : {}),
     looks,
     lookChosen: chosen,
     logoDirections: [
       { name: 'Primary lockup', description: meta.construction },
       { name: 'Reversed', description: 'The same lockup on ink, with the accent colour taking the brand colour’s place.' },
       { name: 'App icon', description: 'A square tile for avatars, favicons and app stores.' },
-      { name: 'Signature mark', description: `The ${mark.label.toLowerCase()}: ${mark.meaning}. Use it on its own as a bullet, loader or sticker.` },
+      { name: look.symbol ? 'Symbol' : 'Signature mark', description: symbolLine },
     ],
     palette: look.palette,
     typography: { display: trio.display, body: trio.body, data: trio.data },
     designSystem: base.designSystem,
-    motion: base.motion,
+    ...(base.essence ? { essence: base.essence } : {}),
+    ...(base.moodboard ? { moodboard: base.moodboard } : {}),
     usageRules: meta.usage,
   };
 }
@@ -111,7 +157,8 @@ export function withFreshLooks(kit: BrandKit, brief: Brief, looks: Look[]): Bran
 
 export function freshOfflineLooks(kit: BrandKit, brief: Brief, seed: number): Look[] {
   const current = kit.identity.looks.map((l) => l.style);
-  return generateLooks({ name: kit.name, personalities: brief.personalities, industry: brief.industry, geography: brief.geography, seed, exclude: current });
+  const families = kit.identity.looks.map((l) => l.symbol?.family ?? '').filter(Boolean);
+  return generateLooks({ name: kit.name, personalities: brief.personalities, industry: brief.industry, geography: brief.geography, seed, exclude: current, excludeFamilies: families });
 }
 
 /** Back-convert a kit into a draft so one section can be regenerated and merged. */
@@ -131,9 +178,10 @@ export function kitToDraft(kit: BrandKit): KitDraft {
     },
     taglines: kit.taglines,
     identity: {
-      looks: kit.identity.looks.map((l) => ({ title: l.title, concept: l.concept, style: l.style, hue: l.hue, markShape: l.markShape })),
+      looks: kit.identity.looks.map(lookToDraft),
+      essence: kit.identity.essence ?? { promise: kit.messaging.oneLiner, values: kit.personality.slice(0, 3).map((p) => ({ name: p, meaning: '' })) },
+      moodboard: kit.identity.moodboard ?? [],
       designSystem: kit.identity.designSystem,
-      motion: kit.identity.motion,
     },
     launch: kit.launch,
     website: kit.website,
@@ -244,6 +292,7 @@ export function toMarkdown(b: { name: string; domain: string | null; handle: str
     '',
     `**Domain:** ${b.domain ?? '—'} · **Handle:** @${b.handle ?? toSlug(k.name)} · **GoBrand Score:** ${b.score?.overall ?? '—'}/10`,
     '',
+    ...(k.identity.essence ? ['## Essence', `**Promise.** ${k.identity.essence.promise}`, '', ...k.identity.essence.values.map((v) => `- **${v.name}:** ${v.meaning}`), ''] : []),
     '## Strategy',
     `**Meaning.** ${k.meaning}`,
     '',
@@ -283,7 +332,7 @@ export function toMarkdown(b: { name: string; domain: string | null; handle: str
     '',
     `**Concept:** ${k.identity.mark.concept}`,
     '',
-    `**Signature mark:** ${MARK_PATHS[k.identity.mark.shape].label}`,
+    `**${k.identity.symbol ? 'Symbol' : 'Signature mark'}:** ${k.identity.symbol?.svg ? 'Custom drawn symbol' : k.identity.symbol?.family ? (SYMBOL_META[k.identity.symbol.family as keyof typeof SYMBOL_META]?.label ?? k.identity.symbol.family) : MARK_PATHS[k.identity.mark.shape].label}`,
     '',
     '### Lockups',
     ...k.identity.logoDirections.map((d) => `- **${d.name}:** ${d.description}`),
@@ -301,12 +350,7 @@ export function toMarkdown(b: { name: string; domain: string | null; handle: str
     '### Design system',
     ...Object.entries(k.identity.designSystem).map(([key, v]) => `- **${key}:** ${v}`),
     '',
-    '### Motion',
-    `1. Idle — ${k.identity.motion.idle}`,
-    `2. Thinking — ${k.identity.motion.thinking}`,
-    `3. Mark — ${k.identity.motion.mark}`,
-    `4. Done — ${k.identity.motion.done}`,
-    '',
+    ...(k.identity.moodboard?.length ? ['### Imagery', ...k.identity.moodboard.map((m) => `- ${m.caption}`), ''] : []),
     '### Usage rules',
     `- **Clear space:** ${k.identity.usageRules.clearSpace}`,
     `- **Minimum size:** ${k.identity.usageRules.minSize}`,

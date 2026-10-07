@@ -53,6 +53,15 @@ async function loadBootstrap(timeoutMs: number): Promise<Bootstrap> {
   );
 }
 
+async function hasNameservers(domain: string): Promise<boolean> {
+  try {
+    const ns = await Promise.race([dns.resolveNs(domain), new Promise<string[]>((r) => setTimeout(() => r([]), 1500))]);
+    return ns.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export class RdapProvider implements DomainProvider {
   readonly id = 'rdap' as const;
   readonly live = true;
@@ -76,7 +85,16 @@ export class RdapProvider implements DomainProvider {
         headers: { accept: 'application/rdap+json' },
       });
       if (res.status === 404) {
-        return { domain, status: 'available', verified: true, source: 'rdap', note: 'Not registered at the registry. Price and premium status are confirmed at checkout.' };
+        // Belt and braces: a name with live nameservers is registered, whatever RDAP says.
+        if (await hasNameservers(domain)) return { domain, status: 'taken', verified: true, source: 'dns', note: 'Has live DNS — it is registered.' };
+        return {
+          domain,
+          status: 'available',
+          verified: true,
+          confirmed: false,
+          source: 'rdap',
+          note: 'Nobody owns it at the registry. Some registry-reserved or premium names still can’t be bought at the usual price; the registrar confirms at checkout.',
+        };
       }
       if (res.ok) {
         const body = (await res.json().catch(() => ({}))) as { status?: string[] };

@@ -64,9 +64,18 @@ Base URL: the web origin (`/api/*` is proxied) or the API directly (`http://loca
 | `POST /api/brands/:id/look` | `{ lookId }` — pick one of the offered looks; the identity is rebuilt around it |
 | `POST /api/brands/:id/looks` | offer four new looks (different styles from those on screen) |
 | `POST /api/brands/:id/undo` | restore the previous version |
+| `POST /api/brands/:id/imagery` | `{ kind: "moodboard" \| "concepts" }`: generate moodboard photos or logo concept sketches with the image model; stored on `kit.identity.moodboard` / `kit.identity.concepts` |
+| `GET /api/assets/:id` | a generated image stored by the server |
 | `GET/POST /api/brands/:id/assistant` | history / `{ message }` → `{ reply, names, changed, source, brand }` |
 | `GET /api/brands/:id/export?format=json\|md` | download |
 | `GET /api/public/brands/:slug` | read-only shared brand |
+
+## Experts
+
+| | |
+|---|---|
+| `GET /api/experts` | the bespoke service catalogue (id, title, includes, turnaround, `from` price in INR/USD) |
+| `POST /api/experts/requests` | `{ service, also?, name, email, phone?, budget?, timeline?, details?, brandId?, currency }` → `{ ok, id, message }`. Rate-limited to 5 an hour. |
 
 ## Projects & saved names
 

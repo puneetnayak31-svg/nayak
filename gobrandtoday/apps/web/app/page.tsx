@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { DemoPlayer } from '@/components/DemoPlayer';
+import { ExpertsBox } from '@/components/Experts';
 import { HeroComposer } from '@/components/HeroComposer';
 import { PricingCards } from '@/components/PricingCards';
 import { Mark, Spark } from '@/components/Spark';
@@ -212,6 +213,13 @@ export default function Home() {
             <h2 className="h2">Free to start. Fair when you grow.</h2>
           </div>
           <PricingCards />
+        </div>
+      </section>
+
+      {/* Experts (premium, bespoke) */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <ExpertsBox compact={false} title="Need it crafted by hand? Our experts go bespoke." />
         </div>
       </section>
 

@@ -8,9 +8,12 @@ import { download, downloadIconPNG, downloadIconSVG, downloadLogoPNG, downloadLo
 import { useApp } from '@/lib/providers';
 import { BrandGuidelines } from './BrandGuidelines';
 import { KitIcon, KitLogo } from './Logo';
+import { ExpertsBox } from './Experts';
 import { LookPicker } from './LookPicker';
+import { MockupGrid } from './Mockups';
 import { Mark, Spark } from './Spark';
-import { CopyButton, DomainTable, Loading, ScoreBreakdown, ScoreCard, SocialGrid, SourceBadge, useGoogleFonts } from './ui';
+import { AvailabilityPanel, CoreTag } from './Availability';
+import { CopyButton, Loading, ScoreBreakdown, ScoreCard, SourceBadge, useGoogleFonts } from './ui';
 
 export interface BrandDTO {
   id: string;
@@ -30,7 +33,7 @@ export interface BrandDTO {
   shareSlug: string | null;
 }
 
-/** True in the single-file preview build, which can't download files. */
+/** True in the single-file preview build (no server: exports go through the host's save dialog, no PDF route). */
 const PREVIEW = process.env.NEXT_PUBLIC_PREVIEW === '1';
 
 const TABS = ['Brand in a Box', 'Identity', 'Strategy', 'Launch kit', 'Website', 'Assistant'] as const;
@@ -104,6 +107,20 @@ export function BrandView({ id }: { id: string }) {
       toast(e instanceof ApiError ? e.message : 'Could not design new looks', 'error');
     } finally {
       setLookBusy(null);
+    }
+  };
+
+  const [imageryBusy, setImageryBusy] = useState<'moodboard' | 'concepts' | null>(null);
+  const imagery = async (kind: 'moodboard' | 'concepts') => {
+    setImageryBusy(kind);
+    try {
+      const r = await api<{ brand: BrandDTO }>(`/api/brands/${id}/imagery`, { body: { kind } });
+      setBrand(r.brand);
+      toast(kind === 'moodboard' ? 'Moodboard ready' : 'Concept sketches ready');
+    } catch (e) {
+      toast(e instanceof ApiError ? e.message : 'The image model didn’t answer. Try again.', 'error');
+    } finally {
+      setImageryBusy(null);
     }
   };
 
@@ -188,7 +205,16 @@ export function BrandView({ id }: { id: string }) {
               </button>
             </div>
           </div>
-          <BrandGuidelines kit={kit} domain={brand.domain} handle={brand.handle} version={brand.version} score={brand.score?.overall} onSwitchLook={choose} />
+          <BrandGuidelines
+            kit={kit}
+            domain={brand.domain}
+            handle={brand.handle}
+            version={brand.version}
+            score={brand.score?.overall}
+            onSwitchLook={choose}
+            onGenerateImagery={PREVIEW ? undefined : imagery}
+            imageryBusy={imageryBusy}
+          />
         </div>
       )}
       {tab === 'Strategy' && <StrategyTab brand={brand} kit={kit} onChange={setBrand} />}
@@ -229,13 +255,10 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
   const exportAs = async (f: string) => {
     setMenu(false);
     track('export', { format: f });
-    if (PREVIEW) {
-      // The preview runs in a sandbox that can't save files: copy instead.
-      const text = await api<string>(`/api/brands/${brand.id}/export?format=${f === 'md' ? 'md' : 'json'}`);
-      await navigator.clipboard?.writeText(typeof text === 'string' ? text : JSON.stringify(text, null, 2)).then(
-        () => toast(f === 'md' ? 'Brand Bible copied as Markdown' : 'Brand Bible copied as JSON'),
-        () => toast('Copy is blocked here — try the full app', 'error'),
-      );
+    if (PREVIEW && (f === 'md' || f === 'json')) {
+      // The preview's API is in-browser: fetch the text, then hand it to the viewer's save dialog.
+      const text = await api<string>(`/api/brands/${brand.id}/export?format=${f}`);
+      download(`${toSlug(brand.name)}-brand-bible.${f}`, typeof text === 'string' ? text : JSON.stringify(text, null, 2), f === 'md' ? 'text/markdown' : 'application/json');
       return;
     }
     if (f === 'pdf') window.open(`/brand/${brand.id}/guidelines?print=1`, '_blank');
@@ -283,8 +306,13 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
               <div role="menu" className="card sm stack" style={{ position: 'absolute', right: 0, top: 48, zIndex: 30, padding: 6, minWidth: 230, boxShadow: 'var(--shadow-lg)' }}>
                 {(PREVIEW
                   ? [
-                      ['md', 'Copy Brand Bible (Markdown)'],
-                      ['json', 'Copy Brand Bible (JSON)'],
+                      ['svg', 'Logo — SVG (light)'],
+                      ['svg-dark', 'Logo — SVG (dark)'],
+                      ['png', 'Logo — PNG (light)'],
+                      ['icon', 'App icon — SVG'],
+                      ['icon-png', 'App icon — PNG'],
+                      ['md', 'Brand Bible — Markdown'],
+                      ['json', 'Brand Bible — JSON'],
                     ]
                   : [
                   ['pdf', 'Brand guidelines (PDF)'],
@@ -316,17 +344,14 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
 
 function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Tab) => void }) {
   const p = kit.identity.palette;
-  const firstFree = brand.domains?.find((d) => d.status === 'available');
-  const freeHandles = brand.socials?.filter((s) => s.status === 'available').length ?? 0;
-  const decided = brand.socials?.filter((s) => s.status === 'available' || s.status === 'taken').length ?? 0;
   return (
     <div className="stack gap-20">
       <div className="box-grid">
         <div className="card box-hero" style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 260 }}>
-          <KitLogo kit={kit} width="min(100%, 520px)" />
+          <KitLogo kit={kit} width="min(100%, 520px)" maxHeight={210} />
         </div>
         <div className="card dark stack gap-12" style={{ background: swatch(p, 'ink'), alignItems: 'center', justifyContent: 'center' }}>
-          <KitLogo kit={kit} variant="dark" width="min(100%, 260px)" />
+          <KitLogo kit={kit} variant="dark" width="min(100%, 260px)" maxHeight={110} />
         </div>
         <div className="card row gap-16" style={{ background: swatch(p, 'tint'), borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' }}>
           <KitIcon kit={kit} size={84} />
@@ -335,19 +360,18 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
       </div>
 
       <div className="grid-4">
-        <div className="card sm stack gap-8">
-          <span className="eyebrow">Domain</span>
-          <span className="mono" style={{ fontSize: 18, wordBreak: 'break-all' }}>
-            {brand.domain ?? '—'}
-          </span>
-          <span className="small soft">{firstFree ? `${firstFree.domain} is available` : 'See all options in the Domains list below'}</span>
-        </div>
-        <div className="card sm stack gap-8">
-          <span className="eyebrow">Handle</span>
-          <span className="mono" style={{ fontSize: 18 }}>
-            @{brand.handle ?? toSlug(brand.name)}
-          </span>
-          <span className="small soft">{decided ? `${freeHandles}/${decided} verified free` : 'Check each platform below'}</span>
+        <div className="card sm stack gap-10 span-2">
+          <div className="row gap-16 wrap" style={{ alignItems: 'baseline' }}>
+            <span className="stack gap-2">
+              <span className="eyebrow">Domain</span>
+              <span className="mono" style={{ fontSize: 17, wordBreak: 'break-all' }}>{brand.domain ?? `${toSlug(brand.name)}.com`}</span>
+            </span>
+            <span className="stack gap-2">
+              <span className="eyebrow">Handle</span>
+              <span className="mono" style={{ fontSize: 17 }}>@{brand.handle ?? toSlug(brand.name).replace(/-/g, '')}</span>
+            </span>
+          </div>
+          <CoreTag name={brand.name} domains={brand.domains ?? undefined} socials={brand.socials ?? undefined} size="sm" />
         </div>
         <div className="card sm stack gap-8">
           <span className="eyebrow">Personality</span>
@@ -385,7 +409,7 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
           </div>
           <span className="eyebrow">Look</span>
           <p className="soft">
-            <strong>{LOGO_STYLE_META[kit.identity.style].title}.</strong> {kit.identity.mark.concept}
+            <strong>{kit.identity.looks.find((l) => l.style === kit.identity.style && l.seed === kit.identity.seed)?.title ?? LOGO_STYLE_META[kit.identity.style].title}.</strong> {kit.identity.mark.concept}
           </p>
         </div>
         <div className="card stack gap-16">
@@ -408,18 +432,24 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
         </div>
       </div>
 
-      {brand.domains && (
-        <div className="grid-2" style={{ alignItems: 'start' }}>
-          <div className="card stack gap-12">
-            <h3 className="h3">Domains</h3>
-            <DomainTable results={brand.domains} />
-          </div>
-          <div className="card stack gap-12">
-            <h3 className="h3">Social handles</h3>
-            {brand.socials && <SocialGrid results={brand.socials} />}
-          </div>
+      <div className="stack gap-12">
+        <div className="row between wrap gap-8">
+          <h3 className="h3">{brand.name} in the wild</h3>
+          <button className="btn-link small" onClick={() => go('Identity')}>
+            All 9 applications →
+          </button>
+        </div>
+        <MockupGrid kit={kit} kinds={['card', 'social', 'storefront']} domain={brand.domain} handle={brand.handle} caption={false} />
+      </div>
+
+      {(brand.domains || brand.socials) && (
+        <div className="stack gap-12">
+          <h3 className="h3">Where {brand.name} can live</h3>
+          <AvailabilityPanel name={brand.name} domains={brand.domains ?? undefined} socials={brand.socials ?? undefined} />
         </div>
       )}
+      <ExpertsBox tags={[...kit.personality, brand.brief.industry ?? '']} brandId={brand.id} brandName={brand.name} />
+
       {brand.score && (
         <details className="card">
           <summary style={{ cursor: 'pointer', fontWeight: 700 }}>How the GoBrand Score was calculated</summary>

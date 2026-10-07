@@ -37,6 +37,17 @@ const EnvSchema = z.object({
 
   DOMAIN_PROVIDER: z.enum(['rdap', 'godaddy', 'hostinger', 'namecheap', 'mock']).default('rdap'),
   DOMAIN_FALLBACK_PROVIDER: z.enum(['rdap', 'none']).default('rdap'),
+  /**
+   * A registrar that re-checks names the registry reports as free, so
+   * "available" also means "you can buy it now" and comes with a real price.
+   * auto = the first registrar with credentials configured.
+   */
+  DOMAIN_CONFIRM_PROVIDER: z.enum(['auto', 'porkbun', 'namecom', 'godaddy', 'hostinger', 'namecheap', 'none']).default('auto'),
+  PORKBUN_API_KEY: z.string().optional(),
+  PORKBUN_SECRET_KEY: z.string().optional(),
+  NAMECOM_USERNAME: z.string().optional(),
+  NAMECOM_API_TOKEN: z.string().optional(),
+  NAMECOM_SANDBOX: bool,
   DOMAIN_TIMEOUT_MS: z.coerce.number().default(6_000),
   GODADDY_API_KEY: z.string().optional(),
   GODADDY_API_SECRET: z.string().optional(),
@@ -50,6 +61,19 @@ const EnvSchema = z.object({
   AFFILIATE_HOSTINGER: z.string().optional(),
   AFFILIATE_GODADDY: z.string().optional(),
   AFFILIATE_NAMECHEAP: z.string().optional(),
+
+  /** Moodboards and logo concept sketches. auto = first free provider with a key, else Pollinations (keyless). */
+  IMAGE_PROVIDER: z.enum(['auto', 'pollinations', 'huggingface', 'cloudflare', 'together', 'openai', 'none']).default('auto'),
+  POLLINATIONS_TOKEN: z.string().optional(),
+  HF_TOKEN: z.string().optional(),
+  HF_IMAGE_MODEL: z.string().default('black-forest-labs/FLUX.1-schnell'),
+  CF_ACCOUNT_ID: z.string().optional(),
+  CF_API_TOKEN: z.string().optional(),
+  TOGETHER_API_KEY: z.string().optional(),
+  OPENAI_IMAGE_MODEL: z.string().default('gpt-image-1'),
+
+  /** Where "Work with an expert" requests are emailed/forwarded (optional webhook, e.g. Slack or a CRM). */
+  EXPERTS_WEBHOOK_URL: z.string().url().optional(),
 
   SOCIAL_PROVIDER: z.enum(['live', 'mock']).default('live'),
   SOCIAL_TIMEOUT_MS: z.coerce.number().default(5_000),

@@ -11,8 +11,19 @@ describe('looks', () => {
   });
   it('can avoid styles already shown', () => {
     const first = generateLooks({ name: 'Kettlo', seed: 1 });
-    const next = generateLooks({ name: 'Kettlo', seed: 2, exclude: first.map((l) => l.style) });
-    expect(next.filter((l) => first.some((f) => f.style === l.style)).length).toBeLessThanOrEqual(0);
+    const next = generateLooks({ name: 'Kettlo', seed: 2, exclude: first.map((l) => l.style), excludeFamilies: first.map((l) => l.symbol?.family ?? '') });
+    const symbolic = ['symbol', 'emblem', 'lettermark'];
+    // Wordmark constructions never repeat; symbol constructions may, but always with a new symbol.
+    expect(next.filter((l) => !symbolic.includes(l.style) && first.some((f) => f.style === l.style))).toHaveLength(0);
+    const firstFamilies = first.map((l) => l.symbol?.family).filter(Boolean);
+    expect(next.filter((l) => l.symbol?.family && firstFamilies.includes(l.symbol.family))).toHaveLength(0);
+  });
+  it('always offers at least two looks with a real symbol', () => {
+    for (let seed = 0; seed < 25; seed++) {
+      const looks = generateLooks({ name: 'Chaiwala', seed });
+      expect(looks.filter((l) => ['symbol', 'emblem', 'lettermark'].includes(l.style)).length).toBeGreaterThanOrEqual(2);
+      expect(new Set(looks.map((l) => l.id)).size).toBe(4);
+    }
   });
   it('is deterministic per seed', () => {
     expect(generateLooks({ name: 'Sutra', seed: 5 })).toEqual(generateLooks({ name: 'Sutra', seed: 5 }));

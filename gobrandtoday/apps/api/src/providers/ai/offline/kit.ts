@@ -120,7 +120,25 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
         style: l.style,
         hue: l.hue,
         markShape: l.markShape,
+        fontTrio: l.fontTrio,
+        wordCase: l.case ?? 'lower',
+        symbolFamily: l.symbol?.family ?? 'none',
+        symbolSvg: '',
       })),
+      essence: {
+        promise: `${cap(verbFor(desc))}, without the hassle.`,
+        values: [
+          { name: v1!, meaning: `Every screen, post and reply should feel ${v1!.toLowerCase()}. If it doesn't, cut it.` },
+          { name: v2!, meaning: `We show rather than tell: real examples, real numbers, real people.` },
+          { name: v3!, meaning: `People should leave ${name} feeling more capable than when they arrived.` },
+        ],
+      },
+      moodboard: [
+        { caption: `Real ${audience} in real places, natural light`, prompt: `candid lifestyle photo of ${audience}${/india/i.test(audience) ? '' : ' in India'}, ${topic}, natural window light, warm tones, editorial, shallow depth of field` },
+        { caption: 'Close-up texture that echoes the palette', prompt: `macro texture photograph related to ${topic}, soft gradients, minimal, calm, brand moodboard, high detail` },
+        { caption: 'The product moment: hands, screens and objects', prompt: `hands using ${what} on a phone and desk, flat lay, clean background, soft shadows, modern brand photography` },
+        { caption: 'Place and culture, quietly Indian', prompt: `quiet modern Indian street or interior at golden hour, ${topic} mood, cinematic, uncluttered, film photography` },
+      ],
       designSystem: {
         buttons: 'Solid brand-colour primary buttons with white text, 16px radius; outlined ink secondary buttons.',
         cards: 'White cards on paper, 1px soft border, 24–28px radius, generous padding.',
@@ -133,12 +151,6 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
         spacing: '8px base grid; sections breathe at 80–120px on desktop.',
         radius: '16px for controls, 24–28px for cards, fully round for chips.',
         personality: `${voice}.`,
-      },
-      motion: {
-        idle: 'A calm dot in brand colour.',
-        thinking: 'Breathes into a soft diamond while work happens.',
-        mark: 'Snaps open into the brand mark when results land.',
-        done: 'A tiny accent twin appears for "done".',
       },
     },
     launch: {

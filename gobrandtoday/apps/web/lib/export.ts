@@ -1,8 +1,16 @@
 import { googleFontsHref, iconSVG, logoSVG, toSlug, type BrandKit, type LogoIdentity, type LogoVariant } from '@gbt/shared';
 import { canvasMeasure, kitIdentity } from '@/components/Logo';
 
+/** Hosts that can't follow <a download> (e.g. a sandboxed preview) can register their own saver. */
+type Saver = (filename: string, blob: Blob) => Promise<void> | void;
+
 export function download(filename: string, data: Blob | string, type = 'text/plain') {
   const blob = typeof data === 'string' ? new Blob([data], { type }) : data;
+  const saver = (globalThis as { __gbtSave?: Saver }).__gbtSave;
+  if (saver) {
+    void saver(filename, blob);
+    return;
+  }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

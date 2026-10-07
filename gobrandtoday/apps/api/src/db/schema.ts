@@ -242,9 +242,12 @@ export const brandAssets = pgTable('brand_assets', {
   brandId: uuid('brand_id')
     .references(() => brands.id, { onDelete: 'cascade' })
     .notNull(),
-  kind: text('kind').notNull(), // logo | icon | export
-  format: text('format').notNull(), // svg | png | pdf | json | md
+  kind: text('kind').notNull(), // logo | icon | export | moodboard | concept
+  format: text('format').notNull(), // svg | png | jpeg | webp | pdf | json | md
   url: text('url'),
+  /** Small generated images are kept inline (base64) so no object store is needed to start. */
+  data: text('data'),
+  contentType: text('content_type'),
   meta: jsonb('meta'),
   createdAt: created(),
 });
@@ -277,4 +280,27 @@ export const analyticsEvents = pgTable(
     createdAt: created(),
   },
   (t) => [index('analytics_name_idx').on(t.name, t.createdAt)],
+);
+
+/* --------------------------------- experts -------------------------------- */
+
+/** "Work with an expert" requests for bespoke services (design, music, video, trademark…). */
+export const expertRequests = pgTable(
+  'expert_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    brandId: uuid('brand_id').references(() => brands.id, { onDelete: 'set null' }),
+    service: text('service').notNull(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    phone: text('phone'),
+    budget: text('budget'),
+    timeline: text('timeline'),
+    details: text('details'),
+    currency: text('currency').default('INR').notNull(),
+    status: text('status').default('new').notNull(), // new | contacted | proposal | won | lost
+    createdAt: created(),
+  },
+  (t) => [index('expert_requests_status_idx').on(t.status, t.createdAt)],
 );

@@ -5,6 +5,8 @@ export interface DomainCheck {
   status: DomainStatus;
   /** True only when a registry/registrar answered definitively. */
   verified: boolean;
+  /** A registrar (not only the registry) says it can be bought right now. */
+  confirmed?: boolean;
   source: DomainSource;
   price?: DomainResult['price'];
   note?: string;

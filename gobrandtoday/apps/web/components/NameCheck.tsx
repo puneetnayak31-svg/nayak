@@ -6,7 +6,8 @@ import { PERSONALITIES, TLDS, scoreName, toSlug, type DomainResult, type HandleS
 import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
 import { Spark } from './Spark';
-import { Alternatives, DemoBanner, DomainTable, Risks, ScoreBreakdown, ScoreCard, SocialGrid } from './ui';
+import { AvailabilityPanel } from './Availability';
+import { DemoBanner, Risks, ScoreBreakdown, ScoreCard } from './ui';
 
 /** "Just try my name": domains, handles, score — and one click to build the brand. */
 export function NameCheck({ name }: { name: string }) {
@@ -113,67 +114,49 @@ export function NameCheck({ name }: { name: string }) {
       <DemoBanner />
       <Risks score={score} />
 
-      <div className="grid-2" style={{ alignItems: 'start', gap: 24 }}>
-        <div className="stack gap-24">
-          <section className="card stack gap-16" aria-labelledby="dom-h">
-            <div className="row between wrap gap-12">
-              <h2 id="dom-h" className="h3">
-                See if the domain is yours
-              </h2>
-              <button className="btn btn-ghost btn-xs" onClick={() => runDomains(true)} disabled={loadingD}>
-                {loadingD ? 'Checking…' : 'Recheck'}
+      <section className="stack gap-12" aria-labelledby="av-h">
+        <div className="row between wrap gap-12">
+          <h2 id="av-h" className="h3">
+            Is it yours to take?
+          </h2>
+          <div className="chips" aria-label="Domain endings to check">
+            {TLDS.map((t) => (
+              <button key={t} type="button" className="chip sm mono" aria-pressed={tlds.includes(t)} onClick={() => setTlds((x) => (x.includes(t) ? (x.length > 1 ? x.filter((y) => y !== t) : x) : [...x, t].slice(-8)))}>
+                .{t}
               </button>
-            </div>
-            <div className="chips">
-              {TLDS.map((t) => (
-                <button key={t} type="button" className="chip sm mono" aria-pressed={tlds.includes(t)} onClick={() => setTlds((x) => (x.includes(t) ? (x.length > 1 ? x.filter((y) => y !== t) : x) : [...x, t].slice(-8)))}>
-                  .{t}
-                </button>
-              ))}
-            </div>
-            {err.d ? (
-              <div className="notice error row between gap-12">
-                {err.d}
-                <button className="btn btn-ghost btn-xs" onClick={() => runDomains(true)}>
-                  Try again
-                </button>
-              </div>
-            ) : domains ? (
-              <DomainTable
-                results={domains}
-                onWatch={(d) =>
-                  api('/api/watch', { body: { domain: d.domain, status: d.status } })
-                    .then(() => toast(`Watching ${d.domain}`))
-                    .catch(() => toast('Could not add to watchlist', 'error'))
-                }
-              />
-            ) : (
-              <div className="skeleton" style={{ height: 240 }} />
-            )}
-          </section>
-
-          <section className="card stack gap-16" aria-labelledby="soc-h">
-            <h2 id="soc-h" className="h3">
-              Social handles
-            </h2>
-            {err.s ? (
-              <div className="notice error row between gap-12">
-                {err.s}
-                <button className="btn btn-ghost btn-xs" onClick={runSocials}>
-                  Try again
-                </button>
-              </div>
-            ) : socials ? (
-              <>
-                <SocialGrid results={socials} />
-                <Alternatives items={alts} />
-              </>
-            ) : (
-              <div className="skeleton" style={{ height: 260 }} />
-            )}
-          </section>
+            ))}
+          </div>
         </div>
+        {(err.d || err.s) && (
+          <div className="notice error row between gap-12">
+            {err.d || err.s}
+            <button
+              className="btn btn-ghost btn-xs"
+              onClick={() => {
+                runDomains(true);
+                runSocials();
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        <AvailabilityPanel
+          name={name}
+          domains={domains ?? undefined}
+          socials={socials ?? undefined}
+          alternatives={alts}
+          busy={loadingD}
+          onRecheck={() => runDomains(true)}
+          onWatch={(d) =>
+            api('/api/watch', { body: { domain: d.domain, status: d.status } })
+              .then(() => toast(`Watching ${d.domain}`))
+              .catch(() => toast('Could not add to watchlist', 'error'))
+          }
+        />
+      </section>
 
+      <div className="grid-2" style={{ alignItems: 'start', gap: 24 }}>
         <div className="stack gap-24">
           <section className="card stack gap-16">
             <h2 className="h3">Score breakdown</h2>

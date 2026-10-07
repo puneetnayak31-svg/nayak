@@ -9,7 +9,8 @@ import { Spark, Wordmark } from './Spark';
 
 const LINKS = [
   { href: '/create', label: 'Create' },
-  { href: '/#how', label: 'How it works' },
+  { href: '/tools', label: 'Free tools' },
+  { href: '/experts', label: 'Experts' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/dashboard', label: 'My brands' },
 ];

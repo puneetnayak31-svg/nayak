@@ -25,7 +25,9 @@ export const ROUTES = [
   '/pricing',
   '/login',
   '/signup',
+  '/tools',
   '/tools/:slug',
+  '/experts',
   '/dashboard',
   '/dashboard/:section',
 ] as const;

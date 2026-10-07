@@ -13,6 +13,8 @@ import {
   askAssistant,
   chooseLook,
   moreLooks,
+  generateImagery,
+  getAsset,
   assistantHistory,
   createBrand,
   getBrand,
@@ -93,6 +95,8 @@ export default async function brandRoutes(app: FastifyInstance) {
         mark: r.kit?.identity.mark.shape ?? null,
         style: r.kit?.identity.style ?? null,
         seed: r.kit?.identity.seed ?? 0,
+        symbol: r.kit?.identity.symbol ?? null,
+        case: r.kit?.identity.case ?? null,
         fonts: r.kit?.identity.typography ?? null,
         tagline: r.kit?.taglines[0] ?? null,
         updatedAt: r.updatedAt,
@@ -180,6 +184,25 @@ export default async function brandRoutes(app: FastifyInstance) {
     const user = await ensureUser(req, reply);
     const { id } = req.params as { id: string };
     return { brand: serialize(await moreLooks(user, id)) };
+  });
+
+  app.post('/api/brands/:id/imagery', { ...aiLimit, schema: { tags: ['brands'], summary: 'Generate moodboard photos or logo concept sketches with the image model' } }, async (req, reply) => {
+    const user = await ensureUser(req, reply);
+    const { id } = req.params as { id: string };
+    const { kind } = parse(z.object({ kind: z.enum(['moodboard', 'concepts']) }), req.body);
+    await consume(user, 'assistant');
+    const brand = await generateImagery(user, id, kind);
+    analytics.track('imagery_generated', user.id, { kind });
+    return { brand: serialize(brand) };
+  });
+
+  app.get('/api/assets/:id', { schema: { tags: ['brands'], summary: 'A generated image (moodboard, concept sketch)' } }, async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const asset = await getAsset(id);
+    if (!asset?.data) throw new AppError(404, 'not_found', 'Asset not found');
+    reply.header('content-type', asset.contentType ?? 'image/png');
+    reply.header('cache-control', 'public, max-age=31536000, immutable');
+    return reply.send(Buffer.from(asset.data, 'base64'));
   });
 
   app.post('/api/brands/:id/undo', { schema: { tags: ['brands'], summary: 'Undo the last change (versioned)' } }, async (req, reply) => {

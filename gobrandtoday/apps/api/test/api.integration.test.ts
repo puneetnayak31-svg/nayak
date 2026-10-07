@@ -42,8 +42,12 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     const cookie = gen.headers['set-cookie'] as string;
     expect(cookie).toMatch(/gbt_sid=.*HttpOnly/i);
     const sid = cookie.split(';')[0]!;
-    const body = gen.json() as { names: Array<{ name: string; score: { overall: number } }>; projectId: string };
+    const body = gen.json() as { names: Array<{ name: string; score: { overall: number }; tagline?: string; whyItWorks?: string[]; meaning?: string }>; projectId: string };
     expect(body.names.length).toBeGreaterThan(0);
+    // Every name carries its story, not just a label.
+    expect(body.names[0]!.tagline).toBeTruthy();
+    expect(body.names[0]!.meaning).toBeTruthy();
+    expect(body.names[0]!.whyItWorks?.length).toBe(3);
 
     const save = await app!.inject({ method: 'POST', url: '/api/saved', headers: { ...H, cookie: sid }, payload: { name: body.names[0]!.name } });
     expect(save.statusCode).toBe(200);
@@ -67,6 +71,17 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     const md = await app!.inject({ url: `/api/brands/${id}/export?format=md`, headers: { cookie: sid } });
     expect(md.headers['content-type']).toContain('markdown');
     expect(md.body).toContain('## Identity');
+    expect(md.body).toContain('## Essence');
+    expect(md.body).not.toContain('### Motion');
+
+    // Imagery: the default image provider (Pollinations, keyless) returns stable URLs.
+    const img = await app!.inject({ method: 'POST', url: `/api/brands/${id}/imagery`, headers: { ...H, cookie: sid }, payload: { kind: 'moodboard' } });
+    expect(img.statusCode).toBe(200);
+    const mood = (img.json() as { brand: { kit: { identity: { moodboard: Array<{ imageUrl: string; caption: string }> } } } }).brand.kit.identity.moodboard;
+    expect(mood).toHaveLength(4);
+    expect(mood[0]!.imageUrl).toMatch(/^https:\/\/image\.pollinations\.ai\/prompt\//);
+    const badKind = await app!.inject({ method: 'POST', url: `/api/brands/${id}/imagery`, headers: { ...H, cookie: sid }, payload: { kind: 'logo' } });
+    expect(badKind.statusCode).toBe(400);
 
     // Another visitor cannot read it.
     const other = await app!.inject({ url: `/api/brands/${id}` });
@@ -85,5 +100,25 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     expect((projects.json() as { projects: unknown[] }).projects).toHaveLength(1);
     const bad = await app!.inject({ method: 'POST', url: '/api/auth/login', headers: H, payload: { email, password: 'wrong password' } });
     expect(bad.statusCode).toBe(401);
+  });
+
+  it('experts: lists services and takes a validated request', async () => {
+    if (!dbUp) return;
+    const list = await app!.inject({ url: '/api/experts' });
+    const services = (list.json() as { services: Array<{ id: string }> }).services;
+    expect(services.length).toBeGreaterThanOrEqual(7);
+    expect(services.map((s) => s.id)).toContain('sonic');
+    const bad = await app!.inject({ method: 'POST', url: '/api/experts/requests', headers: H, payload: { service: 'identity', name: 'Asha', email: 'not-an-email' } });
+    expect(bad.statusCode).toBe(400);
+    const ok = await app!.inject({
+      method: 'POST',
+      url: '/api/experts/requests',
+      headers: H,
+      payload: { service: 'sonic', also: ['video', 'nope'], name: 'Asha Rao', email: 'asha@example.com', budget: 'Not sure yet', details: 'A jingle for our chai brand', currency: 'INR' },
+    });
+    expect(ok.statusCode).toBe(200);
+    const id = (ok.json() as { id: string }).id;
+    const row = await pool.query('select service, email from expert_requests where id = $1', [id]);
+    expect(row.rows[0]).toEqual({ service: 'sonic,video', email: 'asha@example.com' });
   });
 });

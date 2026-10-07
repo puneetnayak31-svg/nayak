@@ -18,10 +18,17 @@ export function Footer() {
               <Link href="/create?mode=domain_first">Domain-First search</Link>
               <Link href="/pricing">Pricing</Link>
               <Link href="/dashboard">My brands</Link>
+              <Link href="/experts">Work with an expert</Link>
+              <Link href="/tools">All free tools</Link>
             </div>
             <div className="stack gap-8 small">
               <span className="eyebrow">Free tools</span>
-              {SEO_PAGES.slice(0, 5).map((p) => (
+              {SEO_PAGES.filter((p) => p.widget).map((p) => (
+                <Link key={p.slug} href={`/tools/${p.slug}`}>
+                  {p.short}
+                </Link>
+              ))}
+              {SEO_PAGES.filter((p) => !p.widget).slice(0, 3).map((p) => (
                 <Link key={p.slug} href={`/tools/${p.slug}`}>
                   {p.short}
                 </Link>

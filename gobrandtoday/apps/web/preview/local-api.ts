@@ -1,17 +1,20 @@
 /**
  * The preview build's stand-in for the API server. Same routes, same shapes,
- * same business logic (offline name generator, GoBrand Score, kit assembly,
- * looks, assistant), with data kept in this browser. Domain and handle checks
- * use the clearly-labelled demo provider, because a sandboxed preview page
- * can't reach registries or social networks.
+ * same business logic (GoBrand Score, kit assembly, looks, assistant), with
+ * data kept in this browser. Inside a Claude viewer, names, Brand Bibles,
+ * logo symbols and the assistant come from Claude (see claude.ts); elsewhere
+ * the offline engine answers. Domain and handle results are never claimed:
+ * a sandboxed page can't reach registries or social networks, so every
+ * result is "not checked" with a one-tap link and a labelled price estimate.
  */
 import {
   BriefSchema,
+  EXPERT_SERVICES,
+  ExpertRequestSchema,
   PLANS,
   SOCIAL_PLATFORM_IDS,
   buyLinks,
   handleAlternatives,
-  hash32,
   normaliseHandle,
   planById,
   profileUrl,
@@ -30,7 +33,8 @@ import { generateOfflineNames } from '../../api/src/providers/ai/offline/names';
 import { offlineAssistant } from '../../api/src/providers/ai/offline/assistant';
 import { KitDraftSchema, type KitDraft, type KitSection } from '../../api/src/providers/ai/types';
 import { briefTitle } from '../../api/src/providers/ai/prompts';
-import { applyAssistantChanges, applyLook, assembleKit, freshOfflineLooks, kitToDraft, mergeKit, toMarkdown, withFreshLooks } from '../../api/src/services/kit';
+import { applyAssistantChanges, applyLook, assembleKit, completeLooks, freshOfflineLooks, kitToDraft, mergeKit, toMarkdown, withFreshLooks } from '../../api/src/services/kit';
+import { aiAssistant, aiAvailable, aiErrorNotice, aiKit, aiNames, getSample } from './claude';
 
 export class ApiError extends Error {
   constructor(
@@ -75,7 +79,7 @@ interface StoredBrand {
   socials: SocialResult[] | null;
   status: 'generating' | 'ready' | 'failed';
   error: string | null;
-  source: 'offline';
+  source: 'ai' | 'offline';
   version: number;
   versions: BrandKit[];
   isPublic: boolean;
@@ -94,6 +98,7 @@ interface DB {
   watch: Array<{ id: string; domain: string; lastStatus: string | null; lastCheckedAt: string | null }>;
   usage: Record<string, number>;
   day: string;
+  experts?: Array<Record<string, unknown>>;
 }
 
 const KEY = 'gbt-preview-v2';
@@ -172,22 +177,24 @@ function region(): 'IN' | 'US' {
   }
 }
 
+/**
+ * The preview runs inside a sandbox that can't reach registries or social
+ * platforms, so it never claims anything is free or taken. Every result is
+ * "not checked" with a typical price and a one-tap link to see it live.
+ */
 function checkDomains(name: string, tlds: string[]): DomainResult[] {
   const label = toSlug(name);
   return tlds.map((tld) => {
     const domain = `${label}.${tld}`;
-    const h = hash32(domain) % 100;
-    const takenBias = tld === 'com' ? 55 : tld === 'ai' ? 40 : 25;
-    const status = h < takenBias ? 'taken' : h < takenBias + 6 ? 'premium' : 'available';
     return {
       domain,
       tld,
-      status,
+      status: 'unknown',
       source: 'demo',
       verified: false,
-      note: 'Demo data — the full app checks the registry live.',
+      note: 'Preview build: live registry checks run on the server version.',
       checkedAt: now(),
-      buyLinks: status === 'taken' ? [] : buyLinks(domain, region()),
+      buyLinks: buyLinks(domain, region()),
     } satisfies DomainResult;
   });
 }
@@ -197,15 +204,14 @@ function checkHandle(raw: string): SocialResult[] {
   return SOCIAL_PLATFORM_IDS.map((platform) => {
     const v = validateHandle(platform, handle);
     if (!v.ok) return { platform, handle, status: 'invalid', method: 'demo', verified: false, url: profileUrl(platform, handle), note: v.reason, checkedAt: now() } satisfies SocialResult;
-    const h = hash32(`${platform}:${handle}`) % 100;
     return {
       platform,
       handle,
-      status: h < 45 ? 'taken' : 'available',
+      status: 'manual',
       method: 'demo',
       verified: false,
       url: profileUrl(platform, handle),
-      note: 'Demo data — the full app verifies GitHub, Reddit and YouTube live.',
+      note: 'Preview build: tap to see the profile. The server version verifies GitHub, Reddit and YouTube automatically.',
       checkedAt: now(),
     } satisfies SocialResult;
   });
@@ -214,19 +220,39 @@ function checkHandle(raw: string): SocialResult[] {
 /* -------------------------------- serialisers -------------------------------- */
 
 function brandDTO(b: StoredBrand) {
-  maybeFinish(b);
+  ensureJob(b);
   const { versions: _v, messages: _m, readyAt: _r, ...rest } = b;
   return rest;
 }
 
-function maybeFinish(b: StoredBrand) {
-  if (b.status === 'generating' && Date.now() >= b.readyAt) {
+const ALL_SECTIONS: KitSection[] = ['strategy', 'taglines', 'identity', 'launch', 'website'];
+const jobs = new Map<string, Promise<void>>();
+const withTimeout = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej({ code: 'timeout', message: 'Took too long' }), ms))]);
+
+/** Build the Brand Bible in the background: Claude when available, otherwise the offline writer. */
+function ensureJob(b: StoredBrand) {
+  if (b.status !== 'generating' || jobs.has(b.id)) return;
+  const job = (async () => {
     const tlds = b.brief.tlds?.length ? b.brief.tlds.slice(0, 5) : ['com', 'in', 'ai', 'io', 'co'];
     const domains = checkDomains(b.name, tlds);
     const socials = checkHandle(b.handle ?? b.name);
-    const domain = b.domain ?? domains.find((d) => d.status === 'available')?.domain ?? `${toSlug(b.name)}.${tlds[0]}`;
-    const handle = b.handle ?? toSlug(b.name);
-    const draft = KitDraftSchema.parse(generateOfflineKit({ name: b.name, brief: b.brief, sections: ['strategy', 'taglines', 'identity', 'launch', 'website'], domain, handle })) as KitDraft;
+    const domain = b.domain ?? `${toSlug(b.name)}.${tlds[0]}`;
+    const handle = b.handle ?? toSlug(b.name).replace(/-/g, '');
+    const input = { name: b.name, brief: b.brief, sections: ALL_SECTIONS, domain, handle };
+    const offline = KitDraftSchema.parse(generateOfflineKit(input)) as KitDraft;
+    let draft = offline;
+    let source: 'ai' | 'offline' = 'offline';
+    if (await getSample()) {
+      try {
+        const ai = await withTimeout(aiKit(input), 240_000);
+        draft = { ...offline, ...ai } as KitDraft;
+        source = Object.keys(ai).length >= 3 ? 'ai' : 'offline';
+      } catch {
+        /* offline draft stands */
+      }
+    } else {
+      await wait(Math.max(0, b.readyAt - Date.now()));
+    }
     const kit = assembleKit(b.name, b.brief, draft);
     Object.assign(b, {
       domains,
@@ -234,6 +260,7 @@ function maybeFinish(b: StoredBrand) {
       domain,
       handle,
       kit,
+      source,
       score: scoreName({ name: b.name, brief: b.brief.description, domains, socials, preferredTlds: tlds }),
       status: 'ready',
       version: 1,
@@ -241,7 +268,8 @@ function maybeFinish(b: StoredBrand) {
       updatedAt: now(),
     });
     save();
-  }
+  })().finally(() => jobs.delete(b.id));
+  jobs.set(b.id, job);
 }
 
 function findBrand(id: string): StoredBrand {
@@ -265,10 +293,11 @@ type Handler = (args: { body: any; params: any; query: URLSearchParams }) => unk
 const routes: Array<[string, string, Handler]> = [];
 const on = (method: string, pattern: string, h: Handler) => routes.push([method, pattern, h]);
 
-on('GET', '/api/system', () => ({
+on('GET', '/api/system', async () => ({
   mode: 'demo',
-  ai: { provider: 'offline', live: false },
+  ai: (await aiAvailable()) ? { provider: 'anthropic', model: 'Claude (your account)', live: true } : { provider: 'offline', live: false },
   domains: { provider: 'demo', live: false },
+  images: { provider: 'none', live: false },
   social: { live: false, platforms: Object.fromEntries(SOCIAL_PLATFORM_IDS.map((p) => [p, 'demo'])) },
   features: { assistant: true, domainFirst: true, googleLogin: false },
   billing: { enabled: false, provider: 'none' },
@@ -319,12 +348,24 @@ on('PATCH', '/api/me', ({ body }) => {
 });
 
 /* names */
-function generate(body: any, refine: boolean) {
+async function generate(body: any, refine: boolean, opts: { allowAI?: boolean } = {}) {
   me();
   const brief = BriefSchema.parse(body.brief);
   const count = Math.min(40, Math.max(4, body.count ?? 18));
   consume('generation');
-  const raw = generateOfflineNames({ brief, count, feedback: body.feedback, refinements: body.refinements, exclude: body.exclude, liked: body.liked });
+  const input = { brief, count, feedback: body.feedback, refinements: body.refinements, exclude: body.exclude, liked: body.liked };
+  let raw = null as ReturnType<typeof generateOfflineNames> | null;
+  let source: 'ai' | 'offline' = 'offline';
+  let notice: string | undefined;
+  if (opts.allowAI !== false && (await getSample())) {
+    try {
+      raw = await withTimeout(aiNames(input), 150_000);
+      source = 'ai';
+    } catch (e) {
+      notice = aiErrorNotice(e) || undefined;
+    }
+  }
+  raw ??= generateOfflineNames(input);
   const exclude = new Set((body.exclude ?? []).map(toSlug));
   const k = brief.constraints ?? {};
   const names: NameCandidate[] = raw
@@ -336,8 +377,12 @@ function generate(body: any, refine: boolean) {
       pronunciation: r.pronunciation,
       personality: r.personality,
       origin: r.origin || undefined,
-      relevance: r.relevance,
-      source: 'offline' as const,
+      relevance: Math.max(0, Math.min(10, r.relevance)),
+      tagline: r.tagline || undefined,
+      meaning: r.meaning || undefined,
+      whyItWorks: r.whyItWorks?.slice(0, 3),
+      watchOut: r.watchOut || undefined,
+      source,
       score: scoreName({ name: r.name, brief: brief.description, relevance: r.relevance, preferredTlds: brief.tlds }),
     }))
     .filter((n) => !exclude.has(toSlug(n.name)) && (!k.maxLength || toSlug(n.name).length <= k.maxLength))
@@ -353,27 +398,28 @@ function generate(body: any, refine: boolean) {
   p.updatedAt = now();
   p.names.push(...names.map((n) => ({ ...n, round: p!.rounds })));
   save();
-  return { projectId: p.id, round: p.rounds, names, source: 'offline' as const, notice: refine ? undefined : undefined };
+  return { projectId: p.id, round: p.rounds, names, source, notice: refine && !notice ? undefined : notice };
 }
 on('POST', '/api/brand/generate-names', async ({ body }) => {
-  await wait(900);
+  if (!(await getSample())) await wait(900);
   return generate(body, false);
 });
 on('POST', '/api/brand/refine-names', async ({ body }) => {
-  await wait(900);
+  if (!(await getSample())) await wait(900);
   return generate(body, true);
 });
 on('POST', '/api/brand/domain-first', async ({ body }) => {
   await wait(1400);
   const brief = BriefSchema.parse(body.brief);
   const tld = brief.tlds[0] ?? 'com';
-  const res = generate({ ...body, brief: { ...brief, mode: 'domain_first' }, count: 30 }, false);
+  // The preview can't check domains, so Domain-First shows the most ownable coinages with
+  // their (unchecked) domains rather than pretending to filter by availability.
+  const res = await generate({ ...body, brief: { ...brief, mode: 'domain_first' }, count: 16 }, false);
   const keep = res.names
     .map((n) => ({ ...n, domains: checkDomains(n.name, [...new Set([tld, ...brief.tlds])].slice(0, 4)) }))
-    .filter((n) => n.domains[0]!.status === 'available')
     .slice(0, 10)
     .map((n) => ({ ...n, score: scoreName({ name: n.name, brief: brief.description, relevance: n.relevance, domains: n.domains, preferredTlds: brief.tlds }) }));
-  return { ...res, names: keep, checked: res.names.length };
+  return { ...res, names: keep, checked: res.names.length, notice: 'Preview build: domains aren’t checked here. Tap any ending to see it at the registrar.' };
 });
 
 /* checks */
@@ -437,7 +483,7 @@ on('GET', '/api/projects/:id', ({ params }) => {
 /* brands */
 on('GET', '/api/brands', () => ({
   brands: load().brands.map((b) => {
-    maybeFinish(b);
+    ensureJob(b);
     return {
       id: b.id,
       name: b.name,
@@ -448,6 +494,8 @@ on('GET', '/api/brands', () => ({
       mark: b.kit?.identity.mark.shape ?? null,
       style: b.kit?.identity.style ?? null,
       seed: b.kit?.identity.seed ?? 0,
+      symbol: b.kit?.identity.symbol ?? null,
+      case: b.kit?.identity.case ?? null,
       fonts: b.kit?.identity.typography ?? null,
       tagline: b.kit?.taglines[0] ?? null,
       updatedAt: b.updatedAt,
@@ -483,6 +531,7 @@ on('POST', '/api/brands', ({ body }) => {
   };
   load().brands.unshift(b);
   save();
+  consume('generation');
   return { brand: brandDTO(b) };
 });
 on('GET', '/api/brands/:id', ({ params }) => ({ brand: brandDTO(findBrand(params.id)) }));
@@ -518,20 +567,42 @@ on('POST', '/api/brands/:id/look', async ({ params, body }) => {
   return { brand: brandDTO(b) };
 });
 on('POST', '/api/brands/:id/looks', async ({ params }) => {
-  await wait(1100);
   const b = findBrand(params.id);
   if (!b.kit) throw new ApiError(409, 'not_ready', 'Still building.');
-  saveVersion(b, withFreshLooks(b.kit, b.brief, freshOfflineLooks(b.kit, b.brief, Date.now() % 1_000_000)));
+  const seed = Date.now() % 1_000_000;
+  let looks = freshOfflineLooks(b.kit, b.brief, seed);
+  if (await getSample()) {
+    try {
+      const draft = await withTimeout(
+        aiKit({ name: b.name, brief: b.brief, sections: ['identity'], current: b.kit, instruction: `Propose four new looks with new custom symbols. Avoid these styles already shown: ${b.kit.identity.looks.map((l) => l.style).join(', ')}.` }),
+        180_000,
+      );
+      if (draft.identity?.looks?.length) looks = completeLooks(b.name, b.brief, draft.identity.looks, seed);
+    } catch {
+      /* offline looks */
+    }
+  } else await wait(1100);
+  saveVersion(b, withFreshLooks(b.kit, b.brief, looks));
   return { brand: brandDTO(b) };
 });
 on('POST', '/api/brands/:id/sections/:section', async ({ params, body }) => {
-  await wait(900);
   const b = findBrand(params.id);
   if (!b.kit) throw new ApiError(409, 'not_ready', 'Still building.');
   const section = params.section as KitSection;
-  const draft = generateOfflineKit({ name: b.name, brief: { ...b.brief, description: `${b.brief.description}${body.instruction ? ` (${body.instruction})` : ''}` }, sections: [section], domain: b.domain ?? undefined, handle: b.handle ?? undefined, seed: Date.now() % 100000 });
+  let draft: Partial<KitDraft> | null = null;
+  if (await getSample()) {
+    try {
+      draft = await withTimeout(aiKit({ name: b.name, brief: b.brief, sections: [section], domain: b.domain ?? undefined, handle: b.handle ?? undefined, current: b.kit, instruction: body.instruction }), 180_000);
+    } catch {
+      draft = null;
+    }
+  } else await wait(900);
+  draft ??= generateOfflineKit({ name: b.name, brief: { ...b.brief, description: `${b.brief.description}${body.instruction ? ` (${body.instruction})` : ''}` }, sections: [section], domain: b.domain ?? undefined, handle: b.handle ?? undefined, seed: Date.now() % 100000 });
   const merged = { ...kitToDraft(b.kit), ...draft } as KitDraft;
-  if (section === 'identity') saveVersion(b, withFreshLooks(b.kit, b.brief, freshOfflineLooks(b.kit, b.brief, Date.now() % 1_000_000)));
+  if (section === 'identity') {
+    const looks = draft.identity?.looks?.length ? completeLooks(b.name, b.brief, draft.identity.looks, Date.now() % 100000) : freshOfflineLooks(b.kit, b.brief, Date.now() % 1_000_000);
+    saveVersion(b, withFreshLooks({ ...b.kit, identity: { ...b.kit.identity, ...(draft.identity ? { designSystem: draft.identity.designSystem, essence: draft.identity.essence, moodboard: draft.identity.moodboard } : {}) } }, b.brief, looks));
+  }
   else {
     const fresh = assembleKit(b.name, b.brief, merged);
     saveVersion(b, { ...fresh, identity: b.kit.identity });
@@ -548,18 +619,28 @@ on('POST', '/api/brands/:id/undo', ({ params }) => {
 });
 on('GET', '/api/brands/:id/assistant', ({ params }) => ({ messages: findBrand(params.id).messages }));
 on('POST', '/api/brands/:id/assistant', async ({ params, body }) => {
-  await wait(900);
   const b = findBrand(params.id);
   if (!b.kit) throw new ApiError(409, 'not_ready', 'Still building.');
   consume('assistant');
-  const out = offlineAssistant({ name: b.name, brief: b.brief, kit: b.kit, history: b.messages.map((m) => ({ role: m.role, content: m.content })), message: body.message });
+  const input = { name: b.name, brief: b.brief, kit: b.kit, history: b.messages.map((m) => ({ role: m.role, content: m.content })), message: body.message };
+  let source: 'ai' | 'offline' = 'offline';
+  let out = null as ReturnType<typeof offlineAssistant> | null;
+  if (await getSample()) {
+    try {
+      out = await withTimeout(aiAssistant(input), 150_000);
+      source = 'ai';
+    } catch {
+      out = null;
+    }
+  } else await wait(900);
+  out ??= offlineAssistant(input);
   const patch = applyAssistantChanges(b.kit, b.brief, out.changes);
   if (patch) saveVersion(b, mergeKit(b.kit, patch));
   const changed = patch ? Object.keys(patch) : [];
   b.messages.push({ id: uid(), role: 'user', content: body.message, meta: null, createdAt: now() });
-  b.messages.push({ id: uid(), role: 'assistant', content: out.reply, meta: { names: out.names, changed, source: 'offline' }, createdAt: now() });
+  b.messages.push({ id: uid(), role: 'assistant', content: out.reply, meta: { names: out.names, changed, source }, createdAt: now() });
   save();
-  return { reply: out.reply, names: out.names, changed, source: 'offline', brand: brandDTO(b) };
+  return { reply: out.reply, names: out.names, changed, source, brand: brandDTO(b) };
 });
 on('GET', '/api/public/brands/:slug', ({ params }) => {
   const b = load().brands.find((x) => x.shareSlug === params.slug && x.isPublic);
@@ -571,6 +652,22 @@ on('GET', '/api/brands/:id/export', ({ params, query }) => {
   const b = findBrand(params.id);
   if (!b.kit) throw new ApiError(409, 'not_ready', 'Still building.');
   return query.get('format') === 'md' ? brandMarkdown(b.id) : JSON.stringify(brandDTO(b), null, 2);
+});
+
+/* imagery: needs the server's image model */
+on('POST', '/api/brands/:id/imagery', () => {
+  throw new ApiError(501, 'not_in_preview', 'Image generation runs on the server version (free FLUX models). The preview can’t load external images.');
+});
+
+/* experts */
+on('GET', '/api/experts', () => ({ services: EXPERT_SERVICES }));
+on('POST', '/api/experts/requests', async ({ body }) => {
+  await wait(700);
+  const req = ExpertRequestSchema.parse(body);
+  const db = load();
+  db.experts = [{ id: uid(), ...req, createdAt: now() }, ...(db.experts ?? [])];
+  save();
+  return { ok: true, message: `Thanks, ${req.name.split(' ')[0]}. In the live product an expert emails you a scope and quote within one working day. (Preview: your request is saved in this browser only.)` };
 });
 
 /* watchlist */

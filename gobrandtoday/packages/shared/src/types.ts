@@ -116,6 +116,14 @@ export interface NameCandidate {
   origin?: string;
   /** 0–10, how well the name fits the brief (AI judgement or keyword overlap). */
   relevance: number;
+  /** A ready-to-use tagline written for this name. */
+  tagline?: string;
+  /** What the name means or evokes, in plain words. */
+  meaning?: string;
+  /** Two or three concrete reasons it works for this brief. */
+  whyItWorks?: string[];
+  /** One honest caveat (spelling, a crowded space, a similar brand). */
+  watchOut?: string;
   source: 'ai' | 'offline' | 'user';
   score: GoBrandScore;
   domains?: DomainResult[];
@@ -127,7 +135,7 @@ export interface NameCandidate {
 /* ------------------------------------------------------------------ */
 
 export type DomainStatus = 'available' | 'taken' | 'premium' | 'unknown' | 'invalid';
-export type DomainSource = 'rdap' | 'godaddy' | 'hostinger' | 'namecheap' | 'dns' | 'demo';
+export type DomainSource = 'rdap' | 'godaddy' | 'hostinger' | 'namecheap' | 'porkbun' | 'namecom' | 'dns' | 'demo';
 
 export interface BuyLink {
   registrar: string;
@@ -142,6 +150,12 @@ export interface DomainResult {
   source: DomainSource;
   /** Only true when a registry/registrar API confirmed the status. Demo is never verified. */
   verified: boolean;
+  /**
+   * True when a registrar (not just the registry) confirmed it can be bought
+   * right now. Registry-only "available" can still be reserved or premium.
+   */
+  confirmed?: boolean;
+  /** Live price from a registrar API. Estimates are computed client-side and labelled "est.". */
   price?: { amount: number; currency: string; renewal?: number };
   note?: string;
   checkedAt: string;
@@ -229,7 +243,7 @@ export const MARK_SHAPES = [
 ] as const;
 export type MarkShape = (typeof MARK_SHAPES)[number];
 
-export const LOGO_STYLES = ['twinkle', 'monogram', 'editorial', 'stacked', 'symbol', 'playful', 'terminal', 'heritage'] as const;
+export const LOGO_STYLES = ['twinkle', 'monogram', 'editorial', 'stacked', 'symbol', 'emblem', 'lettermark', 'playful', 'terminal', 'heritage'] as const;
 export type LogoStyle = (typeof LOGO_STYLES)[number];
 
 export const PALETTE_ROLES = ['ink', 'brand', 'accent', 'tint', 'paper'] as const;
@@ -251,6 +265,17 @@ export const FontChoiceSchema = z.object({
   why: z.string().max(240),
 });
 
+export const SymbolSpecSchema = z.object({
+  /** A generative family (see symbols.ts). */
+  family: z.string().max(20).optional(),
+  /** Sanitised AI-drawn SVG in a 100×100 box, colours as palette roles. */
+  svg: z.string().max(6000).optional(),
+  /** Optional raster concept from an image model. */
+  imageUrl: z.string().max(2000).optional(),
+});
+
+export const WORDMARK_CASES = ['lower', 'title', 'upper'] as const;
+
 /** One complete visual direction ("look") a user can pick before the guidelines are built. */
 export const LookSchema = z.object({
   id: z.string(),
@@ -262,6 +287,10 @@ export const LookSchema = z.object({
   markShape: z.enum(MARK_SHAPES),
   seed: z.number(),
   palette: z.array(PaletteSwatchSchema),
+  symbol: SymbolSpecSchema.optional(),
+  case: z.enum(WORDMARK_CASES).optional(),
+  /** "ai" when a model designed the symbol, otherwise generated from the seed. */
+  origin: z.enum(['ai', 'generative']).optional(),
 });
 export type Look = z.infer<typeof LookSchema>;
 
@@ -294,6 +323,8 @@ export const BrandKitSchema = z.object({
     /** The logo construction — very different families, chosen by the user. */
     style: z.enum(LOGO_STYLES).default('twinkle'),
     seed: z.number().default(0),
+    symbol: SymbolSpecSchema.optional(),
+    case: z.enum(WORDMARK_CASES).optional(),
     /** The options offered; the user picks one before the guidelines are final. */
     looks: z.array(LookSchema).default([]),
     lookChosen: z.boolean().default(true),
@@ -313,7 +344,14 @@ export const BrandKitSchema = z.object({
       radius: z.string(),
       personality: z.string(),
     }),
-    motion: z.object({ idle: z.string(), thinking: z.string(), mark: z.string(), done: z.string() }),
+    /** Legacy: older kits carried a motion story. No longer generated or shown. */
+    motion: z.object({ idle: z.string(), thinking: z.string(), mark: z.string(), done: z.string() }).optional(),
+    /** The brand's core: one promise and three values with what they mean in practice. */
+    essence: z.object({ promise: z.string(), values: z.array(z.object({ name: z.string(), meaning: z.string() })) }).optional(),
+    /** Imagery direction: captions plus prompts an image model can render. */
+    moodboard: z.array(z.object({ caption: z.string(), prompt: z.string(), imageUrl: z.string().optional() })).optional(),
+    /** Raster concept sketches from an image model: inspiration for a designer, not the logo itself. */
+    concepts: z.array(z.object({ caption: z.string(), prompt: z.string(), imageUrl: z.string() })).optional(),
     usageRules: z.object({ clearSpace: z.string(), minSize: z.string(), do: z.string(), dont: z.string() }),
   }),
   launch: z.object({
@@ -373,6 +411,8 @@ export interface ApiError {
 export interface SystemInfo {
   mode: 'live' | 'demo';
   ai: { provider: string; model?: string; live: boolean };
-  domains: { provider: string; live: boolean };
+  domains: { provider: string; live: boolean; /** Registrar that confirms "available" answers, if configured. */ confirm?: string | null };
   social: { live: boolean; platforms: Record<string, string> };
+  /** Image model for moodboards and concept sketches. */
+  images?: { provider: string; live: boolean };
 }

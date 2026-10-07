@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FONT_TRIOS, LOGO_STYLES, MARK_SHAPES, NAME_TYPES, type AssistantReply, type BrandKit, type Brief } from '@gbt/shared';
+import { FONT_TRIOS, LOGO_STYLES, MARK_SHAPES, NAME_TYPES, SYMBOL_FAMILIES, WORDMARK_CASES, type AssistantReply, type BrandKit, type Brief } from '@gbt/shared';
 
 export type Effort = 'low' | 'medium' | 'high';
 
@@ -20,6 +20,10 @@ export const RawNameSchema = z.object({
   personality: z.array(z.string()),
   origin: z.string(),
   relevance: z.number(),
+  meaning: z.string(),
+  tagline: z.string(),
+  whyItWorks: z.array(z.string()),
+  watchOut: z.string(),
 });
 export type RawName = z.infer<typeof RawNameSchema>;
 export const NamesOutputSchema = z.object({ names: z.array(RawNameSchema) });
@@ -28,7 +32,7 @@ export const NamesOutputSchema = z.object({ names: z.array(RawNameSchema) });
 
 const fontTrioIds = Object.keys(FONT_TRIOS) as [string, ...string[]];
 
-/** A look proposed by the model; fonts and contrast-checked palettes are filled in by our system. */
+/** A look proposed by the model; contrast-checked palettes are filled in by our system. */
 export const DraftLookSchema = z.object({
   title: z.string(),
   concept: z.string(),
@@ -36,12 +40,21 @@ export const DraftLookSchema = z.object({
   /** Base hue 0–360. */
   hue: z.number(),
   markShape: z.enum(MARK_SHAPES),
+  fontTrio: z.enum(fontTrioIds),
+  wordCase: z.enum(WORDMARK_CASES),
+  /** A generative family for symbol/emblem looks ("none" otherwise). */
+  symbolFamily: z.enum([...SYMBOL_FAMILIES, 'none'] as [string, ...string[]]),
+  /** A custom symbol drawn as SVG shapes in a 100×100 box, or "" for none. Sanitised before use. */
+  symbolSvg: z.string(),
 });
 export type DraftLook = z.infer<typeof DraftLookSchema>;
 
 export const IdentityDraftSchema = z.object({
   /** Four very different looks (different styles and hues). */
   looks: z.array(DraftLookSchema),
+  essence: z.object({ promise: z.string(), values: z.array(z.object({ name: z.string(), meaning: z.string() })) }),
+  /** Four imagery directions: a caption for the guidelines and a prompt for an image model. */
+  moodboard: z.array(z.object({ caption: z.string(), prompt: z.string() })),
   designSystem: z.object({
     buttons: z.string(),
     cards: z.string(),
@@ -55,7 +68,6 @@ export const IdentityDraftSchema = z.object({
     radius: z.string(),
     personality: z.string(),
   }),
-  motion: z.object({ idle: z.string(), thinking: z.string(), mark: z.string(), done: z.string() }),
 });
 export type IdentityDraft = z.infer<typeof IdentityDraftSchema>;
 

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width={{W}}, height={{H}}" />
+<title>Naming rule {{SLUG}} {{FMT}}</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+{{COMMON_CSS}}
+{{KIT_CSS}}
+.vc { position: absolute; background: #FFFFFF; border: 3px solid var(--line); border-radius: 30px; box-shadow: 0 18px 40px rgba(22, 22, 26, 0.08); }
+.vc .tag { position: absolute; left: 30px; top: 26px; }
+.vc .nm { position: absolute; left: 30px; font-family: "Space Grotesk"; font-weight: 700; letter-spacing: -0.03em; color: var(--graphite); white-space: nowrap; }
+.vc .why { position: absolute; left: 30px; right: 110px; font: 500 30px Manrope; color: var(--ink-2); line-height: 1.3; }
+.V .vc .why { font-size: 27px; }
+.mark { position: absolute; right: 26px; top: 22px; width: 76px; height: 76px; }
+.bar2 { position: relative; height: 26px; border-radius: 13px; background: #EEECF3; overflow: hidden; }
+.bar2 b { position: absolute; left: 0; top: 0; bottom: 0; display: block; border-radius: 13px; transform-origin: 0 50%; }
+</style>
+</head>
+<body>
+<div id="root" class="{{FMT}}" data-composition-id="rule" data-start="0" data-width="{{W}}" data-height="{{H}}" data-duration="18">
+  <div class="layer bg-dark" id="bgdark"></div>
+  <div class="layer" id="wipes"></div>
+  <div class="layer" id="glows"></div>
+  <div class="layer field" id="field"></div>
+  <section class="clip" id="s-hook" data-start="0" data-duration="3" data-track-index="1"></section>
+  <section class="clip" id="s-cmp" data-start="2.8" data-duration="6.25" data-track-index="1"></section>
+  <section class="clip" id="s-score" data-start="9" data-duration="3.65" data-track-index="1"></section>
+  <section class="clip" id="s-more" data-start="12.6" data-duration="1.45" data-track-index="1"></section>
+  <section class="clip" id="s-end" data-start="14" data-duration="4" data-track-index="1"></section>
+  <section class="clip" id="s-chrome" data-start="2.8" data-duration="11.2" data-track-index="2"></section>
+  <div class="layer grain"></div>
+  <audio id="music" src="assets/audio/shorts/{{SLUG}}.wav" data-start="0" data-duration="18" data-volume="1"></audio>
+</div>
+<script>
+{{COMMON_JS}}
+{{WICKD_JS}}
+{{KIT_JS}}
+{{BRANDS_JS}}
+{{LOOKS_JS}}
+fontsLoaded().then(() => {
+  const W = {{W}}, H = {{H}};
+  const P = {{PARAMS}};
+  const tl = gsap.timeline({ paused: true });
+  const K = makeKit(tl, W, H), V = K.V, CA = K.CA, root = K.root;
+  const $ = (id) => document.getElementById(id);
+  K.fieldTo(0, 0, 0.001);
+  const T = { bad: 3.0, good: 5.6, comp: 9.0, more: 12.6, end: 14.0 };
+
+  // ===================================================== 0-3 HOOK: the rule itself
+  {
+    const sc = $("s-hook");
+    const pill = el("div", "pill vi abs", sc, "Naming rule");
+    const hl = el("div", "hl abs", sc);
+    const size = V ? (P.rule.length > 30 ? 84 : 100) : (P.rule.length > 30 ? 96 : 120);
+    Object.assign(hl.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", fontSize: size + "px" });
+    const ws = K.words(hl, P.rule);
+    const hh = hl.offsetHeight;
+    const top = (V ? 860 : 560) - hh / 2;
+    hl.style.top = top + "px";
+    pill.style.top = (top - 90) + "px";
+    pill.style.left = (W / 2 - pill.offsetWidth / 2) + "px";
+    tl.fromTo(pill, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(3)" }, 0.0);
+    tl.fromTo(ws, { yPercent: 80, opacity: 0, rotation: 3 }, { yPercent: 0, opacity: 1, rotation: 0, duration: 0.35, ease: "back.out(2)", stagger: 0.12 }, 0.15);
+    const u = el("div", "abs", sc);
+    u.style.cssText = `left:${W / 2 - 150}px;top:${top + hh + 30}px;width:300px;height:10px;border-radius:5px;background:var(--violet);transform-origin:50% 50%`;
+    tl.fromTo(u, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 0.9);
+    tl.to([pill, hl, u], { y: -50, opacity: 0, duration: 0.25, ease: "power2.in" }, 2.6);
+  }
+
+  // chrome: the rule stays on screen, small
+  {
+    const sc = $("s-chrome");
+    const p = el("div", "pill vi abs", sc, "Naming rule");
+    Object.assign(p.style, { left: CA.x + "px", top: CA.y + "px" });
+    const ex = K.exPill(sc, CA.x + CA.w - 140, CA.y);
+    const r = el("div", "hl abs", sc, P.rule);
+    Object.assign(r.style, { left: CA.x + "px", width: CA.w + "px", top: (CA.y + 64) + "px", fontSize: (V ? 50 : 56) + "px" });
+    tl.fromTo([p, ex, r], { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.05 }, 2.85);
+    tl.to(r, { opacity: 0, duration: 0.2 }, 8.8);
+  }
+
+  // ===================================================== 3-9 DON'T vs DO
+  {
+    const sc = $("s-cmp");
+    const cw = V ? CA.w : 820, ch = V ? 340 : 470;
+    const spots = V ? [[CA.x, 540], [CA.x, 540 + ch + 30]] : [[120, 290], [980, 290]];
+    const make = (k, name, why, good) => {
+      const c = el("div", "vc", sc);
+      Object.assign(c.style, { left: spots[k][0] + "px", top: spots[k][1] + "px", width: cw + "px", height: ch + "px", borderColor: good ? "#6D4AFF" : "#E7D6D3" });
+      const tag = el("div", "pill tag", c, good ? "Do" : "Don't");
+      tag.style.cssText += good ? ";background:#D5F4EF;color:#0A5F57" : ";background:#FBE3E0;color:#9A2B1E";
+      const fs = Math.min(V ? 92 : 100, (cw - 160) / (name.length * 0.56));
+      const nm = el("div", "nm", c, name); Object.assign(nm.style, { top: (V ? 92 : 110) + "px", fontSize: fs + "px", color: good ? "var(--graphite)" : "#5F5B6B" });
+      const wy = el("div", "why", c, why); wy.style.top = (V ? 92 + fs + 30 : 110 + fs + 40) + "px";
+      const mk = el("div", "mark", c);
+      mk.innerHTML = good
+        ? `<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="36" fill="#0F7B6C"/><path class="st" d="M22 39 L33 50 L55 27" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+        : `<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="36" fill="#C0392B"/><path class="st" d="M25 25 L51 51 M51 25 L25 51" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg>`;
+      return { c, mk, nm, wy };
+    };
+    const bad = make(0, P.badName, P.badWhy, false), good = make(1, P.goodName, P.goodWhy, true);
+    tl.fromTo(bad.c, { x: V ? 0 : -80, y: V ? 60 : 0, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }, T.bad);
+    tl.fromTo(bad.mk, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.35, ease: "back.out(3)" }, T.bad + 0.6);
+    tl.to(bad.nm, { keyframes: [{ x: -10, duration: 0.05 }, { x: 10, duration: 0.05 }, { x: -6, duration: 0.05 }, { x: 0, duration: 0.05 }] }, T.bad + 0.62);
+    tl.to(bad.c, { opacity: 0.55, scale: 0.97, duration: 0.3 }, T.good);
+    tl.fromTo(good.c, { x: V ? 0 : 80, y: V ? 60 : 0, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }, T.good);
+    tl.fromTo(good.mk, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.35, ease: "back.out(3)" }, T.good + 0.6);
+    tl.to(good.c, { boxShadow: "0 0 0 8px rgba(109,74,255,0.18), 0 24px 50px rgba(109,74,255,0.2)", duration: 0.4 }, T.good + 0.6);
+    K.out([bad.c, good.c], 8.72);
+  }
+
+  // ===================================================== 9-12.6 THE SCORE CHECKS THIS
+  {
+    const sc = $("s-score");
+    const hd = K.head(sc, "The GoBrand Score checks this", P.comp, V ? { y: 520, size: 96 } : { x: 120, y: 280, w: 1680, size: 110 });
+    K.headIn(hd, T.comp + 0.02);
+    const wt = el("div", "mono abs", sc, `Weight ${P.weight} / 100 · one of 8 parts`);
+    Object.assign(wt.style, { left: CA.x + "px", top: (V ? 760 : 470) + "px", fontSize: "22px", color: "var(--violet-d)" });
+    tl.fromTo(wt, { opacity: 0 }, { opacity: 1, duration: 0.3 }, T.comp + 0.4);
+    const rows = el("div", "abs", sc);
+    rows.style.cssText = `left:${CA.x}px;width:${V ? CA.w : 1200}px;top:${V ? 840 : 550}px;display:flex;flex-direction:column;gap:26px`;
+    const mkRow = (label, v, col) => {
+      const r = el("div", "", rows);
+      const top = el("div", "", r); top.style.cssText = "display:flex;justify-content:space-between;font:700 28px Manrope;color:var(--graphite);margin-bottom:10px";
+      el("span", "", top, label);
+      const vv = el("span", "", top, v.toFixed(1)); vv.style.fontFamily = "Space Mono"; vv.style.color = col === "#6D4AFF" ? "var(--violet-d)" : "#5F5B6B";
+      const b = el("div", "bar2", r); const f = el("b", "", b); f.style.background = col; f.style.width = (v * 10) + "%";
+      return f;
+    };
+    const fb = mkRow(P.barBad || P.badName, P.bad, "#9C98A8"), fg = mkRow(P.barGood || P.goodName, P.good, "#6D4AFF");
+    tl.fromTo(rows, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35 }, T.comp + 0.5);
+    tl.fromTo(fb, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, T.comp + 0.6);
+    tl.fromTo(fg, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, T.comp + 0.85);
+    K.out([hd.box, wt, rows], 12.35);
+  }
+
+  // ===================================================== 12.6-14 AND MUCH MORE INSIDE
+  {
+    const sc = $("s-more");
+    const rail = featureRail(K, tl, sc, T.more, T.end, V ? 820 : 480, false);
+    const more = el("div", "hl abs", sc, "And a lot more inside.");
+    Object.assign(more.style, { left: K.SAFE.x + "px", width: K.SAFE.w + "px", textAlign: "center", top: (V ? 660 : 320) + "px", fontSize: (V ? 66 : 76) + "px" });
+    tl.fromTo(more, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(2)" }, T.more + 0.05);
+  }
+
+  K.endCard($("s-end"), T.end, { cta: P.cta });
+  window.__timelines["rule"] = tl;
+});
+</script>
+</body>
+</html>

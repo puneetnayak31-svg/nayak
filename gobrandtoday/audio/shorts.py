@@ -310,6 +310,40 @@ def unbox():
     return m.render(), UNBOX_VO
 
 
+# ------------------------------------------------------------------ Naming rules (18 s each, five standalone videos)
+RULE_VO = {
+    "naming-rule-short": ["Short beats clever.", "The Candle and Wax Company? Too long.",
+                          "Wickd. Five letters, and it says the vibe.", "That's memorability, part of your GoBrand Score."],
+    "naming-rule-say-it": ["If they can't say it, they can't share it.", "Qwyzzlr? Good luck spelling that.",
+                           "Mello. Say it once, and everyone gets it.", "That's pronunciation, part of your GoBrand Score."],
+    "naming-rule-stand-out": ["Don't sound like everyone else.", "Smart App-ify? Sounds like every app.",
+                              "Loopa. A hanger with a loop. Only one brand owns that.", "That's distinctiveness, part of your GoBrand Score."],
+    "naming-rule-domain": ["Check the domain before you fall in love.", "Love the name, but the dot com is taken?",
+                           "Domain-First shows only names you can register right now.", "Domain checks are part of your GoBrand Score."],
+    "naming-rule-meaning": ["Make it mean something.", "Xorbo? Means nothing, so it says nothing.",
+                            "Ojas. Sanskrit for vitality.", "That's brandability, part of your GoBrand Score."],
+}
+RULE_T = dict(dur=18.0, bad=3.0, good=5.6, comp=9.0, more=12.6, end=14.0)
+
+
+def rule_score(slug):
+    a = RULE_T
+    m = Mix(a["dur"])
+    groove(m, 0.0, 7, level=0.8)
+    m.add(pop(800, 0.5), 0.2)
+    m.add(whoosh(0.35, 0.6), a["bad"] - 0.2)
+    m.add(thud(0.7), a["bad"] + 0.6)
+    m.add(glitch(0.9), a["bad"] + 0.62)
+    m.add(whoosh(0.35, 0.6), a["good"] - 0.2)
+    m.add(bell(88, 0.5), a["good"] + 0.6, rev=0.35, dly=0.15)
+    for i in range(3):
+        m.add(pluck(76 + [0, 7, 12][i], 0.45), a["comp"] + 0.6 + i * 0.25, rev=0.2)
+    m.add(whoosh(0.4, 0.6), a["more"] - 0.25)
+    end_card(m, a["end"], a["dur"] - a["end"])
+    v = RULE_VO[slug]
+    return m.render(), [(0.1, v[0]), (3.1, v[1]), (5.8, v[2]), (9.2, v[3])]
+
+
 SCORES = {"brand-book-unboxing": unbox, "indian-roots": roots, "inside-the-score": score_video, "name-my-brand-loopa": nmb, "comment-to-brand": comment, "nine-tabs-vs-one": race, "four-logos-one-name": four}
 
 
@@ -326,6 +360,10 @@ def build(slug):
     else:
         os.replace(mpath, final)
     return final
+
+
+for _slug in RULE_VO:
+    SCORES[_slug] = (lambda sl: (lambda: rule_score(sl)))(_slug)
 
 
 if __name__ == "__main__":

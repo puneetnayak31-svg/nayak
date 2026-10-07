@@ -49,8 +49,16 @@ def main():
     kit_js = open(os.path.join(SRC, "kit.js")).read()
     brands = open(os.path.join(SRC, "brands.js")).read()
     looks = open(os.path.join(SRC, "looks.js")).read()
+    jobs = []
     for v in VIDEOS:
         tpl = open(os.path.join(SRC, v + ".html")).read()
+        variants = os.path.join(SRC, v + "s.json")      # e.g. naming-rule.html + naming-rules.json -> one video per entry
+        if os.path.exists(variants):
+            for slug, params in json.load(open(variants)).items():
+                jobs.append((slug, tpl.replace("{{PARAMS}}", json.dumps(params)).replace("{{SLUG}}", slug)))
+        else:
+            jobs.append((v, tpl))
+    for v, tpl in jobs:
         for name, (w, h, fmt) in FORMATS.items():
             html = (tpl.replace("{{COMMON_CSS}}", css).replace("{{COMMON_JS}}", js).replace("{{WICKD_JS}}", wickd)
                     .replace("{{KIT_CSS}}", kit_css).replace("{{KIT_JS}}", kit_js).replace("{{BRANDS_JS}}", brands).replace("{{LOOKS_JS}}", looks)

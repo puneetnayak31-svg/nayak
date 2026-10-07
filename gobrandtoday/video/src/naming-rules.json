@@ -1,0 +1,64 @@
+{
+  "naming-rule-short": {
+    "rule": "Short beats clever.",
+    "badName": "TheCandleAndWaxCompany",
+    "badWhy": "23 letters. Nobody types that twice.",
+    "goodName": "Wickd",
+    "goodWhy": "5 letters, and it says the vibe.",
+    "comp": "Memorability",
+    "weight": 15,
+    "bad": 2.0,
+    "good": 9.0,
+    "cta": "Check your name, free."
+  },
+  "naming-rule-say-it": {
+    "rule": "If they can't say it, they can't share it.",
+    "badName": "Qwyzzlr",
+    "badWhy": "Spell it out loud. We'll wait.",
+    "goodName": "Mello",
+    "goodWhy": "Say it once and everyone gets it.",
+    "comp": "Pronunciation",
+    "weight": 13,
+    "bad": 1.5,
+    "good": 9.5,
+    "cta": "Check your name, free."
+  },
+  "naming-rule-stand-out": {
+    "rule": "Don't sound like everyone else.",
+    "badName": "SmartAppify",
+    "badWhy": "Sounds like a hundred other apps.",
+    "goodName": "Loopa",
+    "goodWhy": "A hanger with a loop. Only one brand owns that.",
+    "comp": "Distinctiveness",
+    "weight": 12,
+    "bad": 3.0,
+    "good": 8.5,
+    "cta": "Find a name that stands out."
+  },
+  "naming-rule-domain": {
+    "rule": "Check the domain before you fall in love.",
+    "badName": "yourname.com",
+    "badWhy": "Taken. And so are the handles.",
+    "goodName": "Domain-First",
+    "goodWhy": "Only shows names you can register right now. (Pro)",
+    "comp": "Domain availability",
+    "weight": 13,
+    "bad": 1.0,
+    "good": 9.0,
+    "cta": "Find a name you can own.",
+    "barBad": "The name you fell for",
+    "barGood": "A name you can register"
+  },
+  "naming-rule-meaning": {
+    "rule": "Make it mean something.",
+    "badName": "Xorbo",
+    "badWhy": "Means nothing, so it says nothing.",
+    "goodName": "Ojas",
+    "goodWhy": "Sanskrit for vitality. A skincare story in four letters.",
+    "comp": "Brandability",
+    "weight": 18,
+    "bad": 3.5,
+    "good": 9.0,
+    "cta": "Find a name with meaning."
+  }
+}

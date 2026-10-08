@@ -9,7 +9,7 @@ export function Footer() {
         <div className="row wrap between gap-24" style={{ alignItems: 'flex-start' }}>
           <div className="stack gap-12" style={{ maxWidth: 340 }}>
             <Wordmark size={26} />
-            <p className="soft small">Your idea deserves a brand. Name, domain, handles and identity — in minutes. Made in India ✦</p>
+            <p className="soft small">Your idea deserves a brand. Name, domain, handles and identity — in minutes ✦</p>
           </div>
           <div className="row wrap gap-40" style={{ alignItems: 'flex-start' }}>
             <div className="stack gap-8 small">
@@ -23,7 +23,7 @@ export function Footer() {
             </div>
             <div className="stack gap-8 small">
               <span className="eyebrow">Free tools</span>
-              {SEO_PAGES.filter((p) => p.widget).map((p) => (
+              {SEO_PAGES.filter((p) => p.widget && (p.widget !== 'repurpose' || !p.focus)).map((p) => (
                 <Link key={p.slug} href={`/tools/${p.slug}`}>
                   {p.short}
                 </Link>

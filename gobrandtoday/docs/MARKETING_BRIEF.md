@@ -25,11 +25,11 @@ check GoDaddy, check Instagram, open Canva, hunt for fonts and colours, and keep
 GoBrandToday does all of it in one place. Describe your idea in a sentence, and it suggests names,
 honestly checks whether the domains and social handles are free, scores each name out of 10 with a
 transparent breakdown, and then builds a full brand identity: logo, colours, fonts, a brand book with
-mockups, and launch content. It is made in India, priced in rupees, and free to start.
+mockups, and launch content. It is priced in rupees (switchable to dollars) and free to start.
 
 **Category:** AI brand studio (AI naming + availability checking + brand identity + launch kit).
 
-**Eyebrow / tag line on the site:** “AI brand studio · Made in India”
+**Eyebrow / tag line on the site:** “AI brand studio” (no “Made in India” line anywhere in product or marketing copy)
 
 ---
 
@@ -232,6 +232,11 @@ Changes are saved as new versions, so nothing is lost.
 AI brand name generator · Startup name generator · Domain name generator · Business name generator ·
 Brand name generator · AI brand kit generator · Startup branding tool · **Username checker** ·
 **Domain checker** (with prices) · **Brand bible generator** · plus a `/tools` index.
+
+**Already have a logo? (add-on, keep it quiet):** upload your logo and get a profile picture, a post, LinkedIn, X and
+YouTube banners and a one-page brand guidelines sheet, each at the exact size. Pages: **Logo to social kit** ·
+**LinkedIn banner maker** · **YouTube banner maker** · **X header maker** · **Profile picture maker** ·
+**Brand guidelines from your logo**. Good for SEO and search ads; don't lead the main story with it.
 
 ### 5.14 GoBrandToday Experts (bespoke, human-made services)
 Box title on the site: **“Need it crafted by hand? Our experts go bespoke.”**
@@ -437,6 +442,8 @@ These keep the marketing truthful. The product is built around honesty, so the m
 14. **Mockups are illustrations.** They show the real logo, colours and type on drawn objects (flat vector scenes, not
     photos or print proofs). Say “see your brand on a mithai box”, not “print-ready packaging”. The website draft is a
     starting point, not a finished, hosted site.
+15. **Logo repurpose tool:** say “your logo stays in your browser” (true: nothing is uploaded). Don't call the one-page
+    sheet a “full brand book”, and don't promise it fixes a low-resolution logo.
 
 ---
 

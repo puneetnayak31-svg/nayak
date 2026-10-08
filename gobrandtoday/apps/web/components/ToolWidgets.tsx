@@ -5,12 +5,14 @@ import { useState } from 'react';
 import { PERSONALITIES, TLDS, normaliseHandle, toSlug, type DomainResult, type HandleSuggestion, type SocialResult } from '@gbt/shared';
 import { ApiError, api, track } from '@/lib/api';
 import { CoreTag, DomainList, HandleIdeas, HandleList } from './Availability';
+import { LogoRepurposer } from './LogoRepurposer';
 import { Spark } from './Spark';
 
 /** Free utility tools that live on SEO landing pages. */
-export function ToolWidget({ kind, example }: { kind: 'social' | 'domain' | 'bible'; example: string }) {
+export function ToolWidget({ kind, example }: { kind: 'social' | 'domain' | 'bible' | 'repurpose'; example: string }) {
   if (kind === 'social') return <SocialTool example={example} />;
   if (kind === 'domain') return <DomainTool example={example} />;
+  if (kind === 'repurpose') return <LogoRepurposer />;
   return <BibleTool example={example} />;
 }
 

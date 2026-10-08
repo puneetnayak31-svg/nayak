@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ExpertsBox } from '@/components/Experts';
 import { HeroComposer } from '@/components/HeroComposer';
+import { LogoRepurposer } from '@/components/LogoRepurposer';
 import { Spark } from '@/components/Spark';
 import { ToolWidget } from '@/components/ToolWidgets';
 import { Shell } from '@/components/ui';
@@ -25,24 +26,43 @@ export function ToolContent({ p }: { p: SeoPage }) {
   return (
     <Shell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <section className="hero">
-        <div className="container hero-grid">
-          <div className="stack gap-20">
-            <span className="eyebrow">Free tool</span>
-            <h1 className="h1" style={{ fontSize: 'clamp(40px,6vw,76px)' }}>
-              {p.h1}
-              <Spark size={34} className="twinkle" style={{ display: 'inline-block', marginLeft: 6 }} />
-            </h1>
-            <p className="lead">{p.intro}</p>
-            {!p.widget && (
-              <p className="small muted">
-                Try: <Link href={`/create?brief=${encodeURIComponent(p.example)}&mode=${p.mode}&go=1`}>“{p.example}”</Link>
-              </p>
-            )}
+      {p.widget === 'repurpose' ? (
+        <section className="hero tool-hero-wide">
+          <div className="container stack gap-24">
+            <div className="stack gap-12" style={{ maxWidth: 760 }}>
+              <span className="eyebrow">Free tool · add-on</span>
+              <h1 className="h1" style={{ fontSize: 'clamp(36px,5vw,64px)' }}>
+                {p.h1}
+                <Spark size={30} className="twinkle" style={{ display: 'inline-block', marginLeft: 6 }} />
+              </h1>
+              <p className="lead">{p.intro}</p>
+            </div>
+            <LogoRepurposer focus={p.focus} />
+            <p className="small muted">
+              No logo yet? <Link href="/create">Create your brand from an idea</Link>: name, domain, handles, four logo looks and this social kit, made around it.
+            </p>
           </div>
-          {p.widget ? <ToolWidget kind={p.widget} example={p.example} /> : <HeroComposer defaultMode={p.mode} />}
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="hero">
+          <div className="container hero-grid">
+            <div className="stack gap-20">
+              <span className="eyebrow">Free tool</span>
+              <h1 className="h1" style={{ fontSize: 'clamp(40px,6vw,76px)' }}>
+                {p.h1}
+                <Spark size={34} className="twinkle" style={{ display: 'inline-block', marginLeft: 6 }} />
+              </h1>
+              <p className="lead">{p.intro}</p>
+              {!p.widget && (
+                <p className="small muted">
+                  Try: <Link href={`/create?brief=${encodeURIComponent(p.example)}&mode=${p.mode}&go=1`}>“{p.example}”</Link>
+                </p>
+              )}
+            </div>
+            {p.widget ? <ToolWidget kind={p.widget} example={p.example} /> : <HeroComposer defaultMode={p.mode} />}
+          </div>
+        </section>
+      )}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container grid-3">
           {p.points.map((pt) => (

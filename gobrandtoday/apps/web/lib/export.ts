@@ -4,6 +4,8 @@ import {
   MOCKUP_KINDS,
   MOCKUP_META,
   PRIMARY_MOCKUPS,
+  REPURPOSE_KINDS,
+  REPURPOSE_META,
   SECTOR_META,
   SOCIAL_ASSETS,
   brandBookHTML,
@@ -18,6 +20,7 @@ import {
   makeZip,
   mockupSVG,
   mockupsForSector,
+  repurposeSVG,
   sectorForKit,
   socialSVG,
   tailwindTokens,
@@ -29,6 +32,8 @@ import {
   type LogoVariant,
   type MockupInput,
   type MockupKind,
+  type RepurposeInput,
+  type RepurposeKind,
   type SocialAsset,
 } from '@gbt/shared';
 import { canvasMeasure, kitIdentity } from '@/components/Logo';
@@ -373,4 +378,65 @@ export async function downloadKitZip(ctx: KitContext, extra: Array<{ name: strin
   onProgress?.('Packing');
   const zip = makeZip(files);
   download(`${slug}-brand-kit.zip`, new Blob([zip as BlobPart], { type: 'application/zip' }));
+}
+
+/* ------------------------------------------------------------------ */
+/* Logo repurpose tool (upload a logo → social kit)                    */
+/* ------------------------------------------------------------------ */
+
+/** Load one Google Font for on-screen previews. */
+export async function ensureFont(family: string, weights = [400, 700]) {
+  const href = googleFontsHref([{ family, weights }]);
+  if (!document.querySelector(`link[data-gf="${CSS.escape(href)}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.dataset.gf = href;
+    document.head.appendChild(link);
+  }
+  try {
+    await document.fonts.load(`700 40px "${family}"`);
+  } catch {
+    /* system fallback */
+  }
+}
+
+async function repurposeFile(kind: RepurposeKind, input: RepurposeInput): Promise<Blob | null> {
+  const svg = repurposeSVG(kind, input);
+  const { w, h } = REPURPOSE_META[kind];
+  const text = [...new Set((svg.match(/>([^<>]+)</g) ?? []).join('').replace(/[<>]/g, '') + input.name + 'Aa')].join('').slice(0, 900);
+  const css = await embeddedFontCss([{ family: input.font || 'Space Grotesk', weights: [400] }, { family: input.font || 'Space Grotesk', weights: [700] }, { family: 'Space Mono', weights: [400] }], text);
+  return svgToPng(withCss(svg, css), w, h, 1);
+}
+
+/** One repurposed asset as a PNG at the platform's exact size. */
+export async function downloadRepurposed(kind: RepurposeKind, input: RepurposeInput) {
+  const blob = await repurposeFile(kind, input);
+  const { w, h } = REPURPOSE_META[kind];
+  if (blob) download(`${toSlug(input.name) || 'brand'}-${kind}-${w}x${h}.png`, blob);
+}
+
+/** Every repurposed asset in one ZIP, with a short README. */
+export async function downloadRepurposedZip(input: RepurposeInput, onProgress?: (step: string) => void) {
+  const slug = toSlug(input.name) || 'brand';
+  const files: Array<{ name: string; data: Uint8Array | string }> = [];
+  for (const k of REPURPOSE_KINDS) {
+    const m = REPURPOSE_META[k];
+    onProgress?.(m.title);
+    const blob = await repurposeFile(k, input);
+    if (blob) files.push({ name: `${slug}-${k}-${m.w}x${m.h}.png`, data: new Uint8Array(await blob.arrayBuffer()) });
+  }
+  files.push({
+    name: 'README.txt',
+    data: [
+      `${input.name}: social kit made from your logo with GoBrandToday`,
+      '',
+      ...REPURPOSE_KINDS.map((k) => `${slug}-${k}  ${REPURPOSE_META[k].title}, ${REPURPOSE_META[k].size}`),
+      '',
+      'Profile pictures are cropped to a circle on most platforms: the logo sits inside the safe middle.',
+      'Banners keep words and logo inside each platform’s safe area.',
+      `Colours: brand ${input.colors.brand}, accent ${input.colors.accent}, ink ${input.colors.ink}, paper ${input.colors.paper}. Font: ${input.font || 'Space Grotesk'} (Google Fonts).`,
+    ].join('\n'),
+  });
+  download(`${slug}-social-kit.zip`, new Blob([makeZip(files) as BlobPart], { type: 'application/zip' }));
 }

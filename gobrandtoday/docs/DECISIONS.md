@@ -140,3 +140,9 @@ The offline writer parses the brief into category, offer, place and audience and
 and per-name wordplay (`offline/copy.ts`). Pasting the founder's sentence into bios read as broken. Rules stay
 deterministic (same name and brief → same copy), and two names never share launch copy.
 
+**D29 — The logo repurpose tool runs in the browser and stays an add-on** · Active · Round 8
+Founders who already have a logo can turn it into a social kit (`/tools/logo-to-social-kit` and five focused SEO pages).
+The file is read, sampled and drawn on the client; it is never uploaded, so there's no storage, moderation or
+retention to manage, and the SVG we draw embeds it as an image (an uploaded SVG can't run script inside `<image>`).
+It is deliberately quiet: linked from the hero's small print, `/tools` and the footer, not the main nav, because the
+core journey is idea → brand. Downloads follow D27 (free account).

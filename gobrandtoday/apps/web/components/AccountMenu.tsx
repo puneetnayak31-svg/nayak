@@ -91,7 +91,7 @@ export function AccountMenu() {
   const rounds = left(usage?.generation);
   if (!me || me.isGuest) {
     return (
-      <div className="row gap-8 hide-sm">
+      <div className="row gap-8 hide-sm nav-guest">
         {rounds !== null && (
           <span className="usage-pill" title="Free naming rounds left today">
             <b>{rounds}</b> free rounds left

@@ -1,3 +1,5 @@
+import type { RepurposeKind } from '@gbt/shared';
+
 /** Dedicated landing pages for high-intent searches. Each pre-selects a mode in the studio. */
 export interface SeoPage {
   slug: string;
@@ -11,7 +13,9 @@ export interface SeoPage {
   points: Array<{ t: string; b: string }>;
   faq: Array<{ q: string; a: string }>;
   /** An interactive widget replaces the naming composer on utility pages. */
-  widget?: 'social' | 'domain' | 'bible';
+  widget?: 'social' | 'domain' | 'bible' | 'repurpose';
+  /** For the logo repurpose tool: the asset this page is about, shown first. */
+  focus?: RepurposeKind;
 }
 
 const commonFaq = [
@@ -27,6 +31,19 @@ const commonFaq = [
     q: 'Is it free?',
     a: 'Yes — the Spark plan is free forever. Pro (₹499 / $9 a month) unlocks unlimited rounds, the full Brand Bible and the AI Brand Assistant.',
   },
+];
+
+const repurposeFaq = [
+  { q: 'Is my logo uploaded anywhere?', a: 'No. The files are made in your browser: your logo never leaves your device. A free account is only needed to download.' },
+  { q: 'What file should I use?', a: 'A PNG with a transparent background, 1000–2000 px wide, gives the cleanest results. JPG, WebP and SVG work too. If your logo has a solid background, we place it on a matching tile so it never looks cut out.' },
+  { q: 'Will the words and logo get cropped?', a: 'No. Every file keeps the logo and words inside the platform’s safe area: the middle of the YouTube banner, clear of the profile photo on LinkedIn and X, and inside the circle on profile pictures.' },
+  { q: 'Don’t have a logo yet?', a: 'Start with GoBrandToday’s name and logo generator: you get four logo looks, a full brand book and the same social kit, made around your new brand.' },
+];
+
+const repurposePoints = [
+  { t: 'Every size, done', b: 'Profile picture, Instagram and LinkedIn post, LinkedIn banner, X header, YouTube banner and a one-page brand guidelines sheet.' },
+  { t: 'Your colours, found for you', b: 'We pick the brand, accent, ink and paper colours from your logo. Tap any swatch to change it.' },
+  { t: 'Private by design', b: 'Your file stays in your browser. Download PNGs one by one or everything as a ZIP.' },
 ];
 
 export const SEO_PAGES: SeoPage[] = [
@@ -204,5 +221,88 @@ export const SEO_PAGES: SeoPage[] = [
       { q: 'Can I edit it?', a: 'Yes. Edit any text, switch looks, regenerate sections or ask the AI Brand Assistant (“make it more premium”). Every change is versioned.' },
       ...commonFaq.slice(2),
     ],
+  },
+  {
+    slug: 'logo-to-social-kit',
+    short: 'Logo to social kit',
+    title: 'Upload Your Logo, Get Your Social Media Kit — banners, profile picture & brand guidelines',
+    h1: 'Turn your logo into a social media kit',
+    description: 'Upload the logo you already have. Get a profile picture, LinkedIn banner, X header, YouTube banner, a launch post and one-page brand guidelines, each at the exact size. Free, in your browser.',
+    intro: 'Already have a logo? Drop it in. We pick your colours from it and make every profile picture, banner and post you need to launch, plus a one-page brand guidelines sheet.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    points: repurposePoints,
+    faq: repurposeFaq,
+  },
+  {
+    slug: 'linkedin-banner-maker',
+    short: 'LinkedIn banner maker',
+    title: 'LinkedIn Banner Maker — upload your logo, get a 1584 × 396 banner',
+    h1: 'LinkedIn banner maker',
+    description: 'Make a LinkedIn company or profile banner (1584 × 396) from your logo in seconds. Your colours, your tagline, kept clear of the profile photo. Free.',
+    intro: 'Upload your logo and add a line about what you do. You get a LinkedIn banner at the exact size, with everything kept clear of the profile photo, plus the rest of your social kit.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    focus: 'linkedin',
+    points: repurposePoints,
+    faq: repurposeFaq,
+  },
+  {
+    slug: 'youtube-banner-maker',
+    short: 'YouTube banner maker',
+    title: 'YouTube Banner Maker — channel art from your logo (2560 × 1440)',
+    h1: 'YouTube banner maker',
+    description: 'Create YouTube channel art (2560 × 1440) from your logo, with the logo and words inside the 1546 × 423 safe area so they show on TV, desktop and phone.',
+    intro: 'YouTube crops channel art differently on every screen. Upload your logo and we keep everything inside the safe area, so it looks right on phones, laptops and TVs.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    focus: 'youtube',
+    points: repurposePoints,
+    faq: repurposeFaq,
+  },
+  {
+    slug: 'x-header-maker',
+    short: 'X header maker',
+    title: 'X (Twitter) Header Maker — 1500 × 500 header from your logo',
+    h1: 'X header maker',
+    description: 'Make an X (Twitter) header at 1500 × 500 from your logo and tagline, in your colours, clear of the profile photo. Free, no design skills needed.',
+    intro: 'Upload your logo, add your line, and get an X header at the exact size, with your profile picture and the rest of your social kit alongside.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    focus: 'x',
+    points: repurposePoints,
+    faq: repurposeFaq,
+  },
+  {
+    slug: 'profile-picture-maker',
+    short: 'Profile picture maker',
+    title: 'Logo Profile Picture Maker — circle-safe 1080 × 1080 for every platform',
+    h1: 'Logo profile picture maker',
+    description: 'Turn your logo into a crisp 1080 × 1080 profile picture that survives the circle crop on Instagram, LinkedIn, X, YouTube and WhatsApp. Free, in your browser.',
+    intro: 'Most logos get their edges cut off by the circle crop. Upload yours and we centre it in the safe middle, on the right background, at 1080 × 1080.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    focus: 'avatar',
+    points: repurposePoints,
+    faq: repurposeFaq,
+  },
+  {
+    slug: 'brand-guidelines-from-logo',
+    short: 'Guidelines from your logo',
+    title: 'Brand Guidelines From Your Logo — free one-page brand sheet',
+    h1: 'Brand guidelines from your logo',
+    description: 'Upload your logo and get a one-page brand guidelines sheet: clear space, logo on colour, your palette with HEX and RGB, typeface and do/don’t examples.',
+    intro: 'Give every freelancer and printer the same rules. Upload your logo and get a one-page brand sheet with clear space, colours, type and do/don’t examples.',
+    mode: 'smart',
+    example: 'tealeaf',
+    widget: 'repurpose',
+    focus: 'guidelines',
+    points: repurposePoints,
+    faq: repurposeFaq,
   },
 ];

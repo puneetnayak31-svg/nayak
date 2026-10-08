@@ -78,7 +78,7 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
     `Small brand. Big ${random() > 0.5 ? 'spark' : 'start'}.`,
     `The easier way to ${verbFor(desc)}.`,
     `${cap(v1!.toLowerCase())} by design.`,
-    `Made in ${geo === 'Global' ? 'the open' : geo}, made for you.`,
+    `Made with care, made for you.`,
   ].filter((t, i, arr) => arr.indexOf(t) === i);
 
   const draft: KitDraft = {
@@ -90,7 +90,7 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
       vision: `A world where anyone in ${geo === 'Global' ? 'the world' : geo} can ${verbFor(desc)} with confidence.`,
       audience: {
         primary: audience,
-        secondary: geo === 'India' ? 'Diaspora and global customers who want an Indian-made option' : 'Teams and early adopters who spread the word',
+        secondary: geo === 'India' ? 'Diaspora and global customers who find you online' : 'Teams and early adopters who spread the word',
         insights: [
           'They want results quickly and hate jargon.',
           'They trust recommendations from people like them.',

@@ -20,6 +20,7 @@ import {
   tokensFile,
 } from '@/lib/export';
 import { useApp } from '@/lib/providers';
+import { PlatformStack, SOCIAL_PLATFORM } from './Mockups';
 import { useSignupGate } from './SignupGate';
 import { Spark } from './Spark';
 
@@ -38,7 +39,7 @@ interface Props {
 /**
  * Every way to take the brand away, grouped by who it's for: the whole kit
  * as one ZIP, the brand book (PDF/HTML/Markdown/JSON), logo files, the
- * website draft, design tokens for developers, a social kit at each
+ * website draft, design tokens for developers, the social media kit at each
  * platform's size and an email signature.
  */
 export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebsite }: Props) {
@@ -85,9 +86,12 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
       toast('Brand kit downloaded');
     });
 
-  const B = ({ k, children, onClick, hint }: { k: string; children: ReactNode; onClick: () => void; hint?: string }) => (
+  const B = ({ k, children, onClick, hint, icon }: { k: string; children: ReactNode; onClick: () => void; hint?: string; icon?: ReactNode }) => (
     <button type="button" className="ec-btn" disabled={!!busy} onClick={onClick} title={hint}>
-      <span>{busy === k ? 'Preparing…' : children}</span>
+      <span className="ec-btn-label">
+        {icon}
+        {busy === k ? 'Preparing…' : children}
+      </span>
       {hint && <span className="ec-hint">{hint}</span>}
     </button>
   );
@@ -114,7 +118,11 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
           <h2 className="h2" style={{ color: '#fff' }}>
             Your whole brand kit as a ZIP
           </h2>
-          <p style={{ color: '#D6D3E4' }}>Logos in every format, favicons, the brand book as a web page, your website draft, design tokens, industry mockups, the brand toolkit and a social kit sized for each platform. Open the README first.</p>
+          <p style={{ color: '#D6D3E4' }}>Logos in every format, favicons, the brand book as a web page, your website draft, design tokens, industry mockups, the brand toolkit and your social media kit. Open the README first.</p>
+          <span className="ec-social">
+            <PlatformStack ids={['instagram', 'linkedin', 'x', 'youtube']} size={20} />
+            Includes profile picture, launch post and LinkedIn, X and YouTube banners
+          </span>
         </div>
         <div className="stack gap-8" style={{ alignItems: 'flex-start' }}>
           <button type="button" className="btn btn-primary" disabled={!!busy} onClick={zip}>
@@ -125,6 +133,19 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
       </section>
 
       <div className="ec-grid">
+        <Group
+          title="Social media kit"
+          icons={<PlatformStack ids={['instagram', 'linkedin', 'x', 'youtube']} size={20} />}
+          lead="Profile picture, launch post and banners for LinkedIn, X and YouTube, each as a PNG at the platform’s exact size."
+          highlight
+        >
+          {(Object.keys(SOCIAL_ASSETS) as SocialAsset[]).map((k) => (
+            <B key={k} k={`social-${k}`} hint={SOCIAL_ASSETS[k].size} icon={<PlatformStack ids={SOCIAL_PLATFORM[k].slice(0, 2)} size={16} />} onClick={() => run(`social-${k}`, () => downloadSocial(ctx, k))}>
+              {SOCIAL_ASSETS[k].title}
+            </B>
+          ))}
+        </Group>
+
         <Group title="Brand book" lead="The full guidelines, to read, print or send.">
           {!PREVIEW && <B k="pdf" hint="Opens print view → Save as PDF" onClick={() => run('pdf', () => void window.open(`/brand/${brandId}/guidelines?print=1`, '_blank'))}>PDF</B>}
           <B k="html" hint="One file, works offline, prints to PDF" onClick={() => run('html', () => downloadBrandBookHTML(ctx))}>
@@ -170,14 +191,6 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
           </button>
         </Group>
 
-        <Group title="Social kit" lead="Profile picture and banners at each platform’s exact size.">
-          {(Object.keys(SOCIAL_ASSETS) as SocialAsset[]).map((k) => (
-            <B key={k} k={`social-${k}`} hint={SOCIAL_ASSETS[k].size} onClick={() => run(`social-${k}`, () => downloadSocial(ctx, k))}>
-              {SOCIAL_ASSETS[k].title}
-            </B>
-          ))}
-        </Group>
-
         <Group title="Email signature" lead="Paste into Gmail or Outlook signature settings.">
           <div className="row gap-8 wrap" style={{ width: '100%' }}>
             <input className="input" style={{ flex: '1 1 140px', minHeight: 40 }} aria-label="Your name" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
@@ -205,12 +218,13 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
   );
 }
 
-function Group({ title, lead, children }: { title: string; lead: string; children: ReactNode }) {
+function Group({ title, lead, children, icons, highlight }: { title: string; lead: string; children: ReactNode; icons?: ReactNode; highlight?: boolean }) {
   return (
-    <section className="card stack gap-12">
+    <section className={`card stack gap-12${highlight ? ' ec-highlight' : ''}`}>
       <div className="stack gap-4">
-        <h3 className="h3" style={{ fontSize: 19 }}>
+        <h3 className="h3 row gap-8 wrap" style={{ fontSize: 19, alignItems: 'center' }}>
           {title}
+          {icons}
         </h3>
         <span className="small soft">{lead}</span>
       </div>

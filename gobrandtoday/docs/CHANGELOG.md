@@ -8,6 +8,25 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 _Nothing yet._
 
+## Round 8 — Social media kit up front, logo repurpose tool, hero and alignment fixes · 2026-10-08
+
+- **Removed** every "Made in India" line: landing eyebrow, footer, marketing brief, the `#madeinindia` hashtag and the
+  "Made in <place>" tagline in the offline writer, and the T-shirt label in the apparel mockup. India-first pricing stays.
+- **Changed** the landing hero so the domains and handles box shows without scrolling at 1366 × 768: a smaller heading,
+  a tighter box, and a third row showing the ready-to-post files (profile picture, LinkedIn/YouTube banners, X header,
+  launch post, brand guidelines) with a quiet link to the logo repurpose tool.
+- **Added** a logo repurpose tool (D29): upload a logo you already have and get a profile picture, a post, LinkedIn, X and
+  YouTube banners and a one-page brand guidelines sheet, at exact sizes, made in the browser (`shared/repurpose.ts`,
+  `LogoRepurposer.tsx`). Six SEO pages: `/tools/logo-to-social-kit`, `linkedin-banner-maker`, `youtube-banner-maker`,
+  `x-header-maker`, `profile-picture-maker`, `brand-guidelines-from-logo`. Listed on `/tools` and in the footer, not in the main nav.
+- **Changed** the brand page to say plainly that it includes social media files: the tab is "Social & launch kit" with
+  platform icons and opens with the brand's profile picture, post and banners (`SocialStrip`); every copy block has its
+  platform icon; Downloads leads with a "Social media kit" group; Brand in a Box gains a "Ready to post" row; the header
+  button reads "Download kit + social files".
+- **Fixed** alignment: the guest header no longer wraps the usage pill above "Sign in" (pill only at ≥ 1440 px); Downloads
+  cards share row heights and their buttons sit on an even grid; the experts grid shows 4 or 2 columns, never a lone
+  card; long example chips in the studio wrap instead of overflowing at 390 px.
+
 ## Round 7 — Launch copy that fits, Pro account menu, download sign-up, logo science · 2026-10-08
 
 - **Changed** the offline launch kit (`offline/copy.ts`): the brief is read into category, offer, place and audience, so

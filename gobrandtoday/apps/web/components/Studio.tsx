@@ -378,7 +378,7 @@ export function Studio() {
                 <button
                   key={e}
                   type="button"
-                  className="chip"
+                  className="chip wrap"
                   onClick={() => {
                     const b = { ...brief, description: e };
                     setBrief(b);

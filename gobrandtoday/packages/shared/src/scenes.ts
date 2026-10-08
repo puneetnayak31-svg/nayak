@@ -207,7 +207,7 @@ export const SCENES: Record<SceneKind, Scene> = {
       weave +
       `<path d="M318 172 V260 M482 172 V260" stroke="${c.ink}" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="3 3"/>` +
       c.place(c.monoIn(c.ink, c.paper), 328, 180, 144, 50) +
-      `<text x="400" y="250" text-anchor="middle" ${c.M} font-size="7.5" letter-spacing="1.5" fill="${c.ink}" fill-opacity="0.75">100% COTTON · MADE IN INDIA</text>` +
+      `<text x="400" y="250" text-anchor="middle" ${c.M} font-size="7.5" letter-spacing="1.5" fill="${c.ink}" fill-opacity="0.75">100% COTTON · SIZE M</text>` +
       `<rect x="374" y="270" width="52" height="40" rx="2" fill="${c.brand}"/>` +
       `<text x="400" y="298" text-anchor="middle" ${c.D} font-weight="${c.dw}" font-size="20" fill="${c.on(c.brand)}">M</text></g>`
     );

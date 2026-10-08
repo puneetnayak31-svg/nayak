@@ -11,7 +11,8 @@ import { KitIcon, KitLogo } from './Logo';
 import { ExpertsBox } from './Experts';
 import { LookPicker } from './LookPicker';
 import { ExportCentre } from './ExportCentre';
-import { MockupGrid } from './Mockups';
+import { MockupGrid, PlatformStack, SocialStrip } from './Mockups';
+import { PlatformIcon } from './PlatformIcons';
 import { WebsiteBuilder } from './WebsiteBuilder';
 import { Mark, Spark } from './Spark';
 import { AvailabilityPanel, CoreTag } from './Availability';
@@ -185,6 +186,14 @@ export function BrandView({ id }: { id: string }) {
               <span className="row gap-6">
                 <Spark size={11} /> AI Assistant
               </span>
+            ) : t === 'Launch kit' ? (
+              <span className="row gap-6 tab-with-icons">
+                Social &amp; launch kit <PlatformStack ids={['instagram', 'linkedin', 'x', 'youtube']} size={15} />
+              </span>
+            ) : t === 'Downloads' ? (
+              <span className="row gap-6 tab-with-icons">
+                Downloads <span className="tab-tag">logos · banners · PDF</span>
+              </span>
             ) : (
               t
             )}
@@ -220,7 +229,7 @@ export function BrandView({ id }: { id: string }) {
         </div>
       )}
       {tab === 'Strategy' && <StrategyTab brand={brand} kit={kit} onChange={setBrand} />}
-      {tab === 'Launch kit' && <LaunchTab brand={brand} kit={kit} onChange={setBrand} />}
+      {tab === 'Launch kit' && <LaunchTab brand={brand} kit={kit} onChange={setBrand} onDownloads={() => setTab('Downloads')} />}
       {tab === 'Website' && <WebsiteTab brand={brand} kit={kit} onChange={setBrand} />}
       {tab === 'Downloads' && <ExportCentre brandId={brand.id} kit={kit} domain={brand.domain} handle={brand.handle} version={brand.version} onOpenWebsite={() => setTab('Website')} />}
       {tab === 'Assistant' && <AssistantPanel brand={brand} onChange={setBrand} />}
@@ -273,7 +282,7 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo, onDownloads }: { bran
             {brand.isPublic ? 'Shared ✓' : 'Share'}
           </button>
           <button className="btn btn-dark btn-sm" onClick={onDownloads}>
-            Download kit ↓
+            Download kit + social files ↓
           </button>
         </div>
       </div>
@@ -383,6 +392,18 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
         <MockupGrid kit={kit} kinds={kitMockupKinds(kit).slice(0, 3)} domain={brand.domain} handle={brand.handle} caption={false} />
       </div>
 
+      <div className="stack gap-12">
+        <div className="row between wrap gap-8">
+          <h3 className="h3 row gap-8" style={{ alignItems: 'center' }}>
+            Ready to post <PlatformStack ids={['instagram', 'linkedin', 'x', 'youtube']} size={20} />
+          </h3>
+          <button className="btn-link small" onClick={() => go('Launch kit')}>
+            Social &amp; launch kit →
+          </button>
+        </div>
+        <SocialStrip kit={kit} domain={brand.domain} handle={brand.handle} />
+      </div>
+
       {(brand.domains || brand.socials) && (
         <div className="stack gap-12">
           <h3 className="h3">Where {brand.name} can live</h3>
@@ -405,11 +426,14 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
 
 /* -------------------------------- text tabs -------------------------------- */
 
-function Block({ title, text, children }: { title: string; text?: string; children?: React.ReactNode }) {
+function Block({ title, text, children, platform }: { title: string; text?: string; children?: React.ReactNode; platform?: string }) {
   return (
     <div className="card sm stack gap-10">
       <div className="row between gap-12">
-        <span className="eyebrow">{title}</span>
+        <span className="row gap-8 block-title">
+          {platform && <PlatformIcon id={platform} size={22} />}
+          <span className="eyebrow">{title}</span>
+        </span>
         {text && <CopyButton text={text} />}
       </div>
       {children ?? <p style={{ whiteSpace: 'pre-wrap' }}>{text}</p>}
@@ -551,38 +575,57 @@ function StrategyTab({ brand, kit, onChange }: { brand: BrandDTO; kit: BrandKit;
   );
 }
 
-function LaunchTab({ brand, kit, onChange }: { brand: BrandDTO; kit: BrandKit; onChange: (b: BrandDTO) => void }) {
+function LaunchTab({ brand, kit, onChange, onDownloads }: { brand: BrandDTO; kit: BrandKit; onChange: (b: BrandDTO) => void; onDownloads: () => void }) {
   const L = kit.launch;
   return (
-    <div className="stack gap-16">
-      <Regenerate brand={brand} section="launch" label="Launch kit" onChange={onChange} />
-      <div className="grid-2">
-        <Block title="Instagram bio" text={L.bios.instagram} />
-        <Block title="X bio" text={L.bios.x} />
-        <Block title="LinkedIn company description" text={L.bios.linkedin} />
-        <Block title="YouTube description" text={L.bios.youtube} />
-      </div>
-      <div className="grid-2">
-        <Block title="Instagram launch post" text={L.posts.instagram} />
-        <Block title="LinkedIn launch post" text={L.posts.linkedin} />
-      </div>
-      <div className="grid-2">
-        <Block title="X thread" text={L.posts.xThread.join('\n\n')}>
-          <ol className="stack gap-10" style={{ margin: 0, paddingLeft: 20 }}>
-            {L.posts.xThread.map((t) => (
-              <li key={t} style={{ whiteSpace: 'pre-line' }}>{t}</li>
+    <div className="stack gap-24">
+      <section className="stack gap-12">
+        <div className="row between wrap gap-12" style={{ alignItems: 'flex-end' }}>
+          <div className="stack gap-6">
+            <span className="eyebrow">Ready-to-post images</span>
+            <h3 className="h3">Your social media kit</h3>
+            <span className="small soft">Profile picture, launch post and banners for LinkedIn, X and YouTube, each at the platform’s exact size.</span>
+          </div>
+          <button type="button" className="btn btn-dark btn-sm no-print" onClick={onDownloads}>
+            All files in Downloads →
+          </button>
+        </div>
+        <SocialStrip kit={kit} domain={brand.domain} handle={brand.handle} download />
+      </section>
+      <section className="stack gap-16">
+        <div className="stack gap-6">
+          <span className="eyebrow">Words for every platform</span>
+          <h3 className="h3">Bios, launch posts and a first month of ideas</h3>
+        </div>
+        <Regenerate brand={brand} section="launch" label="Launch kit" onChange={onChange} />
+        <div className="grid-2">
+          <Block title="Instagram bio" platform="instagram" text={L.bios.instagram} />
+          <Block title="X bio" platform="x" text={L.bios.x} />
+          <Block title="LinkedIn company description" platform="linkedin" text={L.bios.linkedin} />
+          <Block title="YouTube description" platform="youtube" text={L.bios.youtube} />
+        </div>
+        <div className="grid-2">
+          <Block title="Instagram launch post" platform="instagram" text={L.posts.instagram} />
+          <Block title="LinkedIn launch post" platform="linkedin" text={L.posts.linkedin} />
+        </div>
+        <div className="grid-2">
+          <Block title="X thread" platform="x" text={L.posts.xThread.join('\n\n')}>
+            <ol className="stack gap-10" style={{ margin: 0, paddingLeft: 20 }}>
+              {L.posts.xThread.map((t) => (
+                <li key={t} style={{ whiteSpace: 'pre-line' }}>{t}</li>
+              ))}
+            </ol>
+          </Block>
+          <Block title="Short announcement" text={L.posts.announcement} />
+        </div>
+        <Block title="10 content ideas for your first month" text={L.contentIdeas.map((c, i) => `${i + 1}. ${c}`).join('\n')}>
+          <ol className="grid-2" style={{ margin: 0, paddingLeft: 20, gap: 10 }}>
+            {L.contentIdeas.map((c) => (
+              <li key={c}>{c}</li>
             ))}
           </ol>
         </Block>
-        <Block title="Short announcement" text={L.posts.announcement} />
-      </div>
-      <Block title="10 content ideas for your first month" text={L.contentIdeas.map((c, i) => `${i + 1}. ${c}`).join('\n')}>
-        <ol className="grid-2" style={{ margin: 0, paddingLeft: 20, gap: 10 }}>
-          {L.contentIdeas.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
-        </ol>
-      </Block>
+      </section>
     </div>
   );
 }

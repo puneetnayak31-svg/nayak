@@ -82,17 +82,14 @@ export default function Home() {
       {/* 1 — Hero */}
       <section className="hero">
         <div className="container hero-grid">
-          <div className="stack gap-24 fade-up">
-            <span className="eyebrow">AI brand studio · Made in India</span>
+          <div className="stack gap-14 fade-up hero-copy">
+            <span className="eyebrow">AI brand studio</span>
             <h1 className="h1">
               Your idea deserves a brand
-              <Spark size={44} className="twinkle" style={{ display: 'inline-block', marginLeft: 6, verticalAlign: 'baseline' }} />
+              <Spark size={40} className="twinkle" style={{ display: 'inline-block', marginLeft: 6, verticalAlign: 'baseline' }} />
             </h1>
-            <p className="lead">Tell us what you’re building. We’ll find the name, domain, social handles and identity to launch it.</p>
+            <p className="lead">Tell us what you’re building. We’ll find the name, check the domain and handles, score it out of 10 and build the identity to launch it.</p>
             <HeroChecks />
-            <p className="tiny muted hc-foot">
-              <Spark size={10} /> GoBrand Score out of 10 · logo, brand book and launch kit in minutes
-            </p>
           </div>
           <div className="fade-up" style={{ animationDelay: '120ms' }}>
             <HeroComposer />

@@ -91,7 +91,7 @@ PDF, HTML, logo files, tokens, social kit, mockup/toolkit SVGs, website draft, c
 through `useSignupGate().guard`, which shows the sign-up prompt to guests; `?next=` brings them back. The API enforces
 the same on `GET /api/brands/:id/export` (`requireAccount`), and the print route shows the prompt instead of printing.
 
-All downloads live in the **Downloads** tab (`ExportCentre.tsx`; the header's "Download kit" button opens it). Everything
+All downloads live in the **Downloads** tab (`ExportCentre.tsx`; the header's "Download kit + social files" button opens it). The social media kit is also previewed, with per-file PNG buttons, at the top of the "Social & launch kit" tab (`SocialStrip`). Everything
 except Markdown/JSON is generated in the browser by `lib/export.ts`, so it uses real font metrics and works in the preview.
 
 - **Whole kit (ZIP)**: `downloadKitZip` → logos (SVG + PNG ×3 variants), icon + favicons, `brandBookFile` (HTML),
@@ -137,6 +137,17 @@ Kits made before sectors existed get a sector inferred from their own positionin
 
 `/tools/[slug]` pages come from `lib/seo-pages.ts`. Pages with a `widget` render `ToolWidgets.tsx`:
 username checker (A3 handles), domain checker with prices (A3 domains), and brand bible generator (A4 with a typed name).
+
+### A11b. Logo repurpose ("Already have a logo?")
+
+`/tools/logo-to-social-kit` and five focused pages (`focus` in `seo-pages.ts` puts that asset first) render
+`LogoRepurposer`. The founder drops a PNG/JPG/WebP/SVG (≤ 5 MB) → `FileReader` data URL → canvas: big rasters are
+downscaled to 1600 px, a 160 px sample gives `paletteFromPixels` and whether the image is transparent (else its corner
+colour becomes `logo.bg`) → `repurposeColors` fills brand/accent/ink/paper (editable). `repurposeSVG` draws each asset
+with the logo as an `<image>`; a logo with its own background, or one that would vanish into the surface, sits on a
+tile. Downloads go through the sign-up gate: `downloadRepurposed` (PNG at exact size, font embedded) and
+`downloadRepurposedZip`. State is kept in `sessionStorage` so the sign-up round trip doesn't lose the upload. Nothing
+is sent to the API.
 
 ---
 

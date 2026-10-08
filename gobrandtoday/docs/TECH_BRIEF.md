@@ -64,6 +64,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `packages/shared/src/scenes.ts` | Industry scenes (`SCENE_KINDS`, `SCENE_META`, `SCENES`): letterhead, coffee bag, neck label, hang tag, shopping bag, mithai box, candle, serum bottle, cans, bottles, menu, takeaway bag, product screen, payment card, ID badge, notebooks, water bottle, jewellery box, shipping box, stickers, channel banner, signboard, collar tag. |
 | `packages/shared/src/sectors.ts` | Business sectors (`SECTORS`, `SECTOR_META`): `detectSector` (brief words first, `~` marks weak words, then industry), `sectorForKit` (stored or inferred for older kits), `mockupsForSector`, `PRIMARY_MOCKUPS`. |
 | `packages/shared/src/elements.ts` | Brand toolkit (`ELEMENT_KINDS`, `ELEMENT_META`, `elementSVG`): supergraphic, pattern, icon set, seal, type wall, quiet/loud colour modes, photo frames, dividers, data device. Social kit (`SOCIAL_ASSETS`, `socialSVG`) and the website hero (`heroArtSVG`). |
+| `packages/shared/src/repurpose.ts` | Logo repurpose tool ("upload your logo, get your social kit"): `REPURPOSE_KINDS`/`REPURPOSE_META`/`REPURPOSE_FONTS`, `paletteFromPixels` (main colours of an image), `repurposeColors` (brand/accent/ink/paper), `repurposeSVG` (profile picture, post, LinkedIn/X/YouTube banners inside safe areas, one-page guidelines) with the uploaded logo embedded as an image. |
 | `packages/shared/src/brandbook.ts` | `brandBookHTML`: the brand book as one self-contained HTML file (prints to PDF). |
 | `packages/shared/src/website.ts` | `websiteHTML` (first-draft one-page site), `WEBSITE_PACKAGES`, `WEBSITE_SECTIONS`, `WEBSITE_FEATURES`, `websiteBriefText` for the "we build it for you" request. |
 | `packages/shared/src/tokens.ts` | Design tokens: `cssTokens`, `tailwindTokens`, `jsonTokens` (W3C DTCG), `kitTokens`. |
@@ -137,8 +138,8 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 |---|---|
 | `apps/web/lib/api.ts` | The only fetch wrapper: same-origin `/api`, CSRF and currency headers, `ApiError`, `track`. |
 | `apps/web/lib/providers.tsx` | `Providers` context: currency (INR default), current user, usage, system info, toasts. |
-| `apps/web/lib/export.ts` | Every download, generated in the browser with real font metrics: logo/icon SVG and PNG (embedded font subsets), `brandBookFile`/`downloadBrandBookHTML`, `websiteFile`/`downloadWebsiteHTML`, tokens, social kit PNGs, mockup and toolkit SVGs, `emailSignatureHTML`, `downloadKitZip`; `kitMockupInput`, `kitMockupKinds`; `download` (supports a host-provided saver). |
-| `apps/web/lib/seo-pages.ts` | `/tools/*` landing pages (generators and widget tools). |
+| `apps/web/lib/export.ts` | Every download, generated in the browser with real font metrics: logo/icon SVG and PNG (embedded font subsets), `brandBookFile`/`downloadBrandBookHTML`, `websiteFile`/`downloadWebsiteHTML`, tokens, social kit PNGs, mockup and toolkit SVGs, `emailSignatureHTML`, `downloadKitZip`; repurpose tool PNGs and ZIP (`downloadRepurposed`, `downloadRepurposedZip`, `ensureFont`); `kitMockupInput`, `kitMockupKinds`; `download` (supports a host-provided saver). |
+| `apps/web/lib/seo-pages.ts` | `/tools/*` landing pages (generators, widget tools, and the logo repurpose pages with their `focus` asset). |
 | `apps/web/components/ui.tsx` | Shared UI: `Shell`, `SourceBadge`, `DemoBanner`, `ScorePill`, `ScoreCard`, `ScoreBreakdown`, `Risks`, `Loading`, `CopyButton`, `useGoogleFonts`, `Empty`. |
 | `apps/web/components/Nav.tsx` | Top navigation. |
 | `apps/web/components/AccountMenu.tsx` | Nav account control: guests see Sign in + free rounds left; accounts see an avatar chip (Pro/Studio: gradient ring + crown) with rounds left, and a menu with plan, brand boxes left and every usage meter; `UsageMeters`, `USAGE_LABELS` (also used on the dashboard). |
@@ -147,7 +148,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/Spark.tsx` | GoBrandToday mark, wordmark and the loader animation. |
 | `apps/web/components/CurrencyToggle.tsx` | ₹ / $ switch. |
 | `apps/web/components/HeroComposer.tsx` | Landing composer: idea or name, quick filters. |
-| `apps/web/components/HeroChecks.tsx` | Landing hero block: a name whose ending rolls through .com/.in/.ai/.io/.co, and the 10 platform icons (illustrative, claims nothing). |
+| `apps/web/components/HeroChecks.tsx` | Landing hero block: a name whose ending rolls through .com/.in/.ai/.io/.co, the 10 platform icons, and the ready-to-post files (profile picture, banners, guidelines) with a quiet link to the logo repurpose tool. Illustrative, claims nothing. |
 | `apps/web/components/PlatformIcons.tsx` | Simplified icons for the 10 social platforms (`PLATFORM_ICON`, `PlatformIcon`), used in the hero and the availability panel. |
 | `apps/web/components/DemoPlayer.tsx` | Scripted, labelled example of the journey on the landing page. |
 | `apps/web/components/PricingCards.tsx` | Plan cards from `PLANS`. |
@@ -158,8 +159,8 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/LookPicker.tsx` | Four looks side by side; choose or ask for more. |
 | `apps/web/components/Logo.tsx` | React wrappers for the SVG renderer: `Logo`, `LogoIcon`, `KitLogo`, `KitIcon`, `canvasMeasure`, `kitIdentity`. |
 | `apps/web/components/BrandGuidelines.tsx` | The brand book (screen and print), including the brand toolkit and industry-first applications. |
-| `apps/web/components/Mockups.tsx` | `Mockup`, `MockupGrid` (industry objects first, "show all"), `ToolkitElement`, `ToolkitGrid`, per-item SVG downloads. |
-| `apps/web/components/ExportCentre.tsx` | Downloads tab: whole kit ZIP; brand book PDF/HTML/Markdown/JSON; logo files; website draft; tokens; social kit; email signature. |
+| `apps/web/components/Mockups.tsx` | `Mockup`, `MockupGrid` (industry objects first, "show all"), `ToolkitElement`, `ToolkitGrid`, per-item SVG downloads; `SocialStrip` (the brand's profile picture, post and banners, drawn live), `PlatformStack`, `SOCIAL_PLATFORM`. |
+| `apps/web/components/ExportCentre.tsx` | Downloads tab: whole kit ZIP; social media kit (first, with platform icons); brand book PDF/HTML/Markdown/JSON; logo files; website draft; tokens; email signature. |
 | `apps/web/components/WebsiteBuilder.tsx` | Website tab: live first-draft site (desktop/mobile preview, download, open) and "we build it for you" packages + brief (sent as an experts request, service `website`). |
 | `apps/web/components/Dashboard.tsx` | Dashboard sections: home, brands, saved, domains/watchlist, handles, assistant, settings. |
 | `apps/web/components/AuthForm.tsx` | Login/signup form. |
@@ -167,6 +168,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/ExpertsPage.tsx` | `/experts` page body. |
 | `apps/web/components/ToolContent.tsx` | `/tools/[slug]` page body. |
 | `apps/web/components/ToolWidgets.tsx` | Username checker, domain checker, brand bible generator widgets. |
+| `apps/web/components/LogoRepurposer.tsx` | Logo repurpose tool on `/tools/logo-to-social-kit` and the banner/profile-picture/guidelines pages: upload (never leaves the browser), colours picked from the logo, live previews, PNG and ZIP downloads behind the sign-up gate. |
 | `apps/web/components/ToolsIndex.tsx` | `/tools` index. |
 | `apps/web/preview/build.mjs` | esbuild bundle of the real pages into `preview/dist/` (shims for `next/link`, `next/navigation`). |
 | `apps/web/preview/main.tsx` | Preview entry: route switch, link interception, preview bar, downloads saver. |

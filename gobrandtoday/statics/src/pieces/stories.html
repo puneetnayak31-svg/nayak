@@ -1,0 +1,95 @@
+// Stories, 1080 x 1920. Everything sits between y 250 and y 1580 so the app's top bar and reply bar
+// never cover it, and each one leaves a clean gap for its interactive sticker (poll, question, link).
+const W = 1080, H = 1920;
+
+function storyFrame(name, o = {}) {
+  const f = frame(name, W, H, o);
+  return f;
+}
+function panel(f, y, h, label, draw, bg = "#FFFFFF") {
+  const p = box(f, `left:90px;top:${y}px;width:900px;height:${h}px;border-radius:40px;background:${bg};overflow:hidden;box-shadow:0 18px 44px rgba(22,22,26,0.10);border:3px solid var(--line)`);
+  draw(p, 900, h);
+  const l = txt(p, label, "left:24px;top:22px;font:700 18px 'Space Mono';letter-spacing:0.12em;text-transform:uppercase;padding:8px 14px;border-radius:999px;background:rgba(22,22,26,0.82);color:#FFFFFF");
+  return p;
+}
+function storyFooter(f, y, line, dark) {
+  txt(f, line, `left:90px;top:${y}px;width:900px;text-align:center;font:500 26px/1.35 Manrope;color:${dark ? "rgba(250,250,247,0.8)" : "var(--ink-2)"}`);
+  wordmarkAt(f, 32, W / 2, y + 84, { color: dark ? "var(--paper)" : "var(--graphite)", spark: dark ? "var(--violet-s)" : "var(--violet)", center: true });
+}
+function pollStory(name, q, sub, A, B, foot) {
+  const f = storyFrame(name);
+  dotField(f, { seed: name.length * 7, color: "rgba(109,74,255,0.12)", spark: "rgba(109,74,255,0.3)", sparkShare: 0.03, clear: [[60, 250, 960, 1340]] });
+  txt(f, "This or that?", "left:0;width:100%;text-align:center;top:290px;font:700 24px 'Space Mono';letter-spacing:0.18em;text-transform:uppercase;color:var(--violet-d)");
+  txt(f, q, "left:90px;width:900px;text-align:center;top:336px;font:700 64px 'Space Grotesk';letter-spacing:-0.04em;line-height:1.02;color:var(--graphite)");
+  if (sub) txt(f, sub, "left:90px;width:900px;text-align:center;top:480px;font:500 26px Manrope;color:var(--ink-2)");
+  panel(f, 560, 380, A[0], A[1], A[2]);
+  // 940-1080: room for the poll sticker
+  panel(f, 1080, 380, B[0], B[1], B[2]);
+  storyFooter(f, 1476, foot);
+  return f;
+}
+
+// ---- poll 1: two Mello looks
+pollStory("poll-1-mello-looks", "Which Mello would you buy?", "A calm-sleep tea brand · example",
+  ["A · Editorial serif", (p, w, h) => MELLO_LOOKS[3].draw(p, w, h), "#FFFFFF"],
+  ["B · Emblem", (p, w, h) => MELLO_LOOKS[2].draw(p, w, h), "#EEF0FA"],
+  "Two of the 4 looks GoBrandToday made for one example name.");
+
+// ---- poll 2: two Loopa looks
+pollStory("poll-2-loopa-looks", "Which Loopa would you download?", "A thrift app for students · example",
+  ["A · Sticker stack", (p, w, h) => LOOPA_LOOKS[0].draw(p, w, h), "#FFF8EE"],
+  ["B · Symbol + wordmark", (p, w, h) => LOOPA_LOOKS[3].draw(p, w, h), "#FFFFFF"],
+  "10 logo constructions, 13 symbol families. Make yours at gobrandtoday.com");
+
+// ---- poll 3: two names for one idea
+{
+  const nameArt = (name, score, why) => (p, w, h) => {
+    txt(p, name, `left:0;width:100%;text-align:center;top:${h * 0.26}px;font:700 124px 'Space Grotesk';letter-spacing:-0.05em;line-height:1;color:var(--graphite)`);
+    txt(p, why, `left:0;width:100%;text-align:center;top:${h * 0.64}px;font:500 26px Manrope;color:var(--ink-2)`);
+    txt(p, score, "right:26px;top:22px;font:700 26px 'Space Mono';color:var(--violet-d)");
+  };
+  pollStory("poll-3-names", "Naming a chai subscription for remote teams. Pick one:", null,
+    ["A", nameArt("Kettlo", "8.9", "Kettle + a friendly -o"), "#FFFFFF"],
+    ["B", nameArt("Chaiwise", "8.4", "Says chai, sounds smart"), "#FFFFFF"],
+    "Example names and GoBrand Scores (illustrative) from the demo idea.");
+}
+
+// ---- question sticker: drop your idea
+{
+  const f = storyFrame("ask-drop-your-idea", { bg: "var(--violet)" });
+  dotField(f, { seed: 141, color: "rgba(255,255,255,0.12)", spark: "rgba(255,255,255,0.35)", sparkShare: 0.04, clear: [[60, 250, 960, 1340]] });
+  txt(f, "Open call", "left:90px;top:300px;font:700 24px 'Space Mono';letter-spacing:0.18em;text-transform:uppercase;color:#FFFFFF");
+  const h = txt(f, "Give us one sentence. We'll make it a brand", "left:90px;top:346px;width:900px;font:700 100px 'Space Grotesk';letter-spacing:-0.05em;line-height:0.98;color:#FFFFFF");
+  endSpark(h, "#FFFFFF", 0.4);
+  txt(f, "Drop your idea below. We'll pick a few and post their names, logos and scores right here.", "left:90px;top:720px;width:880px;font:500 34px/1.38 Manrope;color:rgba(255,255,255,0.9)");
+  // arrow down to the sticker gap (≈ 960-1280)
+  const a = box(f, "left:880px;top:830px;width:120px;height:140px");
+  a.innerHTML = `<svg viewBox="0 0 120 140" width="120" height="140"><path d="M20 10 C 90 20, 100 70, 70 120" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/><path d="M52 104 L70 124 L86 100" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  txt(f, "e.g. “A podcast about money for women.”", "left:90px;top:1330px;width:900px;font:600 28px Manrope;color:rgba(255,255,255,0.85)");
+  txt(f, "Can't wait? Do it yourself in minutes, free: gobrandtoday.com", "left:90px;top:1400px;width:900px;font:700 20px 'Space Mono';letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF");
+  wordmarkAt(f, 32, 90, 1490, { color: "#FFFFFF", spark: "#FFFFFF" });
+}
+
+// ---- link story: the whole flow in one glance, with a target for the link sticker
+{
+  const f = storyFrame("link-start-free", { dark: true });
+  dotField(f, { seed: 151, color: "rgba(255,255,255,0.06)", spark: "rgba(143,117,255,0.25)", sparkShare: 0.03, clear: [[60, 250, 960, 1340]] });
+  const h = txt(f, "Your idea deserves a brand", "left:90px;top:300px;width:900px;font:700 108px 'Space Grotesk';letter-spacing:-0.05em;line-height:0.98;color:var(--paper)");
+  endSpark(h, "var(--violet-s)", 0.4);
+  // mini flow: idea → names → checks → brand
+  const steps = [["Type one sentence", "“A chai subscription for remote teams.”"], ["Get names with scores", "Kettlo 8.9 · Chaiwise 8.4 · Sippet 8.1"],
+    ["Check domains & handles", "Honest labels: available, likely free, taken, one-tap check"], ["Get the brand", "Logo, colours, fonts, brand book, launch posts"]];
+  steps.forEach(([a, b], k) => {
+    const y = 600 + k * 150;
+    const n = box(f, `left:90px;top:${y}px;width:62px;height:62px;border-radius:50%;background:${k === 3 ? "var(--violet)" : "rgba(143,117,255,0.22)"};display:flex;align-items:center;justify-content:center`);
+    const s = sparkSVG(k === 3 ? "#FFFFFF" : "var(--violet-s)", Math.min(2, k * 0.67), "spark-svg"); s.svg.style.cssText = "width:26px;height:26px;overflow:visible"; n.appendChild(s.svg);
+    txt(f, a, `left:180px;top:${y + 2}px;font:700 38px 'Space Grotesk';letter-spacing:-0.03em;color:var(--paper)`);
+    txt(f, b, `left:180px;top:${y + 52}px;width:800px;font:500 25px Manrope;color:rgba(250,250,247,0.72)`);
+    if (k < 3) box(f, `left:120px;top:${y + 70}px;width:3px;height:72px;background:rgba(143,117,255,0.4)`);
+  });
+  txt(f, "+ a lot more inside · names and scores are examples", "left:90px;top:1210px;font:700 18px 'Space Mono';letter-spacing:0.06em;text-transform:uppercase;color:var(--violet-m)");
+  // target for the link sticker
+  const t = box(f, "left:90px;top:1290px;width:900px;height:130px;border-radius:999px;background:var(--violet);display:flex;align-items:center;justify-content:center;gap:16px;font:700 34px 'Space Grotesk';letter-spacing:-0.02em;color:#FFFFFF;box-shadow:0 16px 40px rgba(109,74,255,0.45)");
+  t.appendChild(document.createTextNode("Start free · gobrandtoday.com"));
+  wordmarkAt(f, 32, W / 2, 1490, { color: "var(--paper)", spark: "var(--violet-s)", center: true });
+}

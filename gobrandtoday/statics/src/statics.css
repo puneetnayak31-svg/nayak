@@ -1,0 +1,22 @@
+body { margin: 0; padding: 40px; background: #D9D6E0; display: flex; flex-direction: column; gap: 40px; align-items: flex-start; }
+.frame { position: relative; overflow: hidden; flex: none; background: var(--paper); color: var(--graphite); font-family: "Manrope", sans-serif; }
+.frame.dark { background: var(--graphite); color: var(--paper); }
+.abs { position: absolute; }
+.hl { font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; }
+.sub { font-family: "Manrope", sans-serif; font-weight: 500; line-height: 1.35; }
+.lbl { font-family: "Space Mono", monospace; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 10px 20px; font-family: "Space Mono", monospace; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.pill.vi { background: var(--violet); color: #FFFFFF; }
+.pill.ex { background: var(--lilac); color: var(--violet-d); }
+.pill.ln { background: transparent; border: 2px solid currentColor; }
+.marker { display: inline; background: var(--violet); color: #FFFFFF; padding: 0 0.12em; border-radius: 0.1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.grainov { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: 0.06; background-image: url("assets/grain.png"); background-size: 256px 256px; }
+.dark .grainov { mix-blend-mode: screen; opacity: 0.05; }
+.dotfield { position: absolute; inset: 0; pointer-events: none; }
+.card { position: absolute; background: #FFFFFF; border: 3px solid var(--line); border-radius: 28px; }
+.logo { white-space: nowrap; display: inline-block; line-height: 1; position: relative; }
+.wk-logo { font-family: "Syne", sans-serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; display: inline-block; }
+.wk-i { position: relative; display: inline-block; }
+.wk-flame { position: absolute; width: 0.3em; height: 0.42em; left: calc(50% - 0.15em); top: -0.2em; overflow: visible; transform-origin: 50% 100%; }
+.tile { position: relative; overflow: hidden; border-radius: 22px; flex: none; }
+.swipe { position: absolute; display: flex; align-items: center; gap: 12px; font-family: "Space Mono"; font-weight: 700; font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; }

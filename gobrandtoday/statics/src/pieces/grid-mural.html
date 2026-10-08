@@ -1,0 +1,105 @@
+// Grid mural: three posts that read "Your idea / deserves / a brand✦" across one row of the profile
+// grid. A thread runs through all three at the same height and carries the signature morph:
+// dot (left) → diamond (middle) → spark + twin (right). The background shades paper → violet.
+// Each post also stands on its own in the feed. Post the RIGHT tile first, the LEFT one last.
+const W = 1080, H = 1350, TY = 742;
+const BG = "linear-gradient(90deg,#FAFAF7 0%,#F2EEFF 34%,#E6DEFF 60%,#8F75FF 64.5%,#6D4AFF 67%,#5A39F0 100%)";
+
+function tileFrame(i, name) {
+  const f = frame(name, W, H);
+  f.style.background = BG;
+  f.style.backgroundSize = `${W * 3}px ${H}px`;
+  f.style.backgroundPosition = `${-W * i}px 0`;
+  // the thread, continuous across tiles
+  box(f, `left:0;top:${TY - 2}px;width:${W}px;height:4px;background:${i === 2 ? "rgba(255,255,255,0.75)" : "var(--violet)"}`);
+  return f;
+}
+function shapeOnThread(f, x, m, size, color) {
+  const s = sparkSVG(color, m, "spark-svg");
+  s.svg.style.cssText = `position:absolute;left:${x - size / 2}px;top:${TY - size / 2}px;width:${size}px;height:${size}px;overflow:visible`;
+  f.appendChild(s.svg);
+  return s.svg;
+}
+const big = (f, text, color, top = 430) =>
+  txt(f, text, `left:96px;top:${top}px;font:700 190px 'Space Grotesk';letter-spacing:-0.055em;line-height:1;color:${color};white-space:nowrap`);
+const lab = (f, text, color) =>
+  txt(f, text, `left:100px;top:362px;font:700 24px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:${color}`);
+
+// ---- left: Your idea · (dot)
+{
+  const f = tileFrame(0, "1-left-your-idea");
+  dotField(f, { seed: 81, color: "rgba(22,22,26,0.08)", spark: "rgba(109,74,255,0.25)", sparkShare: 0.03, clear: [[60, 340, 960, 900]] });
+  lab(f, "It starts small", "var(--violet-d)");
+  big(f, "Your idea", "var(--graphite)");
+  shapeOnThread(f, 900, 0, 44, "var(--violet)");
+  const inp = box(f, "left:96px;top:850px;width:888px;height:128px;border-radius:30px;background:#FFFFFF;border:3px solid var(--line);box-shadow:0 18px 40px rgba(22,22,26,0.08)");
+  const t = txt(inp, "A chai subscription for remote teams", "left:38px;top:0;height:100%;display:flex;align-items:center;font:600 36px Manrope;color:var(--graphite)");
+  const c = el("span", "caret", t); c.style.cssText += ";height:1.05em;margin-left:4px";
+  txt(f, "One sentence is enough.", "left:100px;top:1010px;font:500 30px Manrope;color:var(--ink-2)");
+  exTag(f, 100, 1072, "Example idea");
+  wordmarkAt(f, 30, 100, 1236, { color: "var(--graphite)" });
+}
+
+// ---- middle: deserves ◆ (diamond)
+{
+  const f = tileFrame(1, "2-middle-deserves");
+  lab(f, "And it deserves more than a name", "var(--violet-d)");
+  big(f, "deserves", "var(--graphite)");
+  shapeOnThread(f, 540, 1, 64, "var(--violet)");
+  const items = [["A name that sticks", "10 naming modes"], ["A domain you can own", "honestly checked, with prices"], ["Handles that match", "10 platforms, one screen"], ["A score that explains itself", "8 parts, all shown"]];
+  items.forEach(([a, b], k) => {
+    const y = 820 + k * 92;
+    const r = box(f, `left:96px;top:${y}px;width:820px;height:76px;border-radius:999px;background:rgba(255,255,255,0.8);border:2px solid rgba(109,74,255,0.25);display:flex;align-items:center;gap:18px;padding:0 30px;box-sizing:border-box`);
+    const d = sparkSVG("var(--violet)", 1, "spark-svg"); d.svg.style.cssText = "width:20px;height:20px;overflow:visible;flex:none"; r.appendChild(d.svg);
+    const n = el("span", "", r, a); n.style.cssText = "font:700 30px 'Space Grotesk';letter-spacing:-0.02em;color:var(--graphite)";
+    const s = el("span", "", r, b); s.style.cssText = "font:700 16px 'Space Mono';letter-spacing:0.06em;text-transform:uppercase;color:var(--violet-d);margin-left:auto;white-space:nowrap";
+  });
+  txt(f, "+ a lot more inside", "left:100px;top:1200px;font:700 22px 'Space Mono';letter-spacing:0.1em;text-transform:uppercase;color:var(--violet-d)");
+}
+
+// ---- right: a brand ✦ (spark + twin)
+{
+  const f = tileFrame(2, "3-right-a-brand");
+  dotField(f, { seed: 83, color: "rgba(255,255,255,0.12)", spark: "rgba(255,255,255,0.35)", sparkShare: 0.04, clear: [[60, 340, 960, 900]] });
+  lab(f, "Done in one tab", "#FFFFFF");
+  big(f, "a brand", "#FFFFFF");
+  shapeOnThread(f, 180 - 72, 2, 130, "#FFFFFF");   // sits on the thread before the next tile's edge
+  const tw = sparkSVG("var(--aqua)", 2, "spark-svg");
+  tw.svg.style.cssText = `position:absolute;left:${180 - 72 + 58}px;top:${TY - 100}px;width:52px;height:52px;overflow:visible`;
+  f.appendChild(tw.svg);
+  // what "a brand" means: a little fan of outputs
+  const row = box(f, "left:96px;top:830px;display:flex;gap:18px");
+  [["Logo", (t, w, h) => { const l = wickdLogo(t, 46); centerAbs(l, w, h); }, WK.cream],
+   ["Colours", (t, w, h) => { WK && [WK.plum, WK.ember, WK.lilac, WK.peach].forEach((c, k) => box(t, `left:${22 + k * 44}px;top:44px;width:38px;height:86px;border-radius:10px;background:${c}`)); }, "#FFFFFF"],
+   ["Brand book", (t, w, h) => { [0, 1, 2].forEach(k => box(t, `left:${40 + k * 10}px;top:${30 + k * 8}px;width:120px;height:100px;border-radius:8px;background:${["#FFB38A", "#CDB8FF", WK.plum][k]}`)); }, "#FFFFFF"],
+   ["Launch kit", (t, w, h) => { [0, 1, 2].forEach(k => box(t, `left:30px;top:${36 + k * 30}px;width:${[150, 120, 136][k]}px;height:14px;border-radius:7px;background:${k ? "#DCD8E8" : "#6D4AFF"}`)); }, "#FFFFFF"],
+  ].forEach(([name, draw, bg]) => {
+    const c = el("div", "", row);
+    c.style.cssText = `position:relative;width:206px;height:200px;border-radius:24px;background:${bg};overflow:hidden;box-shadow:0 14px 30px rgba(20,10,60,0.25)`;
+    const art = box(c, "left:0;top:0;width:206px;height:150px");
+    draw(art, 206, 150);
+    txt(c, name, "left:0;width:100%;text-align:center;top:156px;font:700 15px 'Space Mono';letter-spacing:0.1em;text-transform:uppercase;color:var(--graphite)");
+  });
+  txt(f, "Example brand: Wickd", "left:100px;top:1046px;font:700 16px 'Space Mono';letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.8)");
+  const cta = box(f, "left:96px;top:1110px;display:flex");
+  const b = el("div", "pill", cta, "Start free · gobrandtoday.com");
+  b.style.cssText += ";background:#FFFFFF;color:var(--violet-d);font-size:26px;padding:20px 36px";
+  wordmarkAt(f, 30, 984, 1236, { color: "#FFFFFF", spark: "#FFFFFF", right: true });
+}
+
+// ---- preview: the three side by side as the profile grid shows them (centre 3:4 crop, small gutters)
+{
+  const cw = Math.round(H * 3 / 4), g = 6, s = 0.5;
+  const f = frame("preview-grid-row", (cw * 3 + g * 2) * s, H * s, { bg: "#FFFFFF" });
+  f.dataset.nograin = "1";
+  // rendered by cloning the three tiles, scaled, and clipping each to its centre crop
+  [...document.querySelectorAll(".frame")].slice(0, 3).forEach((t, k) => {
+    const win = box(f, `left:${k * (cw + g) * s}px;top:0;width:${cw * s}px;height:${H * s}px;overflow:hidden`);
+    const c = t.cloneNode(true);
+    c.style.cssText += `;position:absolute;left:${-(W - cw) / 2 * s}px;top:0;transform:scale(${s});transform-origin:0 0;margin:0`;
+    c.removeAttribute("data-name");
+    c.classList.remove("frame");
+    c.style.overflow = "hidden";
+    win.appendChild(c);
+  });
+}

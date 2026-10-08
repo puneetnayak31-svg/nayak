@@ -1,0 +1,60 @@
+// "3 a.m. naming session": a relatable meme post. A generic notes screen full of crossed-out names
+// and anxious reminders, ending in "...or just use gobrandtoday✦". All names are made up.
+const W = 1080, H = 1350;
+const LINES = [
+  ["s", "Candle Co."],
+  ["s", "The Candle Company", "too long?"],
+  ["s", "Glowtopia"],
+  ["s", "Lit (lol)"],
+  ["s", "Scentsational", "no."],
+  ["s", "Sharma Candles", "mom's idea"],
+  ["n", "check if the .com is free??"],
+  ["n", "check insta, X, youtube… one by one"],
+  ["n", "logo?? colours?? fonts??"],
+  ["n", "3 weekends left"],
+];
+function notes(f, x, y, w, h, fs) {
+  const c = box(f, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:44px;background:#1E1E24;border:2px solid #2E2D36;box-shadow:0 30px 70px rgba(0,0,0,0.45);overflow:hidden`);
+  const P = 56 * fs;
+  txt(c, "‹ Notes", `left:${P}px;top:${34 * fs}px;font:600 ${26 * fs}px Manrope;color:var(--violet-s)`);
+  txt(c, "Done", `right:${P}px;top:${34 * fs}px;font:700 ${26 * fs}px Manrope;color:var(--violet-s)`);
+  txt(c, "brand names FINAL (v7)", `left:${P}px;top:${100 * fs}px;font:700 ${52 * fs}px 'Space Grotesk';letter-spacing:-0.035em;color:#F4F3F8`);
+  txt(c, "Today, 3:07 AM", `left:${P}px;top:${170 * fs}px;font:700 ${19 * fs}px 'Space Mono';letter-spacing:0.08em;color:#7E7C8E`);
+  const list = box(c, `left:${P}px;top:${226 * fs}px;width:${w - P * 2}px;display:flex;flex-direction:column;gap:${14 * fs}px`);
+  LINES.forEach(([k, t, note]) => {
+    const r = el("div", "", list);
+    r.style.cssText = `font:500 ${32 * fs}px/1.25 Manrope;color:${k === "s" ? "#8A8898" : "#D9D7E3"}`;
+    const m = el("span", "", r, (k === "s" ? "" : "– ") + t);
+    if (k === "s") m.style.cssText = "text-decoration:line-through;text-decoration-thickness:2.5px;text-decoration-color:#C9C6D6";
+    if (note) { const n = el("span", "", r, "  " + note); n.style.cssText = `white-space:pre;font-size:${24 * fs}px;color:#6E6C7E`; }
+  });
+  const last = el("div", "", list);
+  last.style.cssText = `margin-top:${18 * fs}px;font:700 ${40 * fs}px 'Space Grotesk';letter-spacing:-0.03em;color:#FFFFFF`;
+  last.appendChild(document.createTextNode("…or just use "));
+  const g = el("span", "", last, "gobrandtoday"); g.style.color = "var(--violet-s)";
+  endSpark(g, "var(--violet-s)", 0.42);
+  const cr = el("span", "caret", last); cr.style.cssText += ";height:0.9em;background:#FFFFFF;margin-left:8px";
+  c.style.height = (list.offsetTop + list.offsetHeight + P) + "px";
+  return c;
+}
+
+// ---- feed post 1080 x 1350
+{
+  const f = frame("post-3am", W, H, { dark: true });
+  dotField(f, { seed: 171, color: "rgba(255,255,255,0.05)", spark: "rgba(143,117,255,0.2)", sparkShare: 0.03 });
+  txt(f, "Every founder at 3 a.m.", "left:90px;top:84px;font:700 76px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--paper)");
+  const c = notes(f, 90, 196, 900, 0, 1.0);
+  txt(f, "One sentence. Every check. One tab. Start free.", `left:90px;top:${c.offsetTop + c.offsetHeight + 36}px;`+"font:500 28px Manrope;color:rgba(250,250,247,0.82)");
+  wordmarkAt(f, 30, 90, 1250, { color: "var(--paper)", spark: "var(--violet-s)" });
+  txt(f, "gobrandtoday.com", "right:90px;top:1256px;font:700 18px 'Space Mono';letter-spacing:0.1em;color:var(--violet-m)");
+}
+
+// ---- story 1080 x 1920
+{
+  const f = frame("story-3am", W, 1920, { dark: true });
+  dotField(f, { seed: 172, color: "rgba(255,255,255,0.05)", spark: "rgba(143,117,255,0.2)", sparkShare: 0.03 });
+  txt(f, "Every founder at 3 a.m.", "left:90px;top:290px;font:700 84px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--paper)");
+  const c = notes(f, 90, 410, 900, 0, 1.2);
+  txt(f, "Tag the one who's still awake 👇", `left:90px;top:${c.offsetTop + c.offsetHeight + 34}px;`+"font:700 32px 'Space Grotesk';letter-spacing:-0.02em;color:var(--paper)");
+  wordmarkAt(f, 30, 90, c.offsetTop + c.offsetHeight + 96, { color: "var(--paper)", spark: "var(--violet-s)" });
+}

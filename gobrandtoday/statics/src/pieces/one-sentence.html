@@ -1,0 +1,102 @@
+// One sentence → one brand: posts where the sentence ends in a spark and the brand appears under it,
+// plus the blank "your sentence" invite and an A3 print poster with a QR code.
+const W = 1080, H = 1350;
+const LOGO = {
+  wickd: (p, s, c) => wickdLogo(p, s, c),
+  loopa: (p, s, c) => BRANDS.loopa.logo(p, s, c),
+  pawse: (p, s, c) => pawseLogo(p, s, c),
+  ojas: (p, s, c) => BRANDS.ojas.logo(p, s, c, "#E3A72F"),
+  mello: (p, s, c) => BRANDS.mello.logo(p, s, c),
+};
+
+function sentencePost(name, D, o) {
+  const f = frame(name, W, H);
+  dotField(f, { seed: o.seed, color: "rgba(22,22,26,0.08)", spark: "rgba(109,74,255,0.28)", sparkShare: 0.03, clear: [[0, 760, W, 600]] });
+  txt(f, "One sentence", "left:90px;top:96px;font:700 22px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:var(--violet-d)");
+  exTag(f, W - 90 - 128, 88, "Example");
+  const s = txt(f, "", `left:90px;top:170px;width:940px;font:700 ${o.size || 124}px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--graphite)`);
+  const words = D.idea.split(" ");
+  s.appendChild(document.createTextNode(words.slice(0, -1).join(" ") + " "));
+  const last = el("span", "", s, words[words.length - 1]);
+  last.style.whiteSpace = "nowrap";
+  endSpark(last, "var(--violet)", 0.5);
+  s.style.top = (150 + (690 - 150 - s.offsetHeight) / 2) + "px";
+  // the turn: a thin rule with a label, then the brand panel
+  const panelTop = 790;
+  txt(f, "became", `left:90px;top:${panelTop - 64}px;font:700 22px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-2)`);
+  box(f, `left:230px;top:${panelTop - 52}px;width:760px;height:2px;background:var(--line)`);
+  const p = box(f, `left:0;top:${panelTop}px;width:${W}px;height:${H - panelTop}px;background:${D.dark}`);
+  const l = LOGO[D.key](p, o.logo || 150, D.ink);
+  centerAbs(l, W, H - panelTop - 110, 0);
+  l.style.top = parseFloat(l.style.top) + 30 + "px";
+  txt(p, o.line, `left:0;width:100%;text-align:center;top:${H - panelTop - 196}px;font:500 26px Manrope;color:${D.ink};opacity:0.8`);
+  footer(p, { y: H - panelTop - 104, color: D.ink, spark: "var(--violet-s)", urlColor: D.ink, size: 30 });
+  p.W = W; p.H = H - panelTop;
+  return f;
+}
+
+sentencePost("01-wickd", DK.wickd, { seed: 61, line: "Named, checked, scored and designed in one tab." });
+sentencePost("02-loopa", DK.loopa, { seed: 62, line: "Name, domain, handles and a logo from one line." });
+sentencePost("03-pawse", DK.pawse, { seed: 63, size: 116, line: "One sentence in. A whole brand out." });
+
+// ---- the invite: your sentence, blank
+{
+  const f = frame("04-yours", W, H);
+  dotField(f, { seed: 64, color: "rgba(22,22,26,0.08)", spark: "rgba(109,74,255,0.28)", sparkShare: 0.03, clear: [[0, 760, W, 600]] });
+  txt(f, "One sentence", "left:90px;top:96px;font:700 22px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:var(--violet-d)");
+  const s = txt(f, "", "left:90px;top:170px;width:940px;font:700 124px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--graphite)");
+  s.appendChild(document.createTextNode("Your idea "));
+  const blank = el("span", "", s);
+  blank.style.cssText = "white-space:nowrap";
+  const u = el("span", "", blank, "goes here");
+  u.style.cssText = "color:var(--violet);border-bottom:8px solid var(--violet);padding-bottom:0.02em";
+  const c = el("span", "caret", blank); c.style.height = "0.86em";
+  endSpark(blank, "var(--violet)", 0.5);
+  s.style.top = "190px";
+  txt(f, "“A chai subscription for remote teams.” “A podcast about money for women.” “A hackathon team that builds for farmers.” Anything. One line is enough.",
+    "left:90px;top:500px;width:860px;font:500 30px/1.4 Manrope;color:var(--ink-2)");
+  const panelTop = 790;
+  txt(f, "becomes", `left:90px;top:${panelTop - 64}px;font:700 22px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-2)`);
+  box(f, `left:260px;top:${panelTop - 52}px;width:730px;height:2px;background:var(--line)`);
+  const p = box(f, `left:0;top:${panelTop}px;width:${W}px;height:${H - panelTop}px;background:var(--violet)`);
+  // empty logo slot
+  const slot = box(p, `left:${W / 2 - 300}px;top:56px;width:600px;height:170px;border-radius:26px;border:4px dashed rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;gap:18px;font:700 54px 'Space Grotesk';letter-spacing:-0.035em;color:#FFFFFF`);
+  slot.appendChild(document.createTextNode("your brand"));
+  const sp = sparkSVG("#FFFFFF", 2, "spark-svg"); sp.svg.style.cssText = "width:30px;height:30px;overflow:visible"; slot.appendChild(sp.svg);
+  txt(p, "Name · domain · handles · score · logo · brand book · launch posts", "left:0;width:100%;text-align:center;top:262px;font:700 19px 'Space Mono';letter-spacing:0.08em;text-transform:uppercase;color:#FFFFFF");
+  txt(p, "+ a lot more inside. Start free.", "left:0;width:100%;text-align:center;top:300px;font:500 26px Manrope;color:#FFFFFF;opacity:0.86");
+  footer(p, { y: H - panelTop - 104, color: "#FFFFFF", spark: "#FFFFFF", urlColor: "#FFFFFF", size: 30 });
+}
+
+// ---- A3 print poster: 297 x 420 mm = 1169 x 1654 CSS px; rendered at 3x (≈300 dpi) and as a vector PDF
+{
+  const PW = 1169, PH = 1654;
+  const f = frame("poster-a3", PW, PH, { scale: 3 });
+  f.dataset.pdf = "1"; f.dataset.nograin = "1";
+  dotField(f, { gap: 58, seed: 70, color: "rgba(109,74,255,0.16)", spark: "rgba(109,74,255,0.4)", sparkShare: 0.035, clear: [[60, 60, PW - 120, PH - 120]] });
+  txt(f, "AI brand studio", "left:96px;top:110px;font:700 22px 'Space Mono';letter-spacing:0.18em;text-transform:uppercase;color:var(--violet-d)");
+  const h = txt(f, "Every brand starts as one sentence", "left:96px;top:150px;width:980px;font:700 118px 'Space Grotesk';letter-spacing:-0.05em;line-height:0.98;color:var(--graphite)");
+  endSpark(h, "var(--violet)", 0.42);
+  // five rows: sentence → logo on its colour
+  const top = 470, rh = 156, gap = 16;
+  DECK.forEach((D, i) => {
+    const y = top + i * (rh + gap);
+    const r = box(f, `left:96px;top:${y}px;width:${PW - 192}px;height:${rh}px;border-radius:26px;background:#FFFFFF;border:2px solid var(--line);overflow:hidden`);
+    txt(r, "“" + D.idea + ".”", "left:34px;top:0;height:100%;width:520px;display:flex;align-items:center;font:700 34px/1.12 'Space Grotesk';letter-spacing:-0.025em;color:var(--graphite)");
+    const ar = txt(r, "→", "left:560px;top:0;height:100%;display:flex;align-items:center;font:700 40px 'Space Grotesk';color:var(--violet)");
+    const lp = box(r, `right:0;top:0;width:${PW - 192 - 630}px;height:100%;background:${D.dark}`);
+    const l = LOGO[D.key](lp, 64, D.ink);
+    centerAbs(l, PW - 192 - 630, rh, 0.02);
+  });
+  txt(f, "All brands shown are examples.", `left:96px;top:${top + 5 * (rh + gap) + 6}px;font:700 16px 'Space Mono';letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-2)`);
+  // bottom band: QR + CTA
+  const by = 1370;
+  const band = box(f, `left:96px;top:${by}px;width:${PW - 192}px;height:190px;border-radius:30px;background:var(--graphite)`);
+  const qr = box(band, "left:24px;top:24px;width:142px;height:142px;border-radius:16px;background:#FFFFFF;padding:12px;box-sizing:border-box");
+  qr.innerHTML = `{{QR_SVG}}`;
+  const sv = qr.querySelector("svg"); sv.setAttribute("width", "100%"); sv.setAttribute("height", "100%"); sv.style.display = "block";
+  txt(band, "Scan. Type your sentence.", "left:200px;top:36px;font:700 46px 'Space Grotesk';letter-spacing:-0.035em;color:var(--paper)");
+  txt(band, "Name, domain, handles, logo, brand book. Start free.", "left:200px;top:94px;width:700px;font:500 22px/1.35 Manrope;color:rgba(250,250,247,0.78)");
+  wordmarkAt(f, 34, PW - 96 - 14, 102, { color: "var(--graphite)", spark: "var(--violet)", right: true });
+  txt(band, "gobrandtoday.com", "left:200px;top:134px;font:700 20px 'Space Mono';letter-spacing:0.1em;color:var(--violet-m)");
+}

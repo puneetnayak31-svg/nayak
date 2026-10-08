@@ -23,6 +23,15 @@ def read(*p):
     return open(os.path.join(*p)).read()
 
 
+def qr_svg():
+    """QR to the site as an inline SVG string (black modules, no quiet zone; the piece adds its own)."""
+    import io
+    import segno
+    buf = io.BytesIO()
+    segno.make("https://gobrandtoday.com", error="m").save(buf, kind="svg", border=0, xmldecl=False, svgns=True, nl=False, dark="#16161A", light=None, unit="mm")
+    return buf.getvalue().decode().replace("`", "")
+
+
 def main(only):
     os.makedirs(PAGES, exist_ok=True)
     link = os.path.join(PAGES, "assets")
@@ -33,7 +42,7 @@ def main(only):
     pieces = sorted(f[:-5] for f in os.listdir(os.path.join(SRC, "pieces")) if f.endswith(".html"))
     pieces = [p for p in pieces if not only or p in only]
     for p in pieces:
-        body = read(SRC, "pieces", p + ".html")
+        body = read(SRC, "pieces", p + ".html").replace("{{QR_SVG}}", qr_svg())
         html = f"""<!doctype html><html><head><meta charset="utf-8"><title>{p}</title><style>{css}</style></head>
 <body><script>{js}</script><script>
 fontsLoaded().then(() => {{

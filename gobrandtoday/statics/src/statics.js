@@ -9,7 +9,7 @@ function frame(name, w, h, opts = {}) {
   f.W = w; f.H = h;
   return f;
 }
-function finish(f) { el("div", "grainov", f); return f; }
+function finish(f) { if (!f.dataset.nograin) el("div", "grainov", f); return f; }
 
 // The field of full stops, still: dots with a few sparks, optionally fading out of a clear zone.
 function dotField(f, o = {}) {

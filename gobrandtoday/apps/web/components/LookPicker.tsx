@@ -85,6 +85,9 @@ function LookCard({ name, look, index, busy, onChoose }: { name: string; look: L
         <div className="stack gap-4">
           <div className="row gap-6 wrap">
             {look.title !== meta.title && <span className="eyebrow" style={{ fontSize: 11 }}>{meta.title}</span>}
+            <span className="badge line" title={meta.typeNote}>
+              {meta.type}
+            </span>
             {look.origin === 'ai' && (
               <span className="badge" title="This symbol was drawn by AI for your brand">
                 <Spark size={9} /> AI-drawn symbol

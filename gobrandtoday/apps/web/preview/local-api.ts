@@ -155,7 +155,7 @@ const LIMITS: Record<string, keyof (typeof PLANS)[number]['limits']> = {
   social_check: 'socialChecksPerDay',
   assistant: 'assistantMessagesPerDay',
 };
-/** The preview is generous: Pro limits for everyone, still counted for the dashboard. */
+/** Counted for the account menu and dashboard against the user's plan. The preview doesn't block when a limit is hit. */
 function consume(kind: string, n = 1) {
   const db = load();
   db.usage[kind] = (db.usage[kind] ?? 0) + n;
@@ -163,9 +163,13 @@ function consume(kind: string, n = 1) {
 }
 function usage() {
   const db = load();
-  const limits = planById('pro').limits;
-  return Object.fromEntries(Object.entries(LIMITS).map(([k, l]) => [k, { used: db.usage[k] ?? 0, limit: limits[l] as number }]));
+  const limits = planById(me().plan).limits;
+  const daily = Object.fromEntries(Object.entries(LIMITS).map(([k, l]) => [k, { used: db.usage[k] ?? 0, limit: limits[l] as number }]));
+  return { ...daily, brands: { used: db.brands.length, limit: limits.brandKits } };
 }
+
+/** The demo Pro account (also seeded in the full app by `npm run db:seed-demo`). */
+export const DEMO_PRO = { email: 'demo@gobrandtoday.com', password: 'GoBrand@Pro2026', name: 'Demo Founder' } as const;
 
 /* ------------------------------- demo checks ------------------------------- */
 
@@ -328,6 +332,11 @@ on('POST', '/api/auth/signup', async ({ body }) => {
 });
 on('POST', '/api/auth/login', async ({ body }) => {
   const u = me();
+  if (String(body.email ?? '').toLowerCase() === DEMO_PRO.email && body.password === DEMO_PRO.password) {
+    Object.assign(u, { email: DEMO_PRO.email, name: DEMO_PRO.name, isGuest: false, plan: 'pro', passwordHash: await hashPw(DEMO_PRO.password) });
+    save();
+    return { user: u };
+  }
   if (u.email !== String(body.email ?? '').toLowerCase() || u.passwordHash !== (await hashPw(body.password ?? ''))) {
     throw new ApiError(401, 'invalid_credentials', 'That email and password don’t match. (In this preview, accounts live in this browser.)');
   }
@@ -335,7 +344,7 @@ on('POST', '/api/auth/login', async ({ body }) => {
 });
 on('POST', '/api/auth/logout', () => {
   const db = load();
-  if (db.user) Object.assign(db.user, { isGuest: true, email: null, name: null, passwordHash: undefined });
+  if (db.user) Object.assign(db.user, { isGuest: true, email: null, name: null, plan: 'free', passwordHash: undefined });
   save();
   return { ok: true };
 });
@@ -649,6 +658,7 @@ on('GET', '/api/public/brands/:slug', ({ params }) => {
 });
 
 on('GET', '/api/brands/:id/export', ({ params, query }) => {
+  if (me().isGuest) throw new ApiError(401, 'unauthorized', 'Create a free account to do this.');
   const b = findBrand(params.id);
   if (!b.kit) throw new ApiError(409, 'not_ready', 'Still building.');
   return query.get('format') === 'md' ? brandMarkdown(b.id) : JSON.stringify(brandDTO(b), null, 2);

@@ -187,6 +187,20 @@ export function BrandGuidelines({
       {/* Logo */}
       <Section>
         {head('Logo', `${styleMeta.construction} ${kit.identity.symbol ? `The symbol (${symbolName.toLowerCase()}) also works on its own.` : ''}`)}
+        <div style={grid(260)}>
+          <div style={{ ...card, padding: 18 }}>
+            <span style={label}>Logo type</span>
+            <b style={{ fontSize: 17 }}>{styleMeta.type}</b>
+            <span style={{ fontSize: 14.5, lineHeight: 1.5, color: '#36315A' }}>{styleMeta.typeNote}</span>
+          </div>
+          {fam && SYMBOL_META[fam] && !kit.identity.symbol?.svg && (
+            <div style={{ ...card, padding: 18 }}>
+              <span style={label}>How the symbol reads</span>
+              <b style={{ fontSize: 17 }}>{SYMBOL_META[fam].feel}</b>
+              <span style={{ fontSize: 14.5, lineHeight: 1.5, color: '#36315A' }}>Watch for: {SYMBOL_META[fam].caution}</span>
+            </div>
+          )}
+        </div>
         <div className="gl-hero">
           <div style={{ minHeight: 300, borderRadius: 28, background: '#fff', border: `1px solid ${line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(24px,4vw,48px)', overflow: 'hidden' }}>
             <KitLogo kit={kit} width="min(100%, 560px)" maxHeight={240} />
@@ -206,6 +220,7 @@ export function BrandGuidelines({
             { label: 'Primary', bg: '#fff', el: <KitLogo kit={kit} width="86%" maxHeight={100} />, note: 'Default on light backgrounds.' },
             { label: 'Reversed', bg: ink, el: <KitLogo kit={kit} variant="dark" width="86%" maxHeight={100} />, note: 'On ink, photos and dark UI.' },
             { label: 'Single colour', bg: '#fff', el: <KitLogo kit={kit} variant="mono" width="86%" maxHeight={100} />, note: 'Stamps, embossing, one-colour print.' },
+            { label: 'White (reverse)', bg: brand, el: <KitLogo kit={kit} variant="reverse" width="86%" maxHeight={100} />, note: 'On brand colour, photos and busy surfaces.' },
             { label: kit.identity.symbol ? 'Symbol / app icon' : 'App icon', bg: paper, el: <KitIcon kit={kit} size={84} />, note: 'Avatars, favicons and app stores.' },
           ].map((x) => (
             <div key={x.label} style={{ ...card, padding: 14 }}>
@@ -237,7 +252,7 @@ export function BrandGuidelines({
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 28, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <KitLogo kit={kit} width={120} maxHeight={90} />
-                <span style={{ fontFamily: mono, fontSize: 12, color: muted }}>Print 25 mm · Screen 120 px</span>
+                <span style={{ fontFamily: mono, fontSize: 12, color: muted }}>Smallest full lockup</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
                 <KitIcon kit={kit} size={32} />
@@ -257,8 +272,8 @@ export function BrandGuidelines({
             { name: 'Paper', bg: paper, v: 'light' as const },
             { name: 'Tint', bg: tint, v: 'light' as const },
             { name: 'Ink', bg: ink, v: 'dark' as const },
-            { name: 'Brand', bg: brand, v: (onColor(brand) === '#FFFFFF' ? 'dark' : 'light') as 'dark' | 'light' },
-            { name: 'Photo', bg: `linear-gradient(135deg, ${ink}, ${brand} 70%, ${accent})`, v: 'dark' as const },
+            { name: 'Brand', bg: brand, v: (onColor(brand) === '#FFFFFF' ? 'reverse' : 'mono') as 'reverse' | 'mono' },
+            { name: 'Photo', bg: `linear-gradient(135deg, ${ink}, ${brand} 70%, ${accent})`, v: 'reverse' as const },
           ].map((x) => (
             <div key={x.name} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ height: 120, borderRadius: 16, background: x.bg, border: `1px solid ${line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden' }}>

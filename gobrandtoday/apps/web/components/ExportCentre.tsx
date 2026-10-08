@@ -20,6 +20,7 @@ import {
   tokensFile,
 } from '@/lib/export';
 import { useApp } from '@/lib/providers';
+import { useSignupGate } from './SignupGate';
 import { Spark } from './Spark';
 
 /** True in the single-file preview build (no server, so no print-to-PDF route). */
@@ -46,8 +47,10 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
   const slug = toSlug(kit.name);
   const [busy, setBusy] = useState<string | null>(null);
   const [zipStep, setZipStep] = useState<string | null>(null);
+  const { guard, gate, isGuest } = useSignupGate();
 
-  const run = async (key: string, fn: () => Promise<void> | void) => {
+  const run = (key: string, fn: () => Promise<void> | void) => guard(() => runNow(key, fn))();
+  const runNow = async (key: string, fn: () => Promise<void> | void) => {
     setBusy(key);
     track('export', { format: key });
     try {
@@ -94,6 +97,15 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
 
   return (
     <div className="stack gap-20">
+      {gate}
+      {isGuest && (
+        <div className="notice row between wrap gap-12">
+          <span>Downloads need a free account, so your Brand Box is saved before it leaves the app.</span>
+          <button type="button" className="btn btn-dark btn-sm" onClick={guard(() => undefined)}>
+            Create free account
+          </button>
+        </div>
+      )}
       <section className="ec-hero">
         <div className="stack gap-10" style={{ maxWidth: 560 }}>
           <span className="eyebrow" style={{ color: '#B9AEFF' }}>
@@ -152,7 +164,7 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
           <button
             type="button"
             className="ec-btn"
-            onClick={() => navigator.clipboard?.writeText(tokensFile(kit, 'css').text).then(() => toast('CSS variables copied'))}
+            onClick={guard(() => navigator.clipboard?.writeText(tokensFile(kit, 'css').text).then(() => toast('CSS variables copied')))}
           >
             <span>Copy CSS</span>
           </button>
@@ -175,14 +187,14 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
           <button
             type="button"
             className="ec-btn"
-            onClick={async () => {
+            onClick={guard(async () => {
               try {
                 await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([signature], { type: 'text/html' }), 'text/plain': new Blob([`${person.name}\n${person.role}, ${kit.name}\n${ctx.domain}`], { type: 'text/plain' }) })]);
               } catch {
                 await navigator.clipboard?.writeText(signature);
               }
               toast('Signature copied');
-            }}
+            })}
           >
             <span>Copy signature</span>
           </button>

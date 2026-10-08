@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useApp } from '@/lib/providers';
+import { AccountMenu } from './AccountMenu';
 import { CurrencyToggle } from './CurrencyToggle';
 import { Spark, Wordmark } from './Spark';
 
@@ -17,7 +17,6 @@ const LINKS = [
 
 export function Nav() {
   const path = usePathname();
-  const { me } = useApp();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8);
@@ -44,15 +43,7 @@ export function Nav() {
         </nav>
         <div className="row gap-10">
           <CurrencyToggle />
-          {me && !me.isGuest ? (
-            <Link href="/dashboard/settings" className="btn btn-ghost btn-sm hide-sm" aria-label="Account">
-              {me.name?.split(' ')[0] ?? me.email?.split('@')[0] ?? 'Account'}
-            </Link>
-          ) : (
-            <Link href="/login" className="btn btn-ghost btn-sm hide-sm">
-              Sign in
-            </Link>
-          )}
+          <AccountMenu />
           <Link href="/create" className="btn btn-primary btn-sm nav-cta">
             <Spark size={14} color="#fff" />
             Create my brand

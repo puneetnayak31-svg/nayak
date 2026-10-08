@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PLATFORM_ICON, PlatformIcon } from './PlatformIcons';
 import {
   SOCIAL_PLATFORMS,
   buyLinks,
@@ -58,6 +59,7 @@ const PLATFORM_GLYPH: Record<string, { g: string; bg: string; fg: string }> = {
 };
 
 export function PlatformGlyph({ id, size = 28 }: { id: string; size?: number }) {
+  if (PLATFORM_ICON[id]) return <PlatformIcon id={id} size={size} />;
   const p = PLATFORM_GLYPH[id] ?? { g: id.slice(0, 2).toUpperCase(), bg: '#F4F2FA', fg: '#16161A' };
   return (
     <span className="av-glyph" aria-hidden="true" style={{ width: size, height: size, background: p.bg, color: p.fg, fontSize: p.g.length > 2 ? size * 0.3 : size * 0.42 }}>

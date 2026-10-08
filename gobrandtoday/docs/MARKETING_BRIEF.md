@@ -79,7 +79,7 @@ Consumer, E-commerce, Consulting, Other.
 5. **Generate your identity.** Pick one of four looks; get logo, colours, fonts and a full brand book.
 6. **Launch.** “Bios, launch posts, website copy and a month of content ideas.”
 
-Guest-first: you can start without signing up. Creating an account (email or Google) keeps your work.
+Guest-first: you can start without signing up and build one Brand Box free. Downloading anything (logos, brand book, ZIP, website draft) needs a free account (email or Google), which also keeps your work.
 
 ---
 
@@ -187,9 +187,12 @@ A studio-style brand book, generated for your brand:
 - **Other looks**, so you can switch direction at any time. Every change is versioned, so you can undo.
 
 ### 5.9 Launch kit and website copy
+Written natively for each platform and for each name, never a copy of what you typed: platform lengths
+(Instagram bio ≤150 characters, X ≤160, thread posts ≤270), the right call to action for the business, local
+hashtags, and a line of wordplay from the name itself (e.g. “Mithaas comes from ‘mitha’: sweetness”).
 - Bios for Instagram, X, LinkedIn and YouTube.
 - Launch posts: an Instagram post, a LinkedIn post, an X thread and an announcement.
-- **A month of content ideas.**
+- **A month of content ideas**, specific to the business, each with its format (Reel, Carousel, Story, Short, Post).
 - Website copy: headline, sub-headline, CTA, about, features, benefits, FAQ, contact line, plus an SEO title and meta description.
 
 ### 5.10 AI Brand Assistant (Pro)
@@ -222,7 +225,8 @@ Changes are saved as new versions, so nothing is lost.
 
 ### 5.12 Dashboard and accounts
 - Dashboard of your brands and shortlists.
-- Guest-first; sign up with email or **Google** to keep your work.
+- Guest-first; sign up with email or **Google** to keep your work and to download.
+- An account menu shows what’s left at a glance: naming rounds, brand boxes, domain and handle checks, AI messages. Pro members get a premium crowned avatar.
 
 ### 5.13 Free tools (public pages)
 AI brand name generator · Startup name generator · Domain name generator · Business name generator ·
@@ -265,7 +269,7 @@ GST for India; full rights transfer; revisions included; the deposit is returned
 
 | Plan | Price | Tagline | What’s included |
 |---|---|---|---|
-| **Spark** | Free forever | “Find a name you love.” | 5 naming rounds a day · Domain checks across .com, .in, .ai and more · Handle checks on 10 platforms · GoBrand Score with full breakdown · 1 Brand in a Box |
+| **Spark** | Free forever | “Find a name you love.” | 5 naming rounds a day · Domain checks across .com, .in, .ai and more · Handle checks on 10 platforms · GoBrand Score with full breakdown · 1 Brand in a Box (free account to download) |
 | **Pro** (most popular) | ₹499 / $9 per month | “Turn your name into a brand.” | Unlimited naming rounds (fair use) · Domain-First search, only names you can register · Full Brand Bible, launch kit and website copy · AI Brand Assistant · PDF, PNG, SVG, JSON and Markdown exports · 10 brands |
 | **Studio** | ₹1,999 / $29 per month | “For agencies and serial founders.” | Everything in Pro · Unlimited brands and client projects · *Coming soon:* team seats, domain and handle monitoring, API access |
 

@@ -36,6 +36,7 @@ Status legend:
 
 | Area | Feature | Status | Where in code |
 |---|---|---|---|
+| Entry | Hero block: rolling domain endings (.com · .in · .ai · .io · .co) and the 10 social platforms as icons | Live (illustrative) | `web/components/HeroChecks.tsx`, `PlatformIcons.tsx` |
 | Entry | "I have an idea" composer with quick filters (industry, name style, must-have TLDs, max length, starts-with) | Live | `web/components/HeroComposer.tsx` |
 | Entry | "I have a name" instant check | Live | `web/components/NameCheck.tsx`, page `/name/[name]` |
 | Naming | 10 modes: smart, short, premium, tech, invented, human, global, india, seo, domain_first | Live (AI) / Fallback (offline) | `shared/options.ts` (`NAME_MODES`), `api/services/naming.service.ts` |
@@ -61,13 +62,16 @@ Status legend:
 | Applications | 32 mockups (9 generic + 23 industry objects such as neck label, hang tag, mithai box, coffee bag, candle jar, serum bottle, cans, menu, takeaway bag, product screen, payment card). The sector is detected from the brief and the 9 most relevant show first; "show all" reveals the rest | Live (deterministic keyword rules) | `shared/mockups.ts`, `shared/scenes.ts`, `shared/sectors.ts` |
 | Toolkit | Design elements from the brand's graphic device: supergraphic, pattern, icon set, seal, type wall, quiet/loud colour modes, photo frames, dividers, data device; each downloadable as SVG | Live | `shared/elements.ts`, `web/components/Mockups.tsx` |
 | Imagery | Moodboard photos and logo concept sketches from free FLUX models | Live (Pollinations, keyless) | `providers/image/index.ts`, `brand.service.ts` (`generateImagery`) |
-| Launch | Bios, launch posts, X thread, 10 content ideas, homepage copy | Live (AI) / Fallback | kit sections `launch`, `website` |
+| Launch | Bios (Instagram ≤150, X ≤160, LinkedIn, YouTube), launch posts, X thread (≤270 per post), announcement and 10 content ideas, written natively per platform and per name: the brief is read into category/offer/place, never pasted back; sector vocabulary, local hashtags and wordplay on the name | Live (AI) / Fallback (`offline/copy.ts`) | kit section `launch`, `prompts.ts` launch rules |
 | Assistant | Conversational edits as typed, versioned kit patches with undo | Live (AI) / Fallback (intent matching) | `brand.service.ts` (`askAssistant`), `kit.ts` (`applyAssistantChanges`) |
 | Export | Downloads tab: whole kit as one ZIP (~45 files with README); brand book as PDF (browser print), self-contained HTML, Markdown and JSON; logo SVG/PNG light/dark/one-colour (fonts embedded); app icon and favicons; design tokens (CSS, Tailwind, W3C JSON); social kit PNGs at platform sizes (profile, post, X, LinkedIn, YouTube); email signature; every mockup and toolkit element as SVG | Live (generated in the browser; PDF needs the full app) | `web/lib/export.ts`, `web/components/ExportCentre.tsx`, `shared/{brandbook,tokens,zip,elements}.ts`, `GET /api/brands/:id/export` |
 | Website | First-draft one-page website built from the kit (brand colours, fonts, logo, copy, FAQ, SEO title/description), previewed live (desktop/mobile) and downloadable as one HTML file | Live | `shared/website.ts`, `web/components/WebsiteBuilder.tsx` |
 | Website | "We build it for you": Launch page (from ₹9,999 / $199), Business website (from ₹34,999 / $699), Online store (from ₹64,999 / $1,299), Custom (quote), with a brief (sections, features, references, domain, timeline) | Live intake; fulfilment is manual (stored as an experts request, service `website`) | `shared/website.ts` (`WEBSITE_PACKAGES`), `WebsiteBuilder.tsx`, `POST /api/experts/requests` |
 | Share | Read-only public brand page by slug | Live | `/b/[slug]`, `GET /api/public/brands/:slug` |
 | Accounts | Guest-first sessions; email+password signup keeps guest work; Google OAuth | Live (Google needs keys) | `services/auth.service.ts`, `plugins/auth.ts` |
+| Accounts | Account menu with what's left (naming rounds, brand boxes, domain/handle checks, AI messages); premium avatar for Pro and Studio; usage on the dashboard | Live | `web/components/AccountMenu.tsx`, `GET /api/auth/me` |
+| Accounts | Demo Pro account to try the paid experience (`demo@gobrandtoday.com`) | Live (built into the preview; `npm run db:seed-demo` in the app) | `api/db/seed-demo.ts`, `preview/local-api.ts` |
+| Free tier | One free Brand Box to build and view as a guest; downloading anything needs a free account | Live | `web/components/SignupGate.tsx`, `routes/brands.ts` (export) |
 | Plans | Spark (free), Pro (₹499 / $9 a month), Studio (₹1,999 / $29 a month), daily quotas and a brand-kit cap enforced | Live (limits) | `shared/pricing.ts`, `services/usage.service.ts` |
 | Billing | Checkout / subscriptions (Razorpay INR, Stripe USD) | **Stub**: nobody can pay; plans can only be changed in the DB | `providers/billing/index.ts` |
 | Studio plan | "Brand approvals and comments", "Priority checks" | **Copy only** (listed in `PLANS`, not implemented) | `shared/pricing.ts` |

@@ -80,6 +80,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/api/src/db/schema.ts` | Drizzle table definitions (section 4). |
 | `apps/api/src/db/client.ts` | `pg` pool + Drizzle `db`. |
 | `apps/api/src/db/migrate.ts` | Applies `apps/api/drizzle/*.sql`. |
+| `apps/api/src/db/seed-demo.ts` | `npm run db:seed-demo`: creates or refreshes the demo Pro account (`DEMO_PRO_EMAIL`, `DEMO_PRO_PASSWORD`; local fallback password, refused in production without the env var). |
 | `apps/api/src/lib/cache.ts` | TTL + LRU cache with in-flight de-duplication (`cached`). |
 | `apps/api/src/lib/http.ts` | `httpFetch` (timeout, bounded retries), `mapLimit` (concurrency cap). |
 | `apps/api/src/lib/errors.ts` | `AppError`, `badRequest`, `notFound`, `unauthorized`, `forbidden`, `limitReached`. |
@@ -95,6 +96,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/api/src/providers/ai/offline/index.ts` | `OfflineProvider` (no network, labelled offline). |
 | `apps/api/src/providers/ai/offline/names.ts` | Rule-based name generator (suffixed, blends, compounds, real words, invented, Indian roots, descriptive) + meaning/tagline/reasons/watch-out. |
 | `apps/api/src/providers/ai/offline/kit.ts` | Template Brand Bible writer, looks via `generateLooks`, essence and moodboard prompts. |
+| `apps/api/src/providers/ai/offline/copy.ts` | Offline copywriting: `understandBrief` (category, offer, place, audience, sector, so no field pastes the brief), `SECTOR_VOICE` (promise, CTA, hashtags, problem, beliefs, YouTube line, content ideas per sector), `nameHook` (wordplay from a word or Hindi/Sanskrit root in the name), `launchCopy` (platform-native bios, posts, thread, announcement). |
 | `apps/api/src/providers/ai/offline/assistant.ts` | Intent-matching assistant (taglines, palette, logo style, mark, positioning, Gen Z, carousel…). |
 | `apps/api/src/providers/domain/types.ts` | `DomainProvider` interface, `DomainCheck`, `unknown()` helper. |
 | `apps/api/src/providers/domain/rdap.ts` | RDAP via IANA bootstrap (+ built-in servers), DNS nameserver cross-check. |
@@ -139,10 +141,14 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/lib/seo-pages.ts` | `/tools/*` landing pages (generators and widget tools). |
 | `apps/web/components/ui.tsx` | Shared UI: `Shell`, `SourceBadge`, `DemoBanner`, `ScorePill`, `ScoreCard`, `ScoreBreakdown`, `Risks`, `Loading`, `CopyButton`, `useGoogleFonts`, `Empty`. |
 | `apps/web/components/Nav.tsx` | Top navigation. |
+| `apps/web/components/AccountMenu.tsx` | Nav account control: guests see Sign in + free rounds left; accounts see an avatar chip (Pro/Studio: gradient ring + crown) with rounds left, and a menu with plan, brand boxes left and every usage meter; `UsageMeters`, `USAGE_LABELS` (also used on the dashboard). |
+| `apps/web/components/SignupGate.tsx` | `useSignupGate` (`guard(fn)`) and `SignupPrompt`: downloads need a free account; guests get the sign-up prompt. |
 | `apps/web/components/Footer.tsx` | Footer with product and tools links. |
 | `apps/web/components/Spark.tsx` | GoBrandToday mark, wordmark and the loader animation. |
 | `apps/web/components/CurrencyToggle.tsx` | ₹ / $ switch. |
 | `apps/web/components/HeroComposer.tsx` | Landing composer: idea or name, quick filters. |
+| `apps/web/components/HeroChecks.tsx` | Landing hero block: a name whose ending rolls through .com/.in/.ai/.io/.co, and the 10 platform icons (illustrative, claims nothing). |
+| `apps/web/components/PlatformIcons.tsx` | Simplified icons for the 10 social platforms (`PLATFORM_ICON`, `PlatformIcon`), used in the hero and the availability panel. |
 | `apps/web/components/DemoPlayer.tsx` | Scripted, labelled example of the journey on the landing page. |
 | `apps/web/components/PricingCards.tsx` | Plan cards from `PLANS`. |
 | `apps/web/components/Studio.tsx` | Naming studio: brief, rounds, refinement, name cards, detail modal, shortlist, compare. |

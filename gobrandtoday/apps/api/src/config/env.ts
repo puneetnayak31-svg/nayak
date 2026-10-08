@@ -99,6 +99,10 @@ const EnvSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? v.split(',').map((e) => e.trim().toLowerCase()) : [])),
+  /** `npm run db:seed-demo` creates this Pro account so the paid experience can be tried. */
+  DEMO_PRO_EMAIL: z.string().email().default('demo@gobrandtoday.com'),
+  /** Required in production; locally the seed falls back to the documented preview password. */
+  DEMO_PRO_PASSWORD: z.string().min(8).optional(),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().default(120),
   AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().default(20),
 

@@ -1,4 +1,4 @@
-import { FONT_TRIOS, LOGO_STYLE_META, MARK_PATHS, NAME_MODES, SYMBOL_META, type BrandKit, type Brief } from '@gbt/shared';
+import { FONT_TRIOS, LOGO_STYLE_META, MARK_PATHS, NAME_MODES, SECTOR_META, SYMBOL_META, detectSector, type BrandKit, type Brief } from '@gbt/shared';
 import type { AssistantInput, KitGenInput, NameGenInput } from './types';
 
 /**
@@ -58,6 +58,7 @@ export function namesPrompt(input: NameGenInput): string {
   const lines = [
     `Brief: ${b.description}`,
     b.industry && `Industry: ${b.industry}`,
+    `Business type (detected): ${SECTOR_META[detectSector({ description: b.description, industry: b.industry })].label}`,
     b.audience && `Audience: ${b.audience}`,
     b.geography && `Geography: ${b.geography}`,
     b.personalities.length && `Brand personality: ${b.personalities.join(', ')}`,
@@ -103,6 +104,23 @@ mockups and usage rules).
 Voice: three words separated by " · " (e.g. "Light · Clever · Quietly magical"), with
 concrete "say" lines and crossed-out "not" lines.
 
+Launch kit: write it natively for each platform and for THIS name. Never paste the brief back: turn it into a
+point of view (what the business is, what it makes, where, for whom, and why it is different in its category).
+Use the name itself in at least one line (wordplay on a word hidden in the name, its meaning or its sound),
+but never force a pun. Platform rules:
+- Instagram bio: at most 150 characters, three short lines (what + where · a hook · a call to action ending "↓"),
+  at most one emoji per line.
+- X bio: at most 160 characters, one sharp line with personality.
+- LinkedIn: a 2–3 sentence company "about" in a professional register: what, for whom, where, the promise.
+- YouTube: what viewers will get, specific to the category, and how often.
+- Launch posts: Instagram (hook, two or three short lines of story, call to action, 5–7 relevant hashtags including
+  a local one); LinkedIn (founder voice: hook, the problem in this category, what we made, three beliefs specific
+  to this category, an ask); X thread (5 posts, each under 270 characters: hook, problem, product, what's
+  different, call to action); announcement (two press-style sentences).
+- Content ideas: 10, specific to this category and audience, each starting with its format (Reel, Carousel,
+  Story, Short, Post).
+Two different names for the same idea must get clearly different launch copy.
+
 Writing rules: specific, warm and plain. No jargon, no hype words ("revolutionary",
 "synergy", "cutting-edge"). Short sentences. Write for the stated geography; India-first by default
 (₹ pricing, Indian cultural cues where natural) without stereotypes.
@@ -127,6 +145,7 @@ export function kitPrompt(input: KitGenInput): string {
     `Brand name: ${input.name}`,
     `Brief: ${b.description || 'not provided — infer a sensible positioning from the name'}`,
     b.industry && `Industry: ${b.industry}`,
+    `Business type (detected): ${SECTOR_META[detectSector({ description: b.description, industry: b.industry })].label}`,
     b.audience && `Audience: ${b.audience}`,
     b.geography && `Geography: ${b.geography}`,
     b.personalities?.length && `Personality: ${b.personalities.join(', ')}`,

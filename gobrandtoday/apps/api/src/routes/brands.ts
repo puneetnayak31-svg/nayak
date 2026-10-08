@@ -6,7 +6,7 @@ import { env } from '../config/env';
 import { db, schema } from '../db/client';
 import { AppError, limitReached } from '../lib/errors';
 import { parse } from '../lib/validate';
-import { ensureUser, regionOf } from '../plugins/auth';
+import { ensureUser, regionOf, requireAccount } from '../plugins/auth';
 import { KIT_SECTIONS, type KitSection } from '../providers/ai';
 import { analytics } from '../providers/analytics';
 import {
@@ -236,7 +236,9 @@ export default async function brandRoutes(app: FastifyInstance) {
   });
 
   app.get('/api/brands/:id/export', { schema: { tags: ['brands'], summary: 'Export as json or md' } }, async (req, reply) => {
-    const user = await ensureUser(req, reply);
+    await ensureUser(req, reply);
+    // Downloads need a free account (the Brand Box itself is free to build and view as a guest).
+    const user = requireAccount(req);
     const { id } = req.params as { id: string };
     const { format = 'json' } = req.query as { format?: string };
     const brand = await getBrand(user, id);

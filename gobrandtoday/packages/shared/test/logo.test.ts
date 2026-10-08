@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LOGO_STYLES, LOGO_STYLE_META, approxMeasure, buildLook, generateLooks, iconSVG, logoSVG, lookToIdentity } from '../src';
+import { LOGO_STYLES, contrast, LOGO_STYLE_META, approxMeasure, buildLook, generateLooks, iconSVG, logoSVG, lookToIdentity } from '../src';
 
 describe('looks', () => {
   it('offers four different styles with clearly different hues', () => {
@@ -50,5 +50,37 @@ describe('logo rendering', () => {
   });
   it('every style documents its usage rules', () => {
     for (const s of LOGO_STYLES) expect(LOGO_STYLE_META[s].usage.dont.length).toBeGreaterThan(10);
+  });
+});
+
+describe('logo science fixes', () => {
+  it('keeps the mark visible on ink in the dark version (≥ 3:1) for every hue', () => {
+    for (let hue = 0; hue < 360; hue += 15) {
+      const look = buildLook({ name: 'Kettlo' }, 'twinkle', hue, 3);
+      const id = lookToIdentity('Kettlo', look);
+      const svg = logoSVG(id, { variant: 'dark' }).svg;
+      const ink = look.palette.find((p) => p.role === 'ink')!.hex;
+      const fills = [...svg.matchAll(/fill="(#[0-9A-Fa-f]{6})"/g)].map((m) => m[1]!).filter((h) => h.toUpperCase() !== ink.toUpperCase());
+      for (const f of fills) expect(contrast(f, ink)).toBeGreaterThanOrEqual(3);
+    }
+  });
+  it('draws the reverse version in white only (plus knock-outs)', () => {
+    const look = buildLook({ name: 'Kettlo' }, 'symbol', 200, 1);
+    const svg = logoSVG(lookToIdentity('Kettlo', look), { variant: 'reverse' }).svg;
+    const brand = look.palette.find((p) => p.role === 'brand')!.hex.toUpperCase();
+    const colours = new Set([...svg.matchAll(/(?:fill|stroke)="(#[0-9A-Fa-f]{6})"/g)].map((m) => m[1]!.toUpperCase()));
+    for (const c of colours) expect(['#FFFFFF', brand]).toContain(c);
+  });
+  it('never draws a moving year: the editorial lockup shows EST. only when a year is given', () => {
+    const look = buildLook({ name: 'Kettlo' }, 'editorial', 30, 1);
+    const id = lookToIdentity('Kettlo', look);
+    expect(logoSVG(id).svg).not.toContain('EST.');
+    expect(logoSVG({ ...id, founded: 2024 }).svg).toContain('EST. 2024');
+  });
+  it('labels every construction with its logo type', () => {
+    for (const m of Object.values(LOGO_STYLE_META)) {
+      expect(m.type.length).toBeGreaterThan(3);
+      expect(m.typeNote.length).toBeGreaterThan(20);
+    }
   });
 });

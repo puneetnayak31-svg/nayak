@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { DemoPlayer } from '@/components/DemoPlayer';
 import { ExpertsBox } from '@/components/Experts';
+import { HeroChecks } from '@/components/HeroChecks';
 import { HeroComposer } from '@/components/HeroComposer';
 import { PricingCards } from '@/components/PricingCards';
 import { Mark, Spark } from '@/components/Spark';
@@ -88,17 +89,10 @@ export default function Home() {
               <Spark size={44} className="twinkle" style={{ display: 'inline-block', marginLeft: 6, verticalAlign: 'baseline' }} />
             </h1>
             <p className="lead">Tell us what you’re building. We’ll find the name, domain, social handles and identity to launch it.</p>
-            <div className="trust-strip">
-              <span>
-                <Spark size={10} /> .com · .in · .ai · .io · .co
-              </span>
-              <span>
-                <Spark size={10} /> 10 social platforms
-              </span>
-              <span>
-                <Spark size={10} /> Score out of 10
-              </span>
-            </div>
+            <HeroChecks />
+            <p className="tiny muted hc-foot">
+              <Spark size={10} /> GoBrand Score out of 10 · logo, brand book and launch kit in minutes
+            </p>
           </div>
           <div className="fade-up" style={{ animationDelay: '120ms' }}>
             <HeroComposer />

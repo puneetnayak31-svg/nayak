@@ -4,6 +4,7 @@
  */
 import { extractKeywords, generateLooks, hash32, pickMark, rng, MARK_PATHS, toSlug } from '@gbt/shared';
 import type { KitDraft, KitGenInput } from '../types';
+import { SECTOR_VOICE, launchCopy, understandBrief } from './copy';
 
 const GENERIC = new Set(['brand', 'company', 'platform', 'app', 'startup', 'business', 'product', 'service', 'website', 'tool', 'solution']);
 
@@ -48,16 +49,14 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
   const name = input.name.trim();
   const b = input.brief;
   const desc = (b.description || `a new brand called ${name}`).trim().replace(/\.$/, '');
-  let what = desc
-    .replace(/^(i'?m|i am|we'?re|we are|i want|we want)\s+(building|creating|making|launching|starting|to build|to start|to launch)?\s*/i, '')
-    .replace(/^(a|an)\s+/i, '');
-  // "candle brand for Gen Z in India" → what: "candle brand", audience: "Gen Z in India"
-  const forMatch = what.match(/^(.*?)\s+(?:for|that helps|helping)\s+(.+)$/i);
-  const inferredAudience = forMatch ? forMatch[2]!.trim() : undefined;
-  if (forMatch && forMatch[1]!.split(' ').length >= 1) what = forMatch[1]!.trim();
+  // Read the brief into parts ("mithai shop" / "handmade sweets…" / "Jaipur") so no field pastes it back verbatim.
+  const sense = understandBrief(desc, b.industry);
+  const what = sense.category;
+  const sv = SECTOR_VOICE[sense.sector];
+  const inferredAudience = sense.audience;
   const personalities = b.personalities?.length ? b.personalities : ['Human', 'Futuristic'];
   const lead = personalities[0]!;
-  const audience = b.audience || inferredAudience || inferAudience(desc);
+  const audience = b.audience || inferredAudience || inferAudience(desc) || sv.audience;
   const geo = b.geography || 'India';
   const random = rng(hash32(`kit:${name}:${desc}`));
   const keywords = extractKeywords(what, 6).filter((k) => !GENERIC.has(k));
@@ -72,6 +71,7 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
   const [v1, v2, v3] = voice.split(' · ');
 
   const taglines = [
+    `${cap(sv.promise)}.`,
     `${cap(topic)}, made simple.`,
     `Every ${thing} deserves a little magic.`,
     `Built for ${short(audience)}.`,
@@ -106,9 +106,9 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
         principles: [`Be ${v1!.toLowerCase()}: say it in one breath.`, `Be ${v2!.toLowerCase()}: show, then tell.`, `Be ${v3!.toLowerCase()}: leave people feeling capable.`],
       },
       messaging: {
-        oneLiner: `${name} — ${what}.`,
+        oneLiner: `${name}: ${sv.promise}.`,
         short: `${name} helps ${audience} ${verbFor(desc)} without the usual hassle.`,
-        long: `${name} is ${articled(what)}. It's designed for ${audience}, with a ${v1!.toLowerCase()}, ${v2!.toLowerCase()} experience from the first click. No jargon, no long setup — just the thing you came for, done well.`,
+        long: `${name} is ${articled(what)}${sense.place ? ` from ${sense.place}` : ''}${sense.offer ? `, offering ${sense.offer}` : ''}. It's designed for ${audience}, with a ${v1!.toLowerCase()}, ${v2!.toLowerCase()} experience from the first click. No jargon, no long setup — just the thing you came for, done well.`,
         elevatorPitch: `You know how ${keywords[0] ?? 'getting started'} is harder than it should be? ${name} fixes that. It's ${articled(what)}, built for ${audience}, and it takes minutes to get value. We're starting in ${geo} and growing from there.`,
       },
     },
@@ -153,43 +153,15 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
         personality: `${voice}.`,
       },
     },
-    launch: {
-      bios: {
-        instagram: `${cap(what)} ✦\nMade for ${audience}.\n↓ Start here: ${domain}`,
-        x: `${name}: ${what}. ${taglines[0]} ${domain}`,
-        linkedin: `${name} is ${articled(what)}. We help ${audience} ${verbFor(desc)} — simply, quickly and without jargon. Based in ${geo}. Visit ${domain}.`,
-        youtube: `Welcome to ${name}. Short, useful videos on ${topic} for ${audience}. New videos every week. ${domain}`,
-      },
-      posts: {
-        instagram: `Hello, world ✦\n\nMeet ${name} — ${what}.\n\nWe built it because ${keywords[0] ?? 'this'} shouldn't be this hard. Tap the link in bio to try it first.\n\n#${handle} #launch #madeinindia`,
-        linkedin: `Today we're launching ${name}.\n\n${cap(what)} — built for ${audience}.\n\nWhat we believe:\n• ${cap(verbFor(desc))} should take minutes, not weeks\n• Plain words beat jargon\n• Great tools should feel personal\n\nWe'd love your feedback. Try it at ${domain} and tell us what to build next.`,
-        xThread: [
-          `Meet ${name} ✦ ${what}.`,
-          `Why: ${keywords[0] ?? 'this'} is still harder than it should be. We wanted something ${v1!.toLowerCase()} and ${v2!.toLowerCase()}.`,
-          `What it does: helps ${audience} ${verbFor(desc)} in minutes.`,
-          `Who it's for: ${audience}.`,
-          `Try it today → ${domain}. Replies open — tell us what to build next.`,
-        ],
-        announcement: `${name} is live. ${cap(what)}, made for ${audience}. Try it at ${domain}.`,
-      },
-      contentIdeas: [
-        `Behind the name: why we chose "${name}"`,
-        `The problem with ${topic} today — in 30 seconds`,
-        `A day in the life of our first customer`,
-        `3 mistakes people make with ${keywords[0] ?? 'getting started'}`,
-        `Before / after: what changes with ${name}`,
-        `Founder note: what we're building and why`,
-        `Myth vs fact about ${topic}`,
-        `A quick tutorial: your first 5 minutes with ${name}`,
-        `Customer question of the week`,
-        `What's next: a sneak peek at the roadmap`,
-      ],
-    },
+    launch: (() => {
+      const l = launchCopy({ name, sense, audience, geo, domain, handle, tone: [v1!, v2!, v3!] });
+      return { bios: l.bios, posts: l.posts, contentIdeas: l.contentIdeas };
+    })(),
     website: {
       headline: taglines[0]!,
-      subheadline: `${name} is ${articled(what)} for ${audience}. ${cap(v1!.toLowerCase())}, ${v2!.toLowerCase()} and ready when you are.`,
-      cta: random() > 0.5 ? 'Get started free' : `Try ${name}`,
-      about: `We started ${name} because ${keywords[0] ?? 'this'} deserved better. We're a small team in ${geo} building ${what} — with plain words, fair prices and real support.`,
+      subheadline: `${name} is ${articled(what)}${sense.place ? ` from ${sense.place}` : ''}${sense.offer ? ` making ${sense.offer}` : ''}, for ${audience}. ${cap(sv.promise)}.`,
+      cta: sv.cta,
+      about: `${sv.problem} We started ${name} to change that: a small team in ${sense.place ?? geo} that sets out to ${sv.verb}, with plain words, fair prices and real support.`,
       features: [
         { title: 'Fast to start', body: 'Set up in minutes. No manual, no long calls.' },
         { title: 'Made for you', body: `Designed around how ${audience} actually work.` },
@@ -197,14 +169,14 @@ export function generateOfflineKit(input: KitGenInput): Partial<KitDraft> {
       ],
       benefits: ['Save hours every week', 'Look professional from day one', 'Get help from real people'],
       faq: [
-        { q: `What is ${name}?`, a: `${name} is ${articled(what)}.` },
+        { q: `What is ${name}?`, a: `${name} is ${articled(what)}${sense.place ? ` in ${sense.place}` : ''}${sense.offer ? `. We make ${sense.offer}` : ''}.` },
         { q: 'Who is it for?', a: `${cap(audience)}.` },
         { q: 'How much does it cost?', a: 'You can start free. Paid plans unlock more as you grow.' },
         { q: 'How do I get help?', a: `Write to hello@${domain} — a real person replies.` },
       ],
       contact: `hello@${domain}`,
-      seoTitle: `${name} — ${cap(what)}`.slice(0, 60),
-      metaDescription: `${name} is ${articled(what)} for ${audience}. ${taglines[0]}`.slice(0, 158),
+      seoTitle: `${name} — ${cap(what)}${sense.place ? ` in ${sense.place}` : ''}`.slice(0, 60),
+      metaDescription: `${name} is ${articled(what)}${sense.offer ? ` for ${sense.offer}` : ''}, made for ${audience}. ${cap(sv.promise)}.`.slice(0, 158),
     },
   };
 
@@ -217,15 +189,15 @@ function short(audience: string): string {
   return audience.split(/[,.]/)[0]!.trim();
 }
 
-function inferAudience(desc: string): string {
+function inferAudience(desc: string): string | undefined {
   const d = desc.toLowerCase();
   if (/gen ?z|young|student/.test(d)) return 'Gen Z in India';
-  if (/small business|smb|msme|shop/.test(d)) return 'small business owners';
+  if (/small business|smb|msme/.test(d)) return 'small business owners';
   if (/freelanc/.test(d)) return 'freelancers and solo founders';
   if (/developer|engineer/.test(d)) return 'developers and product teams';
   if (/parent|kid|child/.test(d)) return 'busy parents';
   if (/creator|influencer/.test(d)) return 'creators and their communities';
-  return 'founders and early adopters';
+  return undefined;
 }
 
 function verbFor(desc: string): string {

@@ -13,20 +13,21 @@ import { hash32, rng } from './text';
 export const SYMBOL_FAMILIES = ['tiles', 'orbit', 'petals', 'stripes', 'blob', 'pixels', 'chevrons', 'crescent', 'burst', 'interlock', 'sprout', 'layers', 'arcs'] as const;
 export type SymbolFamily = (typeof SYMBOL_FAMILIES)[number];
 
-export const SYMBOL_META: Record<SymbolFamily, { label: string; idea: string; fit: string[] }> = {
-  tiles: { label: 'Bauhaus tiles', idea: 'four geometric tiles, built like a modular system', fit: ['Technical', 'Minimal', 'Creative', 'saas', 'education'] },
-  orbit: { label: 'Orbit', idea: 'a planet and its satellite: a core product with everything around it', fit: ['Futuristic', 'Technical', 'ai', 'saas', 'fintech'] },
-  petals: { label: 'Bloom', idea: 'petals opening around a centre: growth, care and many voices', fit: ['Human', 'Premium', 'beauty', 'healthcare', 'india', 'wellness'] },
-  stripes: { label: 'Banded sun', idea: 'a sun cut into bands: warmth with a sense of order', fit: ['Bold', 'Creative', 'food', 'travel', 'media'] },
-  blob: { label: 'Living shape', idea: 'a soft organic form with an eye of colour: friendly and alive', fit: ['Playful', 'Youthful', 'Human', 'consumer', 'creator'] },
-  pixels: { label: 'Pixel crest', idea: 'a symmetric pixel crest unique to the name: digital and crafted', fit: ['Technical', 'Experimental', 'Playful', 'gaming', 'ai', 'saas'] },
-  chevrons: { label: 'Momentum', idea: 'stacked chevrons that point forward: progress you can see', fit: ['Bold', 'Trustworthy', 'fintech', 'logistics', 'fitness'] },
-  crescent: { label: 'Crescent', idea: 'a crescent and a spark: something new rising', fit: ['Premium', 'Luxury', 'Minimal', 'beauty', 'wellness', 'india'] },
-  burst: { label: 'Burst', idea: 'a many-pointed burst: energy and celebration', fit: ['Playful', 'Bold', 'Youthful', 'food', 'events', 'consumer'] },
-  interlock: { label: 'Interlock', idea: 'two rings linked together: partnership and trust', fit: ['Trustworthy', 'Human', 'consulting', 'fintech', 'community'] },
-  sprout: { label: 'Sprout', idea: 'leaves from one stem: natural growth', fit: ['Human', 'Traditional', 'food', 'agritech', 'wellness', 'education'] },
-  layers: { label: 'Layers', idea: 'stacked layers: a platform others build on', fit: ['Technical', 'Trustworthy', 'saas', 'ai', 'devtools'] },
-  arcs: { label: 'Rainbow arcs', idea: 'nested arcs: range, inclusion and a sunrise', fit: ['Creative', 'Human', 'Youthful', 'education', 'media', 'creator'] },
+/** label, the idea it carries, where it fits, plus how the shape is perceived (`feel`) and what to watch (`caution`), see docs/LOGO_SCIENCE.md. */
+export const SYMBOL_META: Record<SymbolFamily, { label: string; idea: string; fit: string[]; feel: string; caution: string }> = {
+  tiles: { label: 'Bauhaus tiles', idea: 'four geometric tiles, built like a modular system', fit: ['Technical', 'Minimal', 'Creative', 'saas', 'education'], feel: 'Mixed shapes on a strict grid: order with a creative streak.', caution: 'Same-colour tiles merge in one-colour print.' },
+  orbit: { label: 'Orbit', idea: 'a planet and its satellite: a core product with everything around it', fit: ['Futuristic', 'Technical', 'ai', 'saas', 'fintech'], feel: 'Curves around a core: an ecosystem, a centre with satellites.', caution: 'Thin rings vanish at 16px; a common space cliché in AI.' },
+  petals: { label: 'Bloom', idea: 'petals opening around a centre: growth, care and many voices', fit: ['Human', 'Premium', 'beauty', 'healthcare', 'india', 'wellness'], feel: 'Radial curves: care, growth and wellness.', caution: 'A lotus can read as political in India; avoid saffron with eight petals.' },
+  stripes: { label: 'Banded sun', idea: 'a sun cut into bands: warmth with a sense of order', fit: ['Bold', 'Creative', 'food', 'travel', 'media'], feel: 'A banded circle: warmth with order.', caution: 'The gaps close up at small sizes.' },
+  blob: { label: 'Living shape', idea: 'a soft organic form with an eye of colour: friendly and alive', fit: ['Playful', 'Youthful', 'Human', 'consumer', 'creator'], feel: 'Organic and soft: friendly and alive.', caution: 'Can feel too casual for finance or premium brands.' },
+  pixels: { label: 'Pixel crest', idea: 'a symmetric pixel crest unique to the name: digital and crafted', fit: ['Technical', 'Experimental', 'Playful', 'gaming', 'ai', 'saas'], feel: 'Square and symmetric: digital and crafted.', caution: 'Can look like a generic avatar; busy at 16px.' },
+  chevrons: { label: 'Momentum', idea: 'stacked chevrons that point forward: progress you can see', fit: ['Bold', 'Trustworthy', 'fintech', 'logistics', 'fitness'], feel: 'Angular and directional: progress and ambition.', caution: 'Pointing down reads as decline; keep it rising or forward.' },
+  crescent: { label: 'Crescent', idea: 'a crescent and a spark: something new rising', fit: ['Premium', 'Luxury', 'Minimal', 'beauty', 'wellness', 'india'], feel: 'A curve opening up: new beginnings, calm and premium.', caution: 'A crescent with a star carries religious and flag meanings.' },
+  burst: { label: 'Burst', idea: 'a many-pointed burst: energy and celebration', fit: ['Playful', 'Bold', 'Youthful', 'food', 'events', 'consumer'], feel: 'Angular and radial: energy and celebration.', caution: 'Too many points looks like a discount sticker.' },
+  interlock: { label: 'Interlock', idea: 'two rings linked together: partnership and trust', fit: ['Trustworthy', 'Human', 'consulting', 'fintech', 'community'], feel: 'Overlapping forms: partnership and trust.', caution: 'Close to famous ring logos; the rings merge in one colour.' },
+  sprout: { label: 'Sprout', idea: 'leaves from one stem: natural growth', fit: ['Human', 'Traditional', 'food', 'agritech', 'wellness', 'education'], feel: 'Organic growth: nature and new life.', caution: 'A cliché in agriculture and wellness; pair with a distinctive wordmark.' },
+  layers: { label: 'Layers', idea: 'stacked layers: a platform others build on', fit: ['Technical', 'Trustworthy', 'saas', 'ai', 'devtools'], feel: 'Stacked planes: a platform others build on.', caution: 'Common in developer tools; the gaps vanish small.' },
+  arcs: { label: 'Rainbow arcs', idea: 'nested arcs: range, inclusion and a sunrise', fit: ['Creative', 'Human', 'Youthful', 'education', 'media', 'creator'], feel: 'Nested curves: inclusion and optimism.', caution: 'Can read as a rainbow or Pride flag, or feel child-like.' },
 };
 
 export interface SymbolColors {

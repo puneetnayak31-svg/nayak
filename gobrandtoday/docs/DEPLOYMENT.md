@@ -11,6 +11,7 @@ Two stateless Node services plus Postgres. No vendor-specific code.
 - [ ] `API_ORIGIN` set **at web build time** (Next.js bakes rewrites into the build)
 - [ ] Optional keys: AI, registrar, YouTube, GitHub, Google OAuth, PostHog
 - [ ] `ADMIN_EMAILS` to unlock `/api/admin/status`
+- [ ] Optional demo Pro account: set `DEMO_PRO_EMAIL` and `DEMO_PRO_PASSWORD`, then `npm run db:seed-demo` (refuses to run in production without the password)
 
 ## Docker Compose (single server)
 ```bash

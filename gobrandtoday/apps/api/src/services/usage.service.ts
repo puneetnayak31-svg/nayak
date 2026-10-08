@@ -43,6 +43,7 @@ export async function consume(user: User, kind: UsageKind, amount = 1): Promise<
   }
 }
 
+/** Today's usage per daily quota, plus `brands` (total brand boxes against the plan's cap). */
 export async function usageToday(user: User): Promise<Record<string, { used: number; limit: number }>> {
   const rows = await db
     .select()
@@ -53,5 +54,8 @@ export async function usageToday(user: User): Promise<Record<string, { used: num
   for (const kind of Object.keys(LIMIT_KEY) as UsageKind[]) {
     out[kind] = { used: rows.find((r) => r.kind === kind)?.count ?? 0, limit: limits[LIMIT_KEY[kind]] as number };
   }
+  // Brand boxes are a running total, not a daily count: shown beside the daily meters so people see what's left.
+  const [b] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.brands).where(eq(schema.brands.userId, user.id));
+  out.brands = { used: b?.n ?? 0, limit: limits.brandKits };
   return out;
 }

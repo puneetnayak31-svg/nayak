@@ -68,7 +68,7 @@ Base URL: the web origin (`/api/*` is proxied) or the API directly (`http://loca
 | `POST /api/brands/:id/imagery` | `{ kind: "moodboard" \| "concepts" }`: generate moodboard photos or logo concept sketches with the image model; stored on `kit.identity.moodboard` / `kit.identity.concepts` |
 | `GET /api/assets/:id` | a generated image stored by the server |
 | `GET/POST /api/brands/:id/assistant` | history / `{ message }` → `{ reply, names, changed, source, brand }` |
-| `GET /api/brands/:id/export?format=json\|md` | download |
+| `GET /api/brands/:id/export?format=json\|md` | download (needs a free account: guests get 401) |
 | `GET /api/public/brands/:slug` | read-only shared brand |
 
 ## Experts
@@ -84,7 +84,7 @@ Base URL: the web origin (`/api/*` is proxied) or the API directly (`http://loca
 
 ## Auth & account
 
-`GET /api/auth/me` (user + today's usage), `POST /api/auth/signup`, `POST /api/auth/login` (merges guest work), `POST /api/auth/logout`, `PATCH /api/me` (`name`, `currency`), `GET /api/auth/google` → `/api/auth/google/callback`.
+`GET /api/auth/me` (user + usage: today's `generation`, `domain_check`, `social_check`, `assistant`, plus `brands` = total brand boxes against the plan's cap), `POST /api/auth/signup`, `POST /api/auth/login` (merges guest work), `POST /api/auth/logout`, `PATCH /api/me` (`name`, `currency`), `GET /api/auth/google` → `/api/auth/google/callback`.
 
 ## System
 

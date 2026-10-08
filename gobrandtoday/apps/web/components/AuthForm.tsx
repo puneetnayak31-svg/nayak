@@ -7,6 +7,11 @@ import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
 import { Spark, Wordmark } from './Spark';
 
+/** Demo Pro account: built into the preview; in a local full app, create it with `npm run db:seed-demo`. */
+const SHOW_DEMO = process.env.NEXT_PUBLIC_PREVIEW === '1' || process.env.NODE_ENV !== 'production';
+const DEMO_EMAIL = 'demo@gobrandtoday.com';
+const DEMO_PASSWORD = 'GoBrand@Pro2026';
+
 export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   const router = useRouter();
   const q = useSearchParams();
@@ -89,6 +94,24 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
           {mode === 'signup' && <span className="field-hint">At least 8 characters.</span>}
         </label>
         {error && <div className="notice error">{error}</div>}
+        {mode === 'login' && SHOW_DEMO && (
+          <button
+            type="button"
+            className="demo-pro"
+            onClick={() => {
+              setEmail(DEMO_EMAIL);
+              setPassword(DEMO_PASSWORD);
+            }}
+          >
+            <span className="plan-badge paid">Pro demo</span>
+            <span className="stack gap-2" style={{ textAlign: 'left' }}>
+              <b>Try the Pro experience</b>
+              <span className="tiny mono">
+                {DEMO_EMAIL} · {DEMO_PASSWORD}
+              </span>
+            </span>
+          </button>
+        )}
         <button className="btn btn-primary btn-block" disabled={busy}>
           <Spark size={14} color="#fff" /> {busy ? 'One moment…' : mode === 'signup' ? 'Create free account' : 'Sign in'}
         </button>

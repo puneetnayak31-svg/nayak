@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { swatch, toSlug, type BrandKit, type DomainResult, type HandleSuggestion, type LogoStyle, type MarkShape, type PaletteSwatch, type SocialResult } from '@gbt/shared';
+import { planById, swatch, toSlug, type BrandKit, type DomainResult, type HandleSuggestion, type LogoStyle, type MarkShape, type PaletteSwatch, type SocialResult } from '@gbt/shared';
 import { Logo } from './Logo';
 import { ApiError, api } from '@/lib/api';
 import { useApp } from '@/lib/providers';
@@ -12,6 +12,7 @@ import { Mark, Spark } from './Spark';
 import { DomainList, HandleIdeas, HandleList } from './Availability';
 import { ExpertsBox } from './Experts';
 import { Empty } from './ui';
+import { UsageMeters } from './AccountMenu';
 
 const NAV = [
   ['/dashboard', 'Home'],
@@ -141,25 +142,19 @@ export function DashHome() {
         </div>
       )}
       {usage && (
-        <div className="grid-4">
-          {Object.entries(usage).map(([k, v]) => (
-            <div key={k} className="card sm stack gap-8">
-              <span className="eyebrow" style={{ fontSize: 11 }}>
-                {k.replace('_', ' ')} today
-              </span>
-              <span className="display" style={{ fontSize: 26 }}>
-                {v.used}
-                <span className="muted" style={{ fontSize: 15 }}>
-                  {' '}
-                  / {v.limit}
-                </span>
-              </span>
-              <div className="bar">
-                <span style={{ width: `${Math.min(100, (v.used / v.limit) * 100)}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <section className="card stack gap-14">
+          <div className="row between wrap gap-8">
+            <h2 className="h3" style={{ fontSize: 19 }}>
+              What’s left on {planById(me?.plan ?? 'free').name}
+            </h2>
+            {me?.plan === 'free' && (
+              <Link href="/pricing" className="btn-link small">
+                Go Pro for more →
+              </Link>
+            )}
+          </div>
+          <UsageMeters usage={usage} />
+        </section>
       )}
       <section className="stack gap-16">
         <h2 className="h3">Brand kits</h2>

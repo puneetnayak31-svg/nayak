@@ -5,6 +5,7 @@ import { ELEMENT_KINDS, ELEMENT_META, MOCKUP_META, PRIMARY_MOCKUPS, elementSVG, 
 import { downloadElement, downloadMockup, kitDomain, kitHandle, kitMockupInput, kitMockupKinds } from '@/lib/export';
 import { track } from '@/lib/api';
 import { useLogoFonts } from './Logo';
+import { useSignupGate } from './SignupGate';
 
 const fill = (svg: string) => svg.replace('<svg ', '<svg style="display:block;width:100%;height:auto" ');
 
@@ -14,6 +15,7 @@ export function Mockup({ kit, kind, domain, handle, caption = true, download = f
   const v = useLogoFonts([t.display, t.body, t.data]);
   const d = kitDomain(kit, domain);
   const h = kitHandle(kit, handle);
+  const { guard, gate } = useSignupGate();
   const svg = useMemo(
     () => fill(mockupSVG(kind, kitMockupInput(kit, d, h))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -21,13 +23,14 @@ export function Mockup({ kit, kind, domain, handle, caption = true, download = f
   );
   return (
     <figure className="mockup">
+      {gate}
       <div className="mockup-art" dangerouslySetInnerHTML={{ __html: svg }} />
       {caption && (
         <figcaption>
           <span className="row between gap-8" style={{ alignItems: 'baseline' }}>
             <b>{MOCKUP_META[kind].title}</b>
             {download && (
-              <button type="button" className="btn-link tiny no-print" onClick={() => { track('export', { format: `mockup-${kind}` }); void downloadMockup({ kit, domain: d, handle: h }, kind); }}>
+              <button type="button" className="btn-link tiny no-print" onClick={guard(() => { track('export', { format: `mockup-${kind}` }); void downloadMockup({ kit, domain: d, handle: h }, kind); })}>
                 SVG ↓
               </button>
             )}
@@ -69,6 +72,7 @@ export function ToolkitElement({ kit, kind, domain, handle }: { kit: BrandKit; k
   const v = useLogoFonts([t.display, t.body, t.data]);
   const d = kitDomain(kit, domain);
   const h = kitHandle(kit, handle);
+  const { guard, gate } = useSignupGate();
   const svg = useMemo(
     () => fill(elementSVG(kind, { ...kitMockupInput(kit, d, h), personalities: kit.personality })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,11 +80,12 @@ export function ToolkitElement({ kit, kind, domain, handle }: { kit: BrandKit; k
   );
   return (
     <figure className="mockup">
+      {gate}
       <div className="mockup-art" dangerouslySetInnerHTML={{ __html: svg }} />
       <figcaption>
         <span className="row between gap-8" style={{ alignItems: 'baseline' }}>
           <b>{ELEMENT_META[kind].title}</b>
-          <button type="button" className="btn-link tiny no-print" onClick={() => { track('export', { format: `element-${kind}` }); void downloadElement({ kit, domain: d, handle: h }, kind); }}>
+          <button type="button" className="btn-link tiny no-print" onClick={guard(() => { track('export', { format: `element-${kind}` }); void downloadElement({ kit, domain: d, handle: h }, kind); })}>
             SVG ↓
           </button>
         </span>

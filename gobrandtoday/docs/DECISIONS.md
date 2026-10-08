@@ -129,3 +129,14 @@ Toolkit elements, scenes and banners are drawn from a single device (the symbol,
 quiet/loud colour modes. Studio research and the numeric rules are in `DESIGN_RESEARCH.md`; the numbers are our
 proposals, not published studio figures.
 
+**D27 — Downloads need a free account** · Active · Round 7
+Guests can build and view one Brand Box without signing up, but every download asks for a free account first
+(`SignupGate.tsx`; the API's Markdown/JSON export requires an account). It saves the work to an account before it
+leaves the app and turns the free tier into sign-ups. The client-built files can't be fully enforced server-side;
+the gate is a product rule, not DRM.
+
+**D28 — Offline copy reads the brief; it never repeats it** · Active · Round 7
+The offline writer parses the brief into category, offer, place and audience and writes with a per-sector vocabulary
+and per-name wordplay (`offline/copy.ts`). Pasting the founder's sentence into bios read as broken. Rules stay
+deterministic (same name and brief → same copy), and two names never share launch copy.
+

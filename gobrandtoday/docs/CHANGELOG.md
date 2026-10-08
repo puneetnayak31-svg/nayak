@@ -8,6 +8,29 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 _Nothing yet._
 
+## Round 7 — Launch copy that fits, Pro account menu, download sign-up, logo science · 2026-10-08
+
+- **Changed** the offline launch kit (`offline/copy.ts`): the brief is read into category, offer, place and audience, so
+  no field pastes it back. Bios, posts, thread, announcement and content ideas are written per platform (lengths,
+  calls to action, local hashtags) and per name (wordplay on a word or Hindi/Sanskrit root inside it), with a
+  vocabulary for each of the 20 sectors (D28). The AI prompt gained the same platform rules and the detected business type.
+- **Changed** other strategy and website copy to use the parsed brief (one-liner, subheadline, about, FAQ, SEO title).
+- **Added** an account menu (`AccountMenu.tsx`): Pro and Studio get a gradient-ring avatar with a crown; the chip shows
+  rounds left today, the menu shows brand boxes left and every usage meter. Guests see free rounds left. The dashboard
+  shows "What's left on <plan>". `GET /api/auth/me` usage now includes `brands` (total against the plan's cap).
+- **Added** a demo Pro account: built into the preview (`demo@gobrandtoday.com` / `GoBrand@Pro2026`), and
+  `npm run db:seed-demo` for the app (`DEMO_PRO_EMAIL`, `DEMO_PRO_PASSWORD`; the local default is refused in production).
+- **Changed** downloads to need a free account (D27): guests can build and view one Brand Box; every download shows a
+  sign-up prompt (`SignupGate.tsx`) and `GET /api/brands/:id/export` returns 401 for guests.
+- **Added** a hero block on the landing page (`HeroChecks.tsx`): a name whose ending rolls through .com/.in/.ai/.io/.co
+  and the 10 platforms as icons (`PlatformIcons.tsx`, also used in the availability panel).
+- **Added** `docs/LOGO_SCIENCE.md` from the founder's two logo PDFs, and applied its quick fixes: the dark logo's mark
+  is contrast-checked against ink (≥ 3:1, tested over all hues); a new all-white `reverse` version for brand-colour and
+  photo backgrounds; the editorial lockup no longer prints the current year (`EST.` only with a stored `founded`);
+  every construction has a logo type and note (`LOGO_STYLE_META.type/typeNote`, shown in the look picker and brand
+  book); long names favour lettermark, monogram, symbol and emblem looks; symbol families carry shape-psychology
+  notes (`SYMBOL_META.feel/caution`), shown in the brand book.
+
 ## Round 6 — Industry mockups, brand toolkit, downloads, website builder · 2026-10-08
 
 - **Added** industry scenes (`shared/scenes.ts`): 23 objects a studio would show for the business (woven neck label,

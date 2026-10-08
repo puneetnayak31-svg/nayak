@@ -38,6 +38,7 @@ It is an npm-workspaces TypeScript monorepo:
 | `npm run dev:api` / `npm run dev:web` | One side only. |
 | `npm run db:migrate` | Apply SQL migrations in `apps/api/drizzle/`. |
 | `npm run db:generate` | Generate a new migration after editing `apps/api/src/db/schema.ts`. Commit the SQL. |
+| `npm run db:seed-demo` | Create or refresh the demo Pro account (`DEMO_PRO_EMAIL` / `DEMO_PRO_PASSWORD`; see `docs/WORKFLOWS.md` B1). |
 | `npm run typecheck` | `tsc --noEmit` in every workspace (strict, `noUncheckedIndexedAccess`). |
 | `npm test` | Docs drift check, then Vitest in `packages/shared` and `apps/api`. The API integration test needs a reachable `DATABASE_URL`; without it, it prints a SKIPPED warning and passes (`SKIP_DB_TESTS=1` forces a skip). |
 | `npm run docs:check` | Only the docs drift check (`scripts/check-docs.mjs`). |

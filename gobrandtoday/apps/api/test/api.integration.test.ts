@@ -43,7 +43,7 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     expect(gen.statusCode).toBe(200);
     const cookie = gen.headers['set-cookie'] as string;
     expect(cookie).toMatch(/gbt_sid=.*HttpOnly/i);
-    const sid = cookie.split(';')[0]!;
+    let sid = cookie.split(';')[0]!;
     const body = gen.json() as { names: Array<{ name: string; score: { overall: number }; tagline?: string; whyItWorks?: string[]; meaning?: string }>; projectId: string };
     expect(body.names.length).toBeGreaterThan(0);
     // Every name carries its story, not just a label.
@@ -70,6 +70,12 @@ describe.runIf(process.env.SKIP_DB_TESTS !== '1')('API (integration)', () => {
     const undo = await app!.inject({ method: 'POST', url: `/api/brands/${id}/undo`, headers: { ...H, cookie: sid }, payload: {} });
     expect((undo.json() as { brand: { version: number } }).brand.version).toBe(3);
 
+    // Downloads need a free account: the guest is asked to sign up, then the same brand exports.
+    const guestMd = await app!.inject({ url: `/api/brands/${id}/export?format=md`, headers: { cookie: sid } });
+    expect(guestMd.statusCode).toBe(401);
+    const su = await app!.inject({ method: 'POST', url: '/api/auth/signup', headers: { ...H, cookie: sid }, payload: { email: `x${Date.now()}@example.com`, password: 'correct horse battery' } });
+    expect(su.statusCode).toBe(200);
+    sid = (su.headers['set-cookie'] as string).split(';')[0]!;
     const md = await app!.inject({ url: `/api/brands/${id}/export?format=md`, headers: { cookie: sid } });
     expect(md.headers['content-type']).toContain('markdown');
     expect(md.body).toContain('## Identity');

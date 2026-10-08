@@ -570,7 +570,7 @@ function LaunchTab({ brand, kit, onChange }: { brand: BrandDTO; kit: BrandKit; o
         <Block title="X thread" text={L.posts.xThread.join('\n\n')}>
           <ol className="stack gap-10" style={{ margin: 0, paddingLeft: 20 }}>
             {L.posts.xThread.map((t) => (
-              <li key={t}>{t}</li>
+              <li key={t} style={{ whiteSpace: 'pre-line' }}>{t}</li>
             ))}
           </ol>
         </Block>

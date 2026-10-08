@@ -86,6 +86,11 @@ stored as-is; a bytes result is stored in `brand_assets` and served by `GET /api
 
 ### A8. Export and share
 
+**Downloads need a free account.** Guests can build and view their one free Brand Box, but every download (ZIP,
+PDF, HTML, logo files, tokens, social kit, mockup/toolkit SVGs, website draft, copy buttons in Downloads) goes
+through `useSignupGate().guard`, which shows the sign-up prompt to guests; `?next=` brings them back. The API enforces
+the same on `GET /api/brands/:id/export` (`requireAccount`), and the print route shows the prompt instead of printing.
+
 All downloads live in the **Downloads** tab (`ExportCentre.tsx`; the header's "Download kit" button opens it). Everything
 except Markdown/JSON is generated in the browser by `lib/export.ts`, so it uses real font metrics and works in the preview.
 
@@ -145,8 +150,14 @@ cp .env.example .env            # works as-is locally
 npm install
 docker compose up -d db         # or a local Postgres matching DATABASE_URL
 npm run db:migrate
+npm run db:seed-demo            # optional: demo Pro account
 npm run dev                     # API :4000 (docs at /api/docs), web :3000
 ```
+
+**Demo Pro account** (to try the paid experience): `demo@gobrandtoday.com` / `GoBrand@Pro2026`. The preview build
+accepts it built in; a local full app needs `npm run db:seed-demo` first. In production set `DEMO_PRO_PASSWORD`
+(and optionally `DEMO_PRO_EMAIL`); the seed refuses to use the local default there. The login page shows a
+"Try the Pro experience" shortcut in the preview and in development only.
 
 ### B2. Before every commit
 

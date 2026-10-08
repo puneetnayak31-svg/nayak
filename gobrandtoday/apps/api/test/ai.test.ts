@@ -111,3 +111,38 @@ describe('exports built from a kit', () => {
     expect(() => JSON.parse(jsonTokens(t))).not.toThrow();
   });
 });
+
+describe('launch kit copy', () => {
+  const kitFor = (name: string, description: string) =>
+    generateOfflineKit({ name, brief: brief({ description }), sections: ['launch'] }).launch!;
+  const desc = 'A mithai shop in Jaipur selling handmade sweets and festive gift boxes';
+  it('never pastes the brief back into launch copy', () => {
+    const l = kitFor('Mithaas', desc);
+    const all = [...Object.values(l.bios), l.posts.instagram, l.posts.linkedin, l.posts.announcement, ...l.posts.xThread].join('\n');
+    expect(all).not.toContain(desc);
+    expect(all.toLowerCase()).not.toContain('a mithai shop in jaipur selling');
+  });
+  it('writes to each platform’s limits and conventions', () => {
+    const l = kitFor('Mithaas', desc);
+    expect(l.bios.instagram.length).toBeLessThanOrEqual(150);
+    expect(l.bios.instagram.split('\n')).toHaveLength(3);
+    expect(l.bios.x.length).toBeLessThanOrEqual(160);
+    for (const t of l.posts.xThread) expect(t.length).toBeLessThanOrEqual(270);
+    expect(l.posts.instagram).toMatch(/#jaipur/);
+    expect(l.contentIdeas).toHaveLength(10);
+    expect(l.contentIdeas[0]).toMatch(/^(Reel|Carousel|Story|Short|Post)/);
+  });
+  it('uses the business’s own world (sector) and the name itself', () => {
+    const sweets = kitFor('Mithaas', desc);
+    expect(sweets.posts.instagram).toMatch(/#mithai/);
+    expect(sweets.posts.instagram).toContain('mitha');
+    const chai = kitFor('Kettlo', 'A chai subscription for remote teams');
+    expect(chai.bios.instagram).toMatch(/☕/);
+  });
+  it('gives two names for the same idea different copy', () => {
+    const a = kitFor('Mithaas', desc);
+    const b = kitFor('Sonaghar', desc);
+    expect(a.posts.instagram).not.toBe(b.posts.instagram);
+    expect(a.posts.linkedin).not.toBe(b.posts.linkedin);
+  });
+});

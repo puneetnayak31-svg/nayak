@@ -6,6 +6,7 @@ import { ApiError, api, track } from '@/lib/api';
 import { download, kitDomain, kitHandle, websiteFile } from '@/lib/export';
 import { useApp } from '@/lib/providers';
 import { useLogoFonts } from './Logo';
+import { useSignupGate } from './SignupGate';
 import { Spark } from './Spark';
 
 /**
@@ -23,6 +24,7 @@ export function WebsiteBuilder({ brandId, kit, domain, handle }: { brandId: stri
     [kit, ctx.domain, ctx.handle, v],
   );
   const [mobile, setMobile] = useState(false);
+  const { guard, gate } = useSignupGate();
 
   const open = () => {
     const w = window.open('', '_blank');
@@ -35,6 +37,7 @@ export function WebsiteBuilder({ brandId, kit, domain, handle }: { brandId: stri
 
   return (
     <div className="stack gap-24">
+      {gate}
       <section className="stack gap-12">
         <div className="row between wrap gap-12" style={{ alignItems: 'flex-end' }}>
           <div className="stack gap-6">
@@ -59,10 +62,10 @@ export function WebsiteBuilder({ brandId, kit, domain, handle }: { brandId: stri
             <button
               type="button"
               className="btn btn-dark btn-sm"
-              onClick={() => {
+              onClick={guard(() => {
                 track('export', { format: 'website-html' });
                 download(`${kit.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-website-draft.html`, html, 'text/html');
-              }}
+              })}
             >
               Download HTML
             </button>

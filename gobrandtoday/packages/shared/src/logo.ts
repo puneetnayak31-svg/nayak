@@ -9,7 +9,7 @@
  * Text width comes from an injected `measure` function: the browser passes
  * a canvas measurer that uses the real web font; tests use `approxMeasure`.
  */
-import { FONT_TRIOS, MARK_PATHS, generatePalette, onColor, swatch, type FontTrio } from './brand-system';
+import { FONT_TRIOS, MARK_PATHS, contrast, generatePalette, onColor, swatch, type FontTrio } from './brand-system';
 import { SYMBOL_META, drawSymbol, pickFamily, type SymbolFamily, type SymbolSpec } from './symbols';
 import { hash32, rng, syllables } from './text';
 import type { Look, LogoStyle, MarkShape, PaletteSwatch } from './types';
@@ -19,6 +19,9 @@ export interface LogoStyleMeta {
   title: string;
   /** One-line description of the construction. */
   construction: string;
+  /** Logo type in design terms (wordmark, lettermark, combination mark…) and when it fits. */
+  type: string;
+  typeNote: string;
   fonts: string[];
   marks: MarkShape[];
   fit: string[];
@@ -28,6 +31,8 @@ export interface LogoStyleMeta {
 export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   twinkle: {
     id: 'twinkle',
+    type: 'Wordmark',
+    typeNote: 'The name is the logo; the spark full stop gives it a signature. Best for short, sayable names.',
     title: 'Spark full stop',
     construction: 'A lowercase wordmark whose full stop becomes a signature mark.',
     fonts: ['grotesk', 'swiss', 'avant', 'rounded'],
@@ -42,6 +47,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   monogram: {
     id: 'monogram',
+    type: 'Combination mark',
+    typeNote: 'A lettermark badge beside the name. Good for long or two-word names and trust-led brands.',
     title: 'Signet badge',
     construction: 'A round badge with the initials, beside the name in widely spaced capitals.',
     fonts: ['signet'],
@@ -56,6 +63,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   editorial: {
     id: 'editorial',
+    type: 'Wordmark',
+    typeNote: 'A serif logotype with a rule: quiet, premium and timeless. Fashion, media, beauty and services.',
     title: 'Editorial serif',
     construction: 'A high-contrast serif in title case, the first letter in brand colour, set over a fine rule.',
     fonts: ['editorial'],
@@ -70,6 +79,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   stacked: {
     id: 'stacked',
+    type: 'Wordmark in a container',
+    typeNote: 'Capitals in a tilted block, like a sticker. Loud consumer, food and fashion on packs and social.',
     title: 'Sticker stack',
     construction: 'Tall condensed capitals stacked in a tilted colour block, like a sticker.',
     fonts: ['poster'],
@@ -84,6 +95,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   symbol: {
     id: 'symbol',
+    type: 'Combination mark',
+    typeNote: 'An abstract symbol plus the name. The symbol can later stand alone as the app icon.',
     title: 'Symbol + wordmark',
     construction: 'A generative symbol unique to this name, beside a clean wordmark.',
     fonts: ['trust', 'swiss', 'technical', 'grotesk', 'avant', 'bold'],
@@ -98,6 +111,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   emblem: {
     id: 'emblem',
+    type: 'Stacked combination mark',
+    typeNote: 'Symbol above spaced capitals. Works on signage and packaging; add a frame for a classic emblem.',
     title: 'Emblem',
     construction: 'A centred symbol over the name in spaced capitals, like a seal or a badge on a product.',
     fonts: ['signet', 'swiss', 'editorial', 'trust', 'avant'],
@@ -112,6 +127,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   lettermark: {
     id: 'lettermark',
+    type: 'Lettermark + wordmark',
+    typeNote: 'The initial cut from a shape, beside the name. Strongest at 16px: apps, SaaS, education.',
     title: 'Lettermark',
     construction: 'The initial cut out of a bold shape, beside the name: compact enough for an app icon.',
     fonts: ['grotesk', 'bold', 'rounded', 'avant', 'swiss', 'editorial'],
@@ -126,6 +143,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   playful: {
     id: 'playful',
+    type: 'Display wordmark',
+    typeNote: 'Bouncy letters with character. Short names in kids, food and consumer; weaker at very small sizes.',
     title: 'Bouncy letters',
     construction: 'Rounded lowercase letters that bounce and take turns in the palette colours.',
     fonts: ['bubbly', 'rounded'],
@@ -140,6 +159,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   terminal: {
     id: 'terminal',
+    type: 'Wordmark with a glyph',
+    typeNote: 'A command-line prompt before the name. Developer tools, AI and infrastructure.',
     title: 'Command line',
     construction: 'The name typed at a prompt in a developer’s mono font, with a block cursor.',
     fonts: ['terminal'],
@@ -154,6 +175,8 @@ export const LOGO_STYLE_META: Record<LogoStyle, LogoStyleMeta> = {
   },
   heritage: {
     id: 'heritage',
+    type: 'Wordmark (Devanagari-inspired)',
+    typeNote: 'A headline bar over the letters, from the Devanagari script. Indian food, beauty, fashion and craft.',
     title: 'Shirorekha',
     construction: 'Lowercase letters hung from one headline bar, like Devanagari, crowned with a small mark.',
     fonts: ['bharat'],
@@ -196,6 +219,21 @@ export interface LookInput {
   count?: number;
 }
 
+/**
+ * Long names are hard to read small, so they lean on initials and symbols
+ * (lettermark, monogram, symbol, emblem); short names can carry a wordmark on
+ * their own (docs/LOGO_SCIENCE.md).
+ */
+function lengthFit(name: string, style: LogoStyle): number {
+  const letters = name.replace(/[^a-z]/gi, '').length;
+  const words = name.trim().split(/\s+/).length;
+  const long = letters > 9 || words > 1;
+  const short = letters <= 6 && words === 1;
+  if (long) return ['monogram', 'lettermark', 'symbol', 'emblem'].includes(style) ? 1.2 : ['playful', 'stacked'].includes(style) ? -0.8 : 0;
+  if (short) return ['twinkle', 'playful', 'stacked', 'terminal'].includes(style) ? 0.6 : 0;
+  return 0;
+}
+
 /** Pick `count` very different looks that fit the brief, each with its own palette, type and mark. */
 export function generateLooks(input: LookInput): Look[] {
   const count = input.count ?? 4;
@@ -206,7 +244,7 @@ export function generateLooks(input: LookInput): Look[] {
     .map((id) => {
       const fit = LOGO_STYLE_META[id].fit.filter((f) => tags.some((t) => t.toLowerCase() === f.toLowerCase())).length;
       const penalty = input.exclude?.includes(id) ? 3 : 0;
-      return { id, score: fit * 1.5 + random() * 2.2 - penalty };
+      return { id, score: fit * 1.5 + lengthFit(input.name, id) + random() * 2.2 - penalty };
     })
     .sort((a, b) => b.score - a.score);
   let styles = scored.slice(0, count).map((s) => s.id);
@@ -304,9 +342,12 @@ export interface LogoIdentity {
   seed: number;
   symbol?: SymbolSpec;
   case?: 'lower' | 'title' | 'upper';
+  /** Founding year for lockups that show one (editorial). Omitted: no year is drawn. */
+  founded?: number;
 }
 
-export type LogoVariant = 'light' | 'dark' | 'mono';
+/** light: on paper · dark: on ink (mark colour contrast-checked) · mono: one ink · reverse: all white, for brand-colour or photo backgrounds. */
+export type LogoVariant = 'light' | 'dark' | 'mono' | 'reverse';
 
 export function lookToIdentity(name: string, look: Look): LogoIdentity {
   const t = lookFonts(look);
@@ -329,8 +370,15 @@ function colors(p: PaletteSwatch[], v: LogoVariant): Colors {
   const brand = swatch(p, 'brand');
   const accent = swatch(p, 'accent');
   const tint = swatch(p, 'tint');
-  if (v === 'dark') return { bg: ink, text: paper, brand: accent, accent: brand, tint, ink, paper };
+  if (v === 'dark') {
+    // The mark must stay visible on ink: take the first palette colour with at least 3:1 contrast.
+    const visible = (h: string) => contrast(h, ink) >= 3;
+    const mark = [accent, brand, tint, paper].find(visible) ?? paper;
+    const second = [brand, accent, tint, paper].find((h) => h !== mark && visible(h)) ?? paper;
+    return { bg: ink, text: paper, brand: mark, accent: second, tint, ink, paper };
+  }
   if (v === 'mono') return { bg: null, text: ink, brand: ink, accent: ink, tint: '#FFFFFF', ink, paper };
+  if (v === 'reverse') return { bg: null, text: '#FFFFFF', brand: '#FFFFFF', accent: '#FFFFFF', tint: brand, ink, paper };
   return { bg: null, text: ink, brand, accent, tint, ink, paper };
 }
 
@@ -466,15 +514,16 @@ export function logoSVG(id: LogoIdentity, opts: { variant?: LogoVariant; measure
       const ascent = 0.78 * F;
       const baseline = pad + ascent;
       const ruleY = baseline + 0.2 * F;
-      const est = `EST. ${new Date().getFullYear()}`;
-      const estSize = 0.13 * F;
+      // A fixed founding year only when the brand gives one: a logo must not change by itself every January.
+      const est = id.founded ? `EST. ${id.founded}` : '';
+      const estSize = est ? 0.13 * F : 0;
       const width = pad * 2 + tw;
       const height = ruleY + 0.08 * F + estSize * 1.6 + pad;
       const dataFam = fam(id.typography.data.family, 'monospace');
       const body =
         `<text x="${f1(pad)}" y="${f1(baseline)}" font-family="${fam(display.family, 'serif')}" font-weight="${dw}" font-size="${F}" letter-spacing="${f1(-0.01 * F)}" fill="${c.text}"><tspan fill="${c.brand}">${esc(t[0]!)}</tspan>${esc(t.slice(1))}</text>` +
         `<rect x="${f1(pad)}" y="${f1(ruleY)}" width="${f1(tw)}" height="${f1(0.02 * F)}" fill="${c.text}"/>` +
-        `<text x="${f1(pad + tw / 2)}" y="${f1(ruleY + 0.08 * F + estSize)}" text-anchor="middle" font-family="${dataFam}" font-size="${f1(estSize)}" letter-spacing="${f1(estSize * 0.35)}" fill="${c.text}" fill-opacity="0.7">${esc(est)}</text>`;
+        (est ? `<text x="${f1(pad + tw / 2)}" y="${f1(ruleY + 0.08 * F + estSize)}" text-anchor="middle" font-family="${dataFam}" font-size="${f1(estSize)}" letter-spacing="${f1(estSize * 0.35)}" fill="${c.text}" fill-opacity="0.7">${esc(est)}</text>` : '');
       return wrap(width, height, c, body, o);
     }
     case 'stacked': {

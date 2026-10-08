@@ -1,0 +1,69 @@
+// Profile banners and the link preview. Behind everything runs a ticker of one-line ideas, each
+// ending in a spark; in front, the headline and wordmark sit inside each platform's safe area.
+const IDEAS = ["A cosy candle brand for Gen Z", "A thrift app for college students", "A dog café with a reading corner", "An Ayurvedic skincare brand",
+  "A calm-sleep tea brand", "A chai subscription for remote teams", "A podcast about money for women", "A hackathon team that builds for farmers",
+  "A sourdough-only bakery", "A budgeting app for freelancers", "A yoga studio for desk workers", "A newsletter about Indian design",
+  "A plant shop for tiny flats", "A coding club for girls", "A spice brand from my grandmother's recipes", "A travel app for solo women"];
+
+function ticker(f, size, o = {}) {
+  const gap = size * 1.9, r = rng(o.seed || 5);
+  let k = 0, row_ = 0;
+  for (let y = -size * 0.3; y < f.H; y += gap) {
+    let x = -r() * size * 12;
+    k = (row_++ * 7 + Math.floor(r() * 3)) % IDEAS.length;
+    const row = box(f, `left:${x}px;top:${y}px;white-space:nowrap;font:700 ${size}px 'Space Grotesk';letter-spacing:-0.03em;color:${o.color || "rgba(109,74,255,0.13)"}`);
+    for (let i = 0; i < 8; i++) {
+      const s = el("span", "", row, IDEAS[(k++) % IDEAS.length]);
+      endSpark(s, o.spark || "rgba(109,74,255,0.3)", 0.42);
+      const g = el("span", "", row, "   "); g.style.whiteSpace = "pre";
+    }
+  }
+}
+// content inside the safe rect [x, y, w, h]: label, headline, wordmark + url
+function bannerContent(f, safe, s, o = {}) {
+  const [x, y, w, h] = safe;
+  // soft paper glow behind the text so the ticker never fights it
+  box(f, `left:${x - s * 1.6}px;top:${y - s * 1.2}px;width:${w + s * 3.2}px;height:${h + s * 2.4}px;background:radial-gradient(closest-side,${o.bg || "#FAFAF7"} 62%,${o.bg0 || "rgba(250,250,247,0)"} 100%)`);
+  const c = box(f, `left:${x}px;top:${y}px;width:${w}px;display:flex;flex-direction:column;align-items:${o.center ? "center" : "flex-start"};text-align:${o.center ? "center" : "left"}`);
+  const lab = el("div", "", c, o.label || "AI brand studio");
+  lab.style.cssText = `font:700 ${s * 0.26}px 'Space Mono';letter-spacing:0.16em;text-transform:uppercase;color:${o.labelColor || "var(--violet-d)"};margin-bottom:${s * 0.22}px`;
+  const hl = el("div", "", c, "Your idea deserves a ");
+  hl.style.cssText = `font:700 ${s}px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:${o.ink || "var(--graphite)"}`;
+  const last = el("span", "", hl, "brand"); last.style.whiteSpace = "nowrap";
+  endSpark(last, "var(--violet)", 0.42);
+  const row = el("div", "", c);
+  row.style.cssText = `display:flex;align-items:center;gap:${s * 0.4}px;margin-top:${s * 0.36}px`;
+  const holder = el("div", "", row);
+  holder.style.cssText = `position:relative;height:${s * 0.5}px`;
+  const wm = buildWordmark(holder, s * 0.5, { color: o.ink || "var(--graphite)", spark: "var(--violet)", m: 2 });
+  const g = wm.place();
+  holder.style.width = g.width + "px";
+  const u = el("div", "", row, o.url || "Start free · gobrandtoday.com");
+  u.style.cssText = `font:700 ${s * 0.24}px 'Space Mono';letter-spacing:0.08em;text-transform:uppercase;color:${o.urlColor || "var(--violet-d)"};white-space:nowrap`;
+  if (o.extra) {
+    const e = el("div", "", c, o.extra);
+    e.style.cssText = `font:600 ${s * 0.3}px Manrope;color:var(--ink-2);margin-top:${s * 0.3}px`;
+  }
+  c.style.top = (y + (h - c.offsetHeight) / 2) + "px";
+  return c;
+}
+function banner(name, w, h, safe, s, o = {}) {
+  const f = frame(name, w, h, { scale: o.scale || 1 });
+  ticker(f, o.tick || h * 0.09, o);
+  bannerContent(f, safe, s, o);
+  if (o.guide) {   // a debug outline of the safe area, off in the real renders
+    box(f, `left:${safe[0]}px;top:${safe[1]}px;width:${safe[2]}px;height:${safe[3]}px;outline:2px dashed red`);
+  }
+  return f;
+}
+
+// LinkedIn personal: 1584 x 396. The profile photo covers the lower left (about x < 520 on desktop).
+banner("linkedin-profile-1584x396", 1584, 396, [600, 70, 900, 256], 64, { tick: 30 });
+// LinkedIn company page: 1128 x 191. The logo sits on the lower left.
+banner("linkedin-company-1128x191", 1128, 191, [330, 26, 760, 140], 40, { tick: 18, url: "gobrandtoday.com" });
+// X header: 1500 x 500. The avatar covers the lower left; phones crop top and bottom slightly.
+banner("x-header-1500x500", 1500, 500, [480, 90, 960, 320], 66, { tick: 36 });
+// YouTube channel art: 2560 x 1440. Only the centre 1546 x 423 is safe on every device.
+banner("youtube-2560x1440", 2560, 1440, [507 + 30, 508 + 16, 1546 - 60, 423 - 32], 112, { tick: 64, center: true });
+// Link preview (Open Graph) for the site and shared links: 1200 x 630.
+banner("og-1200x630", 1200, 630, [80, 80, 1040, 470], 78, { tick: 40, extra: "Name, domain, handles, logo, brand book and launch kit. In one tab." });

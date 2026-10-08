@@ -103,6 +103,9 @@ except Markdown/JSON is generated in the browser by `lib/export.ts`, so it uses 
 - **Logo/icon SVG/PNG**: `downloadLogoSVG/PNG`, `downloadIconSVG/PNG` with the Google Fonts subset embedded so files
   render anywhere. Social kit PNGs (`socialSVG` → `brandPng`) embed the fonts the same way.
 - **Tokens**: `cssTokens`, `tailwindTokens`, `jsonTokens` (`shared/tokens.ts`).
+- **Email signature**: `emailSignatureHTML(ctx, person, logoSrc)` puts the brand icon on the left. The Downloads card uses
+  a PNG data URL (`signatureLogoDataUrl`; Apple Mail and Outlook keep it) unless the founder pastes an `https://` link to a
+  hosted logo (needed for Gmail). The ZIP ships `email-signature-logo.png` next to `email-signature.html`.
 - **Mockups and toolkit**: "SVG ↓" on each item (`downloadMockup`, `downloadElement`).
 - **Markdown/JSON**: `GET /api/brands/:id/export?format=md|json` (`toMarkdown` in `services/kit.ts`).
 - **Share**: `PATCH /api/brands/:id` `{ isPublic: true }` creates `shareSlug` → `/b/[slug]` reads

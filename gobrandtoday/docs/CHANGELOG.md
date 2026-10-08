@@ -8,6 +8,22 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 _Nothing yet._
 
+## Round 9 — The hero shows the magic; currency to Settings; Identity type; signature logo · 2026-10-08
+
+- **Changed** the landing hero to show what you get instead of listing it: an example idea types itself and a Brand in a
+  Box assembles beside the composer (name and score, logo, domains with prices, handles, brand book, social kit,
+  website draft, launch copy; three examples cycle, labelled "Example"), with an 8-item "Everything inside" strip under it
+  and the same items as chips above the composer on phones (`HeroMagic.tsx`). The composer is compact in the hero.
+  `HeroChecks.tsx` is removed.
+- **Moved** the ₹/$ switch out of the header (D30). It lives in Settings (the account menu shows the current currency)
+  and on the pricing page. The guest "free rounds left" pill shows from 1280 px.
+- **Fixed** Identity: headings, labels and body text use GoBrandToday's own fonts; the brand's fonts appear only where
+  they are shown off (the promise, type specimens, the UI sample and taglines).
+- **Added** the brand icon to the email signature, an optional hosted-logo link for Gmail, a "Signature logo PNG"
+  download, and `email-signature-logo.png` in the ZIP.
+- **Added** icons to the brand page tabs (a box for Brand in a Box, also on the page's eyebrow) and fixed tab icons
+  shrinking to nothing when the tab row is tight. Settings shows the plan's name.
+
 ## Round 8 — Social media kit up front, logo repurpose tool, hero and alignment fixes · 2026-10-08
 
 - **Removed** every "Made in India" line: landing eyebrow, footer, marketing brief, the `#madeinindia` hashtag and the

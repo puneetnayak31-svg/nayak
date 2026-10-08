@@ -62,6 +62,11 @@ export function BrandGuidelines({
   const display = `'${t.display.family}', var(--font-display)`;
   const body = `'${t.body.family}', var(--font-body)`;
   const mono = `'${t.data.family}', var(--font-mono)`;
+  // The page around the specimens speaks in GoBrandToday's own type; the brand's fonts appear only where they are
+  // being shown off (the name, the promise, type specimens and voice samples).
+  const uiDisplay = 'var(--font-display)';
+  const uiBody = 'var(--font-body)';
+  const uiMono = 'var(--font-mono)';
   const dw = Math.max(...t.display.weights);
   const line = 'rgba(22,22,26,0.1)';
   const muted = '#4D4870';
@@ -77,8 +82,8 @@ export function BrandGuidelines({
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
-          <span style={{ fontFamily: mono, fontSize: 14, color: muted }}>{String(n).padStart(2, '0')}</span>
-          <h2 style={{ fontFamily: display, fontSize: 'clamp(26px,3vw,36px)', letterSpacing: '-0.03em', fontWeight: dw, margin: 0 }}>{title}</h2>
+          <span style={{ fontFamily: uiMono, fontSize: 14, color: muted }}>{String(n).padStart(2, '0')}</span>
+          <h2 style={{ fontFamily: uiDisplay, fontSize: 'clamp(26px,3vw,36px)', letterSpacing: '-0.03em', fontWeight: 700, margin: 0 }}>{title}</h2>
         </div>
         {lead && <p style={{ margin: 0, maxWidth: 720, fontSize: 16, lineHeight: 1.55, color: '#36315A' }}>{lead}</p>}
       </div>
@@ -86,7 +91,7 @@ export function BrandGuidelines({
   };
   const card: CSSProperties = { borderRadius: 20, background: '#fff', border: `1px solid ${line}`, padding: 20, display: 'flex', flexDirection: 'column', gap: 10 };
   const grid = (min: number): CSSProperties => ({ display: 'grid', gap: 18, gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${min}px), 1fr))` });
-  const label: CSSProperties = { fontFamily: mono, fontSize: 12, letterSpacing: '0.08em', color: muted, textTransform: 'uppercase' };
+  const label: CSSProperties = { fontFamily: uiMono, fontSize: 12, letterSpacing: '0.08em', color: muted, textTransform: 'uppercase' };
 
   /* -------------------------- derived visuals -------------------------- */
   const pattern = useMemo(() => {
@@ -134,14 +139,14 @@ export function BrandGuidelines({
   ];
 
   return (
-    <div className="guidelines" style={{ background: paper, color: ink, fontFamily: body, borderRadius: 28, border: `1px solid ${line}`, padding: 'clamp(20px, 5vw, 64px)', display: 'flex', flexDirection: 'column', gap: 'clamp(48px,6vw,72px)' }}>
+    <div className="guidelines" style={{ background: paper, color: ink, fontFamily: uiBody, borderRadius: 28, border: `1px solid ${line}`, padding: 'clamp(20px, 5vw, 64px)', display: 'flex', flexDirection: 'column', gap: 'clamp(48px,6vw,72px)' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, flexWrap: 'wrap', borderBottom: `1px solid ${line}`, paddingBottom: 32 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 760 }}>
           <div style={{ ...label, fontSize: 13, letterSpacing: '0.12em' }}>Brand guidelines · {styleMeta.title}</div>
-          <h1 style={{ fontFamily: display, fontWeight: dw, fontSize: 'clamp(44px,6vw,72px)', lineHeight: 1, letterSpacing: '-0.04em', margin: 0 }}>{kit.name}</h1>
+          <h1 style={{ fontFamily: uiDisplay, fontWeight: 700, fontSize: 'clamp(44px,6vw,72px)', lineHeight: 1, letterSpacing: '-0.04em', margin: 0 }}>{kit.name}</h1>
           <p style={{ fontSize: 'clamp(17px,1.8vw,21px)', lineHeight: 1.45, color: '#36315A', margin: 0 }}>{kit.identity.mark.concept}</p>
         </div>
-        <div style={{ fontFamily: mono, fontSize: 13, color: muted, textAlign: 'right', lineHeight: 1.7 }}>
+        <div style={{ fontFamily: uiMono, fontSize: 13, color: muted, textAlign: 'right', lineHeight: 1.7 }}>
           {domainText}
           <br />v{version ?? 1}.0 · {new Date().getFullYear()}
         </div>
@@ -252,11 +257,11 @@ export function BrandGuidelines({
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 28, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <KitLogo kit={kit} width={120} maxHeight={90} />
-                <span style={{ fontFamily: mono, fontSize: 12, color: muted }}>Smallest full lockup</span>
+                <span style={{ fontFamily: uiMono, fontSize: 12, color: muted }}>Smallest full lockup</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
                 <KitIcon kit={kit} size={32} />
-                <span style={{ fontFamily: mono, fontSize: 12, color: muted }}>Icon 16–32 px</span>
+                <span style={{ fontFamily: uiMono, fontSize: 12, color: muted }}>Icon 16–32 px</span>
               </div>
             </div>
             <span style={{ fontSize: 14, color: '#36315A' }}>{kit.identity.usageRules.minSize}</span>
@@ -341,10 +346,10 @@ export function BrandGuidelines({
                 aria-label={`Copy ${s.name} ${s.hex}`}
               >
                 <div className="swatch" style={{ background: s.hex, height: 140, border: s.role === 'paper' || s.role === 'tint' ? `1px solid ${line}` : undefined, display: 'flex', alignItems: 'flex-end', padding: 12 }}>
-                  <span style={{ fontFamily: mono, fontSize: 12, color: onColor(s.hex), opacity: 0.85 }}>{s.role.toUpperCase()}</span>
+                  <span style={{ fontFamily: uiMono, fontSize: 12, color: onColor(s.hex), opacity: 0.85 }}>{s.role.toUpperCase()}</span>
                 </div>
                 <b style={{ fontSize: 16.5 }}>{s.name}</b>
-                <span style={{ fontFamily: mono, fontSize: 12.5, lineHeight: 1.6, color: '#36315A' }}>
+                <span style={{ fontFamily: uiMono, fontSize: 12.5, lineHeight: 1.6, color: '#36315A' }}>
                   HEX {s.hex}
                   <br />
                   RGB {r} {g} {b}
@@ -360,7 +365,7 @@ export function BrandGuidelines({
           <span style={label}>Proportion: how much of each, roughly</span>
           <div style={{ display: 'flex', height: 44, borderRadius: 12, overflow: 'hidden', border: `1px solid ${line}` }}>
             {proportions.map(([hex, w]) => (
-              <div key={hex + w} style={{ width: `${w}%`, background: hex, display: 'flex', alignItems: 'center', paddingLeft: 10, fontFamily: mono, fontSize: 11.5, color: onColor(hex) }}>
+              <div key={hex + w} style={{ width: `${w}%`, background: hex, display: 'flex', alignItems: 'center', paddingLeft: 10, fontFamily: uiMono, fontSize: 11.5, color: onColor(hex) }}>
                 {w >= 8 ? `${w}%` : ''}
               </div>
             ))}
@@ -376,7 +381,7 @@ export function BrandGuidelines({
                   <span style={{ color: fg, fontFamily: display, fontWeight: dw, fontSize: 22 }}>Aa</span>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', color: fg, fontSize: 12 }}>
                     <b>{rating(r)}</b>
-                    <span style={{ fontFamily: mono, opacity: 0.8 }}>
+                    <span style={{ fontFamily: uiMono, opacity: 0.8 }}>
                       {r.toFixed(1)}:1 · {name}
                     </span>
                   </span>
@@ -408,7 +413,7 @@ export function BrandGuidelines({
         <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
           {scale.map((s, i) => (
             <div key={s.name} className="gl-type-row" style={{ borderTop: i ? `1px solid ${line}` : 'none' }}>
-              <span style={{ fontFamily: mono, fontSize: 12, color: muted, lineHeight: 1.5 }}>
+              <span style={{ fontFamily: uiMono, fontSize: 12, color: muted, lineHeight: 1.5 }}>
                 {s.name}
                 <br />
                 {s.size}/{Math.round(s.size * s.lh)} · {s.weight}
@@ -453,7 +458,7 @@ export function BrandGuidelines({
       <Section>
         {head('Voice & interface')}
         <div style={grid(360)}>
-          <div style={{ background: '#fff', border: `1px solid ${line}`, borderRadius: 28, padding: 'clamp(24px,3vw,40px)', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ background: '#fff', border: `1px solid ${line}`, borderRadius: 28, padding: 'clamp(24px,3vw,40px)', display: 'flex', flexDirection: 'column', gap: 18, fontFamily: body }}>
             <span style={label}>UI sample</span>
             <label style={{ fontWeight: 700, fontSize: 17 }} htmlFor={`ui-${kit.name}`}>
               {kit.website.headline}
@@ -480,7 +485,7 @@ export function BrandGuidelines({
           </div>
           <div style={{ background: ink, color: paper, borderRadius: 28, padding: 'clamp(24px,3vw,40px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
             <span style={{ ...label, color: '#B5B5BD' }}>Voice</span>
-            <div style={{ fontFamily: display, fontWeight: dw, fontSize: 26, letterSpacing: '-0.03em' }}>{kit.voice.summary}</div>
+            <div style={{ fontFamily: uiDisplay, fontWeight: 700, fontSize: 26, letterSpacing: '-0.03em' }}>{kit.voice.summary}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <span style={{ fontSize: 13.5, fontWeight: 700, color: tint }}>WE SAY</span>
               {kit.voice.say.slice(0, 3).map((s) => (
@@ -539,7 +544,7 @@ export function BrandGuidelines({
         </Section>
       )}
 
-      <footer style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, fontFamily: mono, fontSize: 12.5, color: muted, borderTop: `1px solid ${line}`, paddingTop: 22 }}>
+      <footer style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, fontFamily: uiMono, fontSize: 12.5, color: muted, borderTop: `1px solid ${line}`, paddingTop: 22 }}>
         <span>
           {kit.name} · made with gobrandtoday
           <span style={{ color: '#6D4AFF' }}>✦</span>

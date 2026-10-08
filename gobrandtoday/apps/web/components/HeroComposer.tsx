@@ -17,7 +17,7 @@ const STYLES = ['Short', 'Invented', 'Real word', 'Indian-inspired', 'Two words'
 const EXTS = ['com', 'in', 'ai', 'io', 'co'];
 
 /** The hero's two doors: "I have an idea" and "I have a name". */
-export function HeroComposer({ defaultMode = 'smart' }: { defaultMode?: string }) {
+export function HeroComposer({ defaultMode = 'smart', compact = false }: { defaultMode?: string; compact?: boolean }) {
   const router = useRouter();
   const [tab, setTab] = useState<'idea' | 'name'>('idea');
   const [idea, setIdea] = useState('');
@@ -77,7 +77,7 @@ export function HeroComposer({ defaultMode = 'smart' }: { defaultMode?: string }
 
       {tab === 'idea' ? (
         <>
-          <label className="label" htmlFor="hero-idea">
+          <label className={compact ? 'sr-only' : 'label'} htmlFor="hero-idea">
             What are you building?
           </label>
           <textarea
@@ -173,9 +173,11 @@ export function HeroComposer({ defaultMode = 'smart' }: { defaultMode?: string }
             <button type="submit" className="btn btn-primary">
               <Spark size={16} color="#fff" /> Create My Brand
             </button>
-            <a href="#how" className="btn btn-outline">
-              See how it works
-            </a>
+            {!compact && (
+              <a href="#how" className="btn btn-outline">
+                See how it works
+              </a>
+            )}
           </div>
         </>
       ) : (

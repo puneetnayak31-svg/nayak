@@ -1,11 +1,23 @@
 import Link from 'next/link';
 import { DemoPlayer } from '@/components/DemoPlayer';
 import { ExpertsBox } from '@/components/Experts';
-import { HeroChecks } from '@/components/HeroChecks';
 import { HeroComposer } from '@/components/HeroComposer';
+import { HeroMagic } from '@/components/HeroMagic';
 import { PricingCards } from '@/components/PricingCards';
 import { Mark, Spark } from '@/components/Spark';
 import { Shell } from '@/components/ui';
+
+/** The hero's "what you get" strip: every capability, one line each. */
+const CAPS = [
+  { t: 'Names', b: 'with meaning and a score out of 10', icon: 'M12 3.5l2.1 5.4 5.4 2.1-5.4 2.1L12 18.5l-2.1-5.4L4.5 11l5.4-2.1z' },
+  { t: 'Domains', b: '.com .in .ai .io .co, live with prices', icon: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM3.5 12h17M12 3.5c2.3 2.4 3.4 5.2 3.4 8.5s-1.1 6.1-3.4 8.5c-2.3-2.4-3.4-5.2-3.4-8.5s1.1-6.1 3.4-8.5z' },
+  { t: 'Social handles', b: 'your @name on 10 platforms', icon: 'M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0zm0 0v1.3a2.4 2.4 0 0 0 4.8 0V12a8.3 8.3 0 1 0-3.3 6.6' },
+  { t: 'Logo', b: '4 looks, vector, every file format', icon: 'M4 20l4.2-1 10.3-10.3a2.1 2.1 0 0 0-3-3L5.2 16 4 20zM13.8 7.2l3 3' },
+  { t: 'Brand book', b: 'colours, fonts, voice and rules', icon: 'M5 4.5h10a3 3 0 0 1 3 3v12H8a3 3 0 0 1-3-3zM5 16.5a3 3 0 0 1 3-3h10M9 8.5h5' },
+  { t: 'Mockups', b: 'your logo on your industry’s objects', icon: 'M6 8h12l-1 12H7zM9 8V6.5a3 3 0 0 1 6 0V8' },
+  { t: 'Social kit', b: 'profile picture, posts and banners', icon: 'M4 5.5h16v13H4zM4 15l4.5-4 3.5 3 2.5-2 5.5 4.5M15.5 9.2h.01' },
+  { t: 'Website & launch', b: 'a draft site, bios and launch posts', icon: 'M3.5 5.5h17v13h-17zM3.5 9h17M7 12.5h6M7 15h4' },
+];
 
 const STEPS = [
   { t: 'Describe your idea', b: 'One sentence is enough. “A cosy candle brand for Gen Z.”', shape: 'dot' },
@@ -79,20 +91,60 @@ export default function Home() {
     <Shell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* 1 — Hero */}
-      <section className="hero">
-        <div className="container hero-grid">
-          <div className="stack gap-14 fade-up hero-copy">
-            <span className="eyebrow">AI brand studio</span>
-            <h1 className="h1">
-              Your idea deserves a brand
-              <Spark size={40} className="twinkle" style={{ display: 'inline-block', marginLeft: 6, verticalAlign: 'baseline' }} />
-            </h1>
-            <p className="lead">Tell us what you’re building. We’ll find the name, check the domain and handles, score it out of 10 and build the identity to launch it.</p>
-            <HeroChecks />
+      {/* 1 — Hero: one sentence in, a whole brand out */}
+      <section className="hero hero-v2">
+        <div className="container stack gap-32">
+          <div className="hero-grid">
+            <div className="stack gap-16 fade-up hero-copy">
+              <span className="hero-pill">
+                <Spark size={12} /> AI brand studio · idea to launch-ready in minutes
+              </span>
+              <h1 className="h1">
+                Your idea deserves a{' '}
+                <span style={{ whiteSpace: 'nowrap' }}>
+                  brand
+                  <Spark size={40} className="twinkle" style={{ display: 'inline-block', marginLeft: 6, verticalAlign: 'baseline' }} />
+                </span>
+              </h1>
+              <p className="lead">
+                Type one sentence. Get a <b>name</b>, checked <b>domains</b> and <b>handles</b>, a <b>logo</b>, a <b>brand book</b> and your <b>launch kit</b>.
+              </p>
+              <ul className="hero-chips" aria-hidden="true">
+                {CAPS.map((c) => (
+                  <li key={c.t}>
+                    <svg viewBox="0 0 24 24" width={14} height={14}>
+                      <path d={c.icon} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {c.t}
+                  </li>
+                ))}
+              </ul>
+              <HeroComposer compact />
+            </div>
+            <div className="fade-up hero-stage" style={{ animationDelay: '120ms' }}>
+              <HeroMagic />
+            </div>
           </div>
-          <div className="fade-up" style={{ animationDelay: '120ms' }}>
-            <HeroComposer />
+          <div className="caps" aria-label="What you get">
+            <span className="caps-title">Everything inside, from one sentence</span>
+            <ul className="caps-list">
+              {CAPS.map((c) => (
+                <li key={c.t}>
+                  <span className="caps-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width={18} height={18}>
+                      <path d={c.icon} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span className="stack">
+                    <b>{c.t}</b>
+                    <span>{c.b}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <span className="tiny muted caps-addon">
+              Already have a logo? <Link href="/tools/logo-to-social-kit">Turn it into banners and a profile picture →</Link>
+            </span>
           </div>
         </div>
       </section>

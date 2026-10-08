@@ -295,13 +295,35 @@ export async function downloadMockup(ctx: KitContext, kind: MockupKind) {
   await downloadSVGFile(ctx.kit, `mockup-${kind}`, mockupSVG(kind, kitMockupInput(ctx.kit, ctx.domain, ctx.handle)));
 }
 
-/** An email signature as HTML (paste into Gmail or Outlook settings). */
-export function emailSignatureHTML(ctx: KitContext, person: { name: string; role: string }): string {
+/**
+ * An email signature as HTML (paste into Gmail or Outlook settings). `logoSrc`
+ * puts the brand icon on the left: a web link works everywhere; a data URL
+ * works in Apple Mail and Outlook but Gmail drops it.
+ */
+export function emailSignatureHTML(ctx: KitContext, person: { name: string; role: string }, logoSrc?: string | null): string {
   const p = ctx.kit.identity.palette;
   const brand = p.find((s) => s.role === 'brand')?.hex ?? '#6D4AFF';
   const ink = p.find((s) => s.role === 'ink')?.hex ?? '#16161A';
   const e = (s: string) => s.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]!);
-  return `<table cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;color:${ink};font-size:13px;line-height:1.5"><tr><td style="padding-right:14px;border-right:3px solid ${brand}"><b style="font-size:15px">${e(person.name)}</b><br>${e(person.role)}, ${e(ctx.kit.name)}</td><td style="padding-left:14px"><a href="https://${e(ctx.domain)}" style="color:${brand};text-decoration:none;font-weight:bold">${e(ctx.domain)}</a><br>@${e(ctx.handle)}<br><span style="color:#777">${e(ctx.kit.taglines[0] ?? '')}</span></td></tr></table>`;
+  const logo = logoSrc ? `<td style="padding-right:14px;vertical-align:middle"><img src="${e(logoSrc)}" width="56" height="56" alt="${e(ctx.kit.name)}" style="display:block;width:56px;height:56px;border-radius:12px"></td>` : '';
+  return `<table cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;color:${ink};font-size:13px;line-height:1.5"><tr>${logo}<td style="padding-right:14px;border-right:3px solid ${brand};vertical-align:middle"><b style="font-size:15px">${e(person.name)}</b><br>${e(person.role)}, ${e(ctx.kit.name)}</td><td style="padding-left:14px;vertical-align:middle"><a href="https://${e(ctx.domain)}" style="color:${brand};text-decoration:none;font-weight:bold">${e(ctx.domain)}</a><br>@${e(ctx.handle)}<br><span style="color:#777">${e(ctx.kit.taglines[0] ?? '')}</span></td></tr></table>`;
+}
+
+/** The brand icon as a small PNG (112 px, shown at 56) for the email signature. */
+export async function signatureLogoPng(kit: BrandKit): Promise<Blob | null> {
+  const out = await buildSvg(kit, 'icon', 'light');
+  return svgToPng(out.svg, out.width, out.height, 112 / out.width);
+}
+
+export async function signatureLogoDataUrl(kit: BrandKit): Promise<string | null> {
+  const blob = await signatureLogoPng(kit);
+  if (!blob) return null;
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => resolve(null);
+    r.readAsDataURL(blob);
+  });
 }
 
 /**
@@ -354,7 +376,9 @@ export async function downloadKitZip(ctx: KitContext, extra: Array<{ name: strin
     const png = await bytes(await brandPng(kit, socialSVG(k, m), a.w, a.h));
     if (png) files.push({ name: `social/${slug}-${k}-${a.w}x${a.h}.png`, data: png });
   }
-  files.push({ name: 'email-signature.html', data: emailSignatureHTML(ctx, { name: 'Your Name', role: 'Founder' }) });
+  const sigLogo = await bytes(await signatureLogoPng(kit));
+  if (sigLogo) files.push({ name: 'email-signature-logo.png', data: sigLogo });
+  files.push({ name: 'email-signature.html', data: emailSignatureHTML(ctx, { name: 'Your Name', role: 'Founder' }, sigLogo ? 'email-signature-logo.png' : null) });
 
   for (const e of extra) files.push(e);
   files.push({

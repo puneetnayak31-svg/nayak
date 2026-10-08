@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AccountMenu } from './AccountMenu';
-import { CurrencyToggle } from './CurrencyToggle';
 import { Spark, Wordmark } from './Spark';
 
 const LINKS = [
@@ -42,7 +41,6 @@ export function Nav() {
           ))}
         </nav>
         <div className="row gap-10">
-          <CurrencyToggle />
           <AccountMenu />
           <Link href="/create" className="btn btn-primary btn-sm nav-cta">
             <Spark size={14} color="#fff" />

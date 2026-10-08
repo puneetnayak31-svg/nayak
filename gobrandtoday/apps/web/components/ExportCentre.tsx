@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { SOCIAL_ASSETS, toSlug, type BrandKit, type SocialAsset } from '@gbt/shared';
 import { api, track } from '@/lib/api';
 import {
@@ -15,6 +15,8 @@ import {
   downloadTokens,
   downloadWebsiteHTML,
   emailSignatureHTML,
+  signatureLogoDataUrl,
+  signatureLogoPng,
   kitDomain,
   kitHandle,
   tokensFile,
@@ -97,7 +99,17 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
   );
 
   const [person, setPerson] = useState({ name: 'Your Name', role: 'Founder' });
-  const signature = emailSignatureHTML(ctx, person);
+  const [logoData, setLogoData] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState('');
+  useEffect(() => {
+    let live = true;
+    void signatureLogoDataUrl(kit).then((d) => live && setLogoData(d));
+    return () => {
+      live = false;
+    };
+  }, [kit]);
+  const hosted = /^https:\/\/\S+$/i.test(logoUrl.trim()) ? logoUrl.trim() : null;
+  const signature = emailSignatureHTML(ctx, person, hosted ?? logoData);
 
   return (
     <div className="stack gap-20">
@@ -196,7 +208,18 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
             <input className="input" style={{ flex: '1 1 140px', minHeight: 40 }} aria-label="Your name" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
             <input className="input" style={{ flex: '1 1 120px', minHeight: 40 }} aria-label="Your role" value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
           </div>
+          <input
+            className="input"
+            style={{ minHeight: 40 }}
+            aria-label="Logo image link for Gmail"
+            placeholder="Logo link for Gmail (optional): https://…/logo.png"
+            value={logoUrl}
+            onChange={(e) => setLogoUrl(e.target.value)}
+            inputMode="url"
+            autoCapitalize="none"
+          />
           <div className="ec-sig" dangerouslySetInnerHTML={{ __html: signature }} />
+          <span className="tiny muted">Apple Mail and Outlook keep the logo as pasted. Gmail only shows a logo from a web link: download the PNG, put it on your site, paste its link above.</span>
           <button
             type="button"
             className="ec-btn"
@@ -211,6 +234,9 @@ export function ExportCentre({ brandId, kit, domain, handle, version, onOpenWebs
           >
             <span>Copy signature</span>
           </button>
+          <B k="sig-logo" hint="112 × 112, shown at 56" onClick={() => run('sig-logo', async () => { const b = await signatureLogoPng(kit); if (b) download(`${slug}-email-logo.png`, b); })}>
+            Signature logo PNG
+          </B>
         </Group>
       </div>
       <p className="tiny muted">All fonts are free Google Fonts. Before you print packaging or file anything, run a trademark search on the name.</p>

@@ -542,7 +542,7 @@ export function DashSettings() {
         <div className="row between wrap gap-12">
           <div className="stack gap-4">
             <strong>Plan</strong>
-            <span className="small soft">{me?.plan === 'free' ? 'Spark (free)' : me?.plan}</span>
+            <span className="small soft">{me?.plan === 'free' ? 'Spark (free)' : planById(me?.plan ?? 'free').name}</span>
           </div>
           <Link href="/pricing" className="btn btn-ghost btn-sm">
             See plans

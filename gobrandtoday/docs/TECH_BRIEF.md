@@ -138,7 +138,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 |---|---|
 | `apps/web/lib/api.ts` | The only fetch wrapper: same-origin `/api`, CSRF and currency headers, `ApiError`, `track`. |
 | `apps/web/lib/providers.tsx` | `Providers` context: currency (INR default), current user, usage, system info, toasts. |
-| `apps/web/lib/export.ts` | Every download, generated in the browser with real font metrics: logo/icon SVG and PNG (embedded font subsets), `brandBookFile`/`downloadBrandBookHTML`, `websiteFile`/`downloadWebsiteHTML`, tokens, social kit PNGs, mockup and toolkit SVGs, `emailSignatureHTML`, `downloadKitZip`; repurpose tool PNGs and ZIP (`downloadRepurposed`, `downloadRepurposedZip`, `ensureFont`); `kitMockupInput`, `kitMockupKinds`; `download` (supports a host-provided saver). |
+| `apps/web/lib/export.ts` | Every download, generated in the browser with real font metrics: logo/icon SVG and PNG (embedded font subsets), `brandBookFile`/`downloadBrandBookHTML`, `websiteFile`/`downloadWebsiteHTML`, tokens, social kit PNGs, mockup and toolkit SVGs, `emailSignatureHTML` (with `signatureLogoPng`/`signatureLogoDataUrl`), `downloadKitZip`; repurpose tool PNGs and ZIP (`downloadRepurposed`, `downloadRepurposedZip`, `ensureFont`); `kitMockupInput`, `kitMockupKinds`; `download` (supports a host-provided saver). |
 | `apps/web/lib/seo-pages.ts` | `/tools/*` landing pages (generators, widget tools, and the logo repurpose pages with their `focus` asset). |
 | `apps/web/components/ui.tsx` | Shared UI: `Shell`, `SourceBadge`, `DemoBanner`, `ScorePill`, `ScoreCard`, `ScoreBreakdown`, `Risks`, `Loading`, `CopyButton`, `useGoogleFonts`, `Empty`. |
 | `apps/web/components/Nav.tsx` | Top navigation. |
@@ -146,9 +146,9 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/SignupGate.tsx` | `useSignupGate` (`guard(fn)`) and `SignupPrompt`: downloads need a free account; guests get the sign-up prompt. |
 | `apps/web/components/Footer.tsx` | Footer with product and tools links. |
 | `apps/web/components/Spark.tsx` | GoBrandToday mark, wordmark and the loader animation. |
-| `apps/web/components/CurrencyToggle.tsx` | ₹ / $ switch. |
-| `apps/web/components/HeroComposer.tsx` | Landing composer: idea or name, quick filters. |
-| `apps/web/components/HeroChecks.tsx` | Landing hero block: a name whose ending rolls through .com/.in/.ai/.io/.co, the 10 platform icons, and the ready-to-post files (profile picture, banners, guidelines) with a quiet link to the logo repurpose tool. Illustrative, claims nothing. |
+| `apps/web/components/CurrencyToggle.tsx` | ₹ / $ switch (in Settings and on the pricing page; not in the header). |
+| `apps/web/components/HeroComposer.tsx` | Landing composer: idea or name, quick filters (`compact` hides the label and the secondary button in the hero). |
+| `apps/web/components/HeroMagic.tsx` | Landing hero "magic": an idea types itself, then a Brand in a Box assembles tile by tile (name and score, logo, domains with prices, handles on 10 platforms, brand book, social kit, website draft, launch copy). Three worked examples cycle; labelled "Example", claims nothing about real availability. |
 | `apps/web/components/PlatformIcons.tsx` | Simplified icons for the 10 social platforms (`PLATFORM_ICON`, `PlatformIcon`), used in the hero and the availability panel. |
 | `apps/web/components/DemoPlayer.tsx` | Scripted, labelled example of the journey on the landing page. |
 | `apps/web/components/PricingCards.tsx` | Plan cards from `PLANS`. |
@@ -160,7 +160,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/Logo.tsx` | React wrappers for the SVG renderer: `Logo`, `LogoIcon`, `KitLogo`, `KitIcon`, `canvasMeasure`, `kitIdentity`. |
 | `apps/web/components/BrandGuidelines.tsx` | The brand book (screen and print), including the brand toolkit and industry-first applications. |
 | `apps/web/components/Mockups.tsx` | `Mockup`, `MockupGrid` (industry objects first, "show all"), `ToolkitElement`, `ToolkitGrid`, per-item SVG downloads; `SocialStrip` (the brand's profile picture, post and banners, drawn live), `PlatformStack`, `SOCIAL_PLATFORM`. |
-| `apps/web/components/ExportCentre.tsx` | Downloads tab: whole kit ZIP; social media kit (first, with platform icons); brand book PDF/HTML/Markdown/JSON; logo files; website draft; tokens; email signature. |
+| `apps/web/components/ExportCentre.tsx` | Downloads tab: whole kit ZIP; social media kit (first, with platform icons); brand book PDF/HTML/Markdown/JSON; logo files; website draft; tokens; email signature with the brand icon (optional hosted logo link for Gmail, signature logo PNG). |
 | `apps/web/components/WebsiteBuilder.tsx` | Website tab: live first-draft site (desktop/mobile preview, download, open) and "we build it for you" packages + brief (sent as an experts request, service `website`). |
 | `apps/web/components/Dashboard.tsx` | Dashboard sections: home, brands, saved, domains/watchlist, handles, assistant, settings. |
 | `apps/web/components/AuthForm.tsx` | Login/signup form. |

@@ -73,7 +73,7 @@ function UserGlyph() {
  * crown) with what's left today, and a menu with every meter.
  */
 export function AccountMenu() {
-  const { me, usage, refreshMe, toast } = useApp();
+  const { me, usage, refreshMe, toast, currency } = useApp();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -184,7 +184,7 @@ export function AccountMenu() {
               My brands
             </Link>
             <Link role="menuitem" href="/dashboard/settings" onClick={() => setOpen(false)}>
-              Settings
+              Settings <span className="tiny muted">· currency {currency === 'INR' ? '₹' : '$'}</span>
             </Link>
             {!paid && (
               <Link role="menuitem" href="/pricing" className="acct-upgrade" onClick={() => setOpen(false)}>

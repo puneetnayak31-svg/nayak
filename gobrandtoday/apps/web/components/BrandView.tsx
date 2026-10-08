@@ -183,8 +183,8 @@ export function BrandView({ id }: { id: string }) {
         {TABS.map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}>
             {t === 'Assistant' ? (
-              <span className="row gap-6">
-                <Spark size={11} /> AI Assistant
+              <span className="row gap-6 tab-with-icons">
+                <Spark size={12} /> AI Assistant
               </span>
             ) : t === 'Launch kit' ? (
               <span className="row gap-6 tab-with-icons">
@@ -192,10 +192,12 @@ export function BrandView({ id }: { id: string }) {
               </span>
             ) : t === 'Downloads' ? (
               <span className="row gap-6 tab-with-icons">
-                Downloads <span className="tab-tag">logos · banners · PDF</span>
+                <TabIcon tab={t} /> Downloads <span className="tab-tag">logos · banners · PDF</span>
               </span>
             ) : (
-              t
+              <span className="row gap-6 tab-with-icons">
+                <TabIcon tab={t} /> {t}
+              </span>
             )}
           </button>
         ))}
@@ -237,6 +239,25 @@ export function BrandView({ id }: { id: string }) {
   );
 }
 
+/** Small line icons for the brand page tabs. */
+const TAB_PATHS: Partial<Record<Tab, string>> = {
+  'Brand in a Box': 'M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5zM3.5 7.5 12 12l8.5-4.5M12 12v9',
+  Identity: 'M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.2-1-1.6-1-2.6 0-.9.7-1.5 1.7-1.5h2.2a3.8 3.8 0 0 0 3.8-3.8C20.5 6.9 16.7 3.5 12 3.5zM7.6 11.2h.01M10 7.6h.01M14.4 7.6h.01',
+  Strategy: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z',
+  Website: 'M3.5 5.5h17v13h-17zM3.5 9h17M6.5 7.2h.01M8.6 7.2h.01',
+  Downloads: 'M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14',
+};
+
+function TabIcon({ tab }: { tab: Tab }) {
+  const d = TAB_PATHS[tab];
+  if (!d) return null;
+  return (
+    <svg className="tab-icon" viewBox="0 0 24 24" width={15} height={15} aria-hidden="true">
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /* ---------------------------------- header --------------------------------- */
 
 function BrandHeader({ brand, kit, onUndo, onChange, demo, onDownloads }: { brand: BrandDTO; kit: BrandKit; onUndo: () => void; onChange: (b: BrandDTO) => void; demo: boolean; onDownloads: () => void }) {
@@ -262,7 +283,9 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo, onDownloads }: { bran
       <div className="row between wrap gap-16" style={{ alignItems: 'flex-end' }}>
         <div className="stack gap-12" style={{ minWidth: 0 }}>
           <div className="row gap-8 wrap">
-            <span className="eyebrow">Your brand in a box</span>
+            <span className="eyebrow row gap-6" style={{ alignItems: 'center' }}>
+              <TabIcon tab="Brand in a Box" /> Your brand in a box
+            </span>
             {brand.source && <SourceBadge source={brand.source} />}
             <span className="badge line">v{brand.version}</span>
             {demo && <span className="badge amber">Demo data</span>}

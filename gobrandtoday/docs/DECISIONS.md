@@ -146,3 +146,9 @@ The file is read, sampled and drawn on the client; it is never uploaded, so ther
 retention to manage, and the SVG we draw embeds it as an image (an uploaded SVG can't run script inside `<image>`).
 It is deliberately quiet: linked from the hero's small print, `/tools` and the footer, not the main nav, because the
 core journey is idea → brand. Downloads follow D27 (free account).
+
+**D30 — Currency is a setting, not a header control** · Active · Round 9
+The ₹/$ switch left the header: most visitors never change it (India gets ₹, visitors clearly outside India get $),
+and the header is the hero's frame. It stays in Settings, on the pricing page and in the account menu's hint.
+The two-currency rule (AGENTS.md invariant 8) is unchanged.
+

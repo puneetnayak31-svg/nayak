@@ -29,7 +29,12 @@ mockups, and launch content. It is priced in rupees (switchable to dollars) and 
 
 **Category:** AI brand studio (AI naming + availability checking + brand identity + launch kit).
 
-**Eyebrow / tag line on the site:** “AI brand studio” (no “Made in India” line anywhere in product or marketing copy)
+**Eyebrow / tag line on the site:** “AI brand studio · idea to launch-ready in minutes” (no “Made in India” line anywhere in product or marketing copy)
+
+**Hero (site copy):** “Your idea deserves a brand.” Lead: “Type one sentence. Get a name, checked domains and handles, a
+logo, a brand book and your launch kit.” Beside it, an example idea types itself and the Brand in a Box assembles tile by
+tile (labelled “Example”). Under it: “Everything inside, from one sentence”: Names · Domains · Social handles · Logo ·
+Brand book · Mockups · Social kit · Website & launch. Currency is no longer in the header (Settings and the pricing page).
 
 ---
 
@@ -208,7 +213,7 @@ Changes are saved as new versions, so nothing is lost.
 - Logo as **SVG** and **PNG** in light, reversed and one-colour versions (fonts embedded); app icon and **favicons**.
 - **Social kit** at each platform’s exact size: profile picture, launch post, X header, LinkedIn banner, YouTube banner.
 - **For developers:** colours and fonts as **CSS variables**, a **Tailwind** theme and **design-token JSON** (Figma via Tokens Studio).
-- **Email signature** ready to paste into Gmail or Outlook.
+- **Email signature** with the brand icon, ready to paste into Gmail or Outlook.
 - Every mockup and toolkit element as **SVG**.
 - A **public share link** for your brand.
 

@@ -42,7 +42,7 @@ Move 3 also feeds itself: ideas that come in from comments and question stickers
 
 ## A 4-week plan (about 4 feed posts and daily Stories per week)
 
-**Week 1: Launch, "one sentence → a brand"**
+**Week 1: Launch, "one sentence → a brand"** (the detailed, all-channel version is in `WEEK-1-LAUNCH.md`)
 | Day | Feed | Stories |
 |---|---|---|
 | Mon | **Announcement** video (Reel + YouTube + LinkedIn + X) | `link-start-free` |

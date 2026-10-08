@@ -1,0 +1,83 @@
+// Brand graveyard: made-up names that "died" at 2 a.m., each with an honest cause of death that maps
+// to a part of the GoBrand Score. No real brands, no claims about real domains.
+const DEAD = [
+  { name: "TheCandleAndWaxCompany", life: "2:14 – 2:16 AM", epitaph: "Too long to fit on a jar.", cause: "Memorability 2.1" },
+  { name: "Qwyzzlr", life: "2:21 – 2:22 AM", epitaph: "Nobody could say it out loud.", cause: "Pronunciation 1.4" },
+  { name: "SmartAppify", life: "2:30 – 2:31 AM", epitaph: "Sounded like everyone else.", cause: "Distinctiveness 2.6" },
+  { name: "Xorbo", life: "2:47 – 2:48 AM", epitaph: "Meant nothing to anyone.", cause: "Brandability 3.0" },
+];
+
+function fitText(t, maxW, start) {
+  let s = start;
+  t.style.fontSize = s + "px";
+  while (t.scrollWidth > t.clientWidth + 1 && s > 12) { s -= 1; t.style.fontSize = s + "px"; }
+}
+
+function stone(parent, D, x, y, w, h, rot) {
+  const s = box(parent, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:${w / 2}px ${w / 2}px 18px 18px;
+    background:linear-gradient(180deg,#3A3946 0%,#2A2933 100%);border:3px solid #4A4858;transform:rotate(${rot}deg);transform-origin:50% 100%;
+    box-shadow:inset 0 -18px 30px rgba(0,0,0,0.25),0 20px 40px rgba(0,0,0,0.35)`);
+  const k = w / 400;
+  txt(s, "RIP", `left:0;width:100%;text-align:center;top:${62 * k}px;font:700 ${30 * k}px 'Space Mono';letter-spacing:0.3em;color:#8C8A9C`);
+  const n = txt(s, D.name, `left:${24 * k}px;width:${w - 48 * k}px;text-align:center;top:${112 * k}px;font:700 ${44 * k}px 'Space Grotesk';letter-spacing:-0.03em;color:#ECEAF2;white-space:nowrap;line-height:1.1`);
+  fitText(n, w - 48 * k, 44 * k);
+  txt(s, D.life, `left:0;width:100%;text-align:center;top:${178 * k}px;font:700 ${18 * k}px 'Space Mono';letter-spacing:0.08em;color:#8C8A9C`);
+  txt(s, D.epitaph, `left:${36 * k}px;width:${w - 72 * k}px;text-align:center;top:${222 * k}px;font:500 ${25 * k}px/1.3 Manrope;color:#CFCCDA`);
+  const c = txt(s, "Cause: " + D.cause, `left:0;width:100%;top:${h - 64 * k}px;text-align:center;font:700 ${15 * k}px 'Space Mono';letter-spacing:0.08em;text-transform:uppercase;color:var(--violet-m)`);
+  return s;
+}
+
+function night(f) {
+  dotField(f, { gap: 64, seed: 91, color: "rgba(255,255,255,0.05)", spark: "rgba(185,174,255,0.22)", sparkShare: 0.035, sparkSize: 7 });
+  // the moon is our spark
+  box(f, `left:${f.W - 330}px;top:${f.H * 0.06}px;width:300px;height:300px;background:radial-gradient(closest-side,rgba(143,117,255,0.4),rgba(143,117,255,0))`);
+  const m = sparkSVG("var(--violet-s)", 2, "spark-svg");
+  m.svg.style.cssText = `position:absolute;left:${f.W - 230}px;top:${f.H * 0.06 + 100}px;width:100px;height:100px;overflow:visible`;
+  f.appendChild(m.svg);
+}
+function ground(f, y) {
+  const g = document.createElementNS(SVGNS, "svg");
+  g.setAttribute("width", f.W); g.setAttribute("height", f.H - y);
+  g.style.cssText = `position:absolute;left:0;top:${y}px`;
+  g.innerHTML = `<path d="M0 40 C ${f.W * 0.25} 0, ${f.W * 0.6} 70, ${f.W} 24 V ${f.H - y} H 0 Z" fill="#0E0E12"/>`
+    + Array.from({ length: 34 }, (_, i) => { const x = 14 + i * (f.W / 34), r = rng(i + 3)(); return `<path d="M${x} ${44 - r * 8} l6 -${14 + r * 14} l6 ${14 + r * 14}" fill="#0E0E12"/>`; }).join("");
+  f.appendChild(g);
+}
+
+// ---- post 1080 x 1350
+{
+  const f = frame("post-graveyard", 1080, 1350, { dark: true });
+  night(f);
+  txt(f, "In loving memory", "left:90px;top:96px;font:700 22px 'Space Mono';letter-spacing:0.18em;text-transform:uppercase;color:var(--violet-s)");
+  const h = txt(f, "RIP to the names that didn't make it", "left:90px;top:136px;width:760px;font:700 84px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--paper)");
+  const gy = 1010;
+  ground(f, gy - 20);
+  // back row: smaller and dimmer (further away), front row: bigger
+  [stone(f, DEAD[0], 236, 372, 300, 300, -2), stone(f, DEAD[1], 590, 352, 300, 300, 2.5)].forEach(b => b.style.filter = "brightness(0.8)");
+  stone(f, DEAD[2], 70, gy - 370 + 30, 370, 370, 1.5);
+  stone(f, DEAD[3], 640, gy - 370 + 14, 370, 370, -2);
+  // epilogue
+  txt(f, "Every name gets scored on 8 parts before you fall for it. Find one that lives.", "left:90px;top:1090px;width:640px;font:500 28px/1.35 Manrope;color:rgba(250,250,247,0.86)");
+  wordmarkAt(f, 32, 990, 1096, { color: "var(--paper)", spark: "var(--violet-s)", right: true });
+  txt(f, "gobrandtoday.com", "right:90px;top:1150px;font:700 18px 'Space Mono';letter-spacing:0.1em;color:var(--violet-m)");
+  txt(f, "Made-up names. Scores are illustrative.", "left:90px;top:1236px;font:700 15px 'Space Mono';letter-spacing:0.1em;text-transform:uppercase;color:#8C8A9C");
+}
+
+// ---- story 1080 x 1920 (top 250 and bottom 340 kept clear for the app's UI)
+{
+  const f = frame("story-graveyard", 1080, 1920, { dark: true });
+  night(f);
+  txt(f, "In loving memory", "left:90px;top:290px;font:700 24px 'Space Mono';letter-spacing:0.18em;text-transform:uppercase;color:var(--violet-s)");
+  txt(f, "RIP to the names that didn't make it", "left:90px;top:334px;width:820px;font:700 96px 'Space Grotesk';letter-spacing:-0.045em;line-height:1;color:var(--paper)");
+  const gy = 1430, sw = 420, sh = 420;
+  ground(f, gy - 30);
+  stone(f, DEAD[0], 90, gy - sh - 470, sw, sh, -2);
+  stone(f, DEAD[1], 570, gy - sh - 450, sw, sh, 2.5);
+  stone(f, DEAD[2], 70, gy - sh + 30, sw, sh, 1.5);
+  stone(f, DEAD[3], 560, gy - sh + 10, sw, sh, -2);
+  txt(f, "Which one have you named a brand? 👀 Be honest.", "left:90px;top:1444px;width:900px;font:700 34px 'Space Grotesk';letter-spacing:-0.02em;color:var(--paper)");
+  const b = box(f, "left:90px;top:1496px;display:flex;align-items:center;gap:18px");
+  const p = el("div", "pill vi", b, "Score yours free · gobrandtoday.com");
+  p.style.cssText += ";font-size:22px;padding:16px 28px";
+  txt(f, "Made-up names. Scores are illustrative.", "left:90px;top:1560px;font:700 15px 'Space Mono';letter-spacing:0.1em;text-transform:uppercase;color:#8C8A9C");
+}

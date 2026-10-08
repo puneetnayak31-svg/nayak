@@ -1,34 +1,37 @@
 'use client';
 
-import { useMemo } from 'react';
-import { MOCKUP_KINDS, MOCKUP_META, mockupSVG, toSlug, type BrandKit, type MockupKind } from '@gbt/shared';
-import { canvasMeasure, kitIdentity, useLogoFonts } from './Logo';
+import { useMemo, useState } from 'react';
+import { ELEMENT_KINDS, ELEMENT_META, MOCKUP_META, PRIMARY_MOCKUPS, elementSVG, mockupSVG, type BrandKit, type ElementKind, type MockupKind } from '@gbt/shared';
+import { downloadElement, downloadMockup, kitDomain, kitHandle, kitMockupInput, kitMockupKinds } from '@/lib/export';
+import { track } from '@/lib/api';
+import { useLogoFonts } from './Logo';
 
-/** One brand application (business card, phone, merch…) drawn with the real logo. */
-export function Mockup({ kit, kind, domain, handle, caption = true }: { kit: BrandKit; kind: MockupKind; domain?: string | null; handle?: string | null; caption?: boolean }) {
+const fill = (svg: string) => svg.replace('<svg ', '<svg style="display:block;width:100%;height:auto" ');
+
+/** One brand application (business card, phone, merch, industry objects…) drawn with the real logo. */
+export function Mockup({ kit, kind, domain, handle, caption = true, download = false }: { kit: BrandKit; kind: MockupKind; domain?: string | null; handle?: string | null; caption?: boolean; download?: boolean }) {
   const t = kit.identity.typography;
   const v = useLogoFonts([t.display, t.body, t.data]);
-  const svg = useMemo(() => {
-    const id = kitIdentity(kit);
-    return mockupSVG(kind, {
-      id,
-      measure: typeof document === 'undefined' ? undefined : canvasMeasure,
-      fonts: { display: t.display.family, body: t.body.family, data: t.data.family },
-      tagline: kit.taglines[0] ?? kit.messaging.oneLiner,
-      headline: kit.website.headline,
-      subheadline: kit.website.subheadline,
-      cta: kit.website.cta,
-      domain: domain ?? `${toSlug(kit.name)}.com`,
-      handle: handle ?? toSlug(kit.name).replace(/-/g, ''),
-    }).replace('<svg ', '<svg style="display:block;width:100%;height:auto" ');
+  const d = kitDomain(kit, domain);
+  const h = kitHandle(kit, handle);
+  const svg = useMemo(
+    () => fill(mockupSVG(kind, kitMockupInput(kit, d, h))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kit, kind, domain, handle, v]);
+    [kit, kind, d, h, v],
+  );
   return (
     <figure className="mockup">
       <div className="mockup-art" dangerouslySetInnerHTML={{ __html: svg }} />
       {caption && (
         <figcaption>
-          <b>{MOCKUP_META[kind].title}</b>
+          <span className="row between gap-8" style={{ alignItems: 'baseline' }}>
+            <b>{MOCKUP_META[kind].title}</b>
+            {download && (
+              <button type="button" className="btn-link tiny no-print" onClick={() => { track('export', { format: `mockup-${kind}` }); void downloadMockup({ kit, domain: d, handle: h }, kind); }}>
+                SVG ↓
+              </button>
+            )}
+          </span>
           <span>{MOCKUP_META[kind].note}</span>
         </figcaption>
       )}
@@ -36,11 +39,64 @@ export function Mockup({ kit, kind, domain, handle, caption = true }: { kit: Bra
   );
 }
 
-export function MockupGrid({ kit, kinds = [...MOCKUP_KINDS], domain, handle, caption }: { kit: BrandKit; kinds?: MockupKind[]; domain?: string | null; handle?: string | null; caption?: boolean }) {
+/**
+ * The brand's applications, its own industry's objects first. Shows the first
+ * nine (or `limit`) with a "show all" toggle.
+ */
+export function MockupGrid({ kit, kinds, domain, handle, caption, limit = PRIMARY_MOCKUPS, download = false }: { kit: BrandKit; kinds?: MockupKind[]; domain?: string | null; handle?: string | null; caption?: boolean; limit?: number; download?: boolean }) {
+  const all = useMemo(() => kinds ?? kitMockupKinds(kit), [kinds, kit]);
+  const [open, setOpen] = useState(false);
+  const shown = open ? all : all.slice(0, limit);
   return (
-    <div className="mockup-grid">
-      {kinds.map((k) => (
-        <Mockup key={k} kit={kit} kind={k} domain={domain} handle={handle} caption={caption} />
+    <div className="stack gap-16">
+      <div className="mockup-grid">
+        {shown.map((k) => (
+          <Mockup key={k} kit={kit} kind={k} domain={domain} handle={handle} caption={caption} download={download} />
+        ))}
+      </div>
+      {!kinds && all.length > limit && (
+        <button type="button" className="btn btn-ghost btn-sm no-print" style={{ alignSelf: 'flex-start' }} onClick={() => setOpen((o) => !o)}>
+          {open ? 'Show fewer' : `Show all ${all.length} applications`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** One brand-toolkit element (supergraphic, pattern, icons…). */
+export function ToolkitElement({ kit, kind, domain, handle }: { kit: BrandKit; kind: ElementKind; domain?: string | null; handle?: string | null }) {
+  const t = kit.identity.typography;
+  const v = useLogoFonts([t.display, t.body, t.data]);
+  const d = kitDomain(kit, domain);
+  const h = kitHandle(kit, handle);
+  const svg = useMemo(
+    () => fill(elementSVG(kind, { ...kitMockupInput(kit, d, h), personalities: kit.personality })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [kit, kind, d, h, v],
+  );
+  return (
+    <figure className="mockup">
+      <div className="mockup-art" dangerouslySetInnerHTML={{ __html: svg }} />
+      <figcaption>
+        <span className="row between gap-8" style={{ alignItems: 'baseline' }}>
+          <b>{ELEMENT_META[kind].title}</b>
+          <button type="button" className="btn-link tiny no-print" onClick={() => { track('export', { format: `element-${kind}` }); void downloadElement({ kit, domain: d, handle: h }, kind); }}>
+            SVG ↓
+          </button>
+        </span>
+        <span>{ELEMENT_META[kind].note}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+export function ToolkitGrid({ kit, domain, handle }: { kit: BrandKit; domain?: string | null; handle?: string | null }) {
+  return (
+    <div className="toolkit-grid">
+      {ELEMENT_KINDS.map((k) => (
+        <div key={k} className={`tk-${k}`}>
+          <ToolkitElement kit={kit} kind={k} domain={domain} handle={handle} />
+        </div>
       ))}
     </div>
   );

@@ -1487,6 +1487,9 @@ select.input { appearance: auto; }
 .mockup-art { border-radius: 18px; overflow: hidden; border: 1px solid rgba(22, 22, 26, 0.08); background: #fff; line-height: 0; }
 .mockup figcaption { display: grid; gap: 2px; font-size: 14px; }
 .mockup figcaption span { color: var(--text-muted); font-size: 13px; line-height: 1.45; }
+.mockup figcaption span.row { color: inherit; font-size: 14px; }
+.toolkit-grid { columns: 3 240px; column-gap: 18px; }
+.toolkit-grid > div { break-inside: avoid; margin-bottom: 22px; }
 
 /* Guidelines v2 */
 .gl-clearspace { padding: 36px; background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--cs-color) 14%, transparent) 0 6px, transparent 6px 12px); }
@@ -1545,3 +1548,30 @@ select.input { appearance: auto; }
 .av-more-row:hover { background: var(--lilac-2); }
 .av-more-row:focus-visible { outline: 2.5px solid var(--violet); outline-offset: -2px; }
 .av-dname { flex-direction: column; align-items: flex-start; gap: 2px; }
+
+/* Export centre */
+.ec-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding: clamp(22px, 4vw, 40px); border-radius: var(--r-xl); background: radial-gradient(120% 140% at 100% 0%, #2a1f66 0%, #16161a 55%); }
+.ec-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); align-items: start; }
+.ec-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.ec-btn { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; min-height: 40px; padding: 8px 13px; border-radius: var(--r-sm); border: 1.5px solid var(--line-strong); background: var(--white); color: var(--ink); font: 600 14px/1.3 var(--font-body); cursor: pointer; text-align: left; transition: border-color 0.15s var(--ease), background 0.15s var(--ease); }
+.ec-btn:hover:not(:disabled) { border-color: var(--violet); background: var(--lilac-2); }
+.ec-btn:disabled { opacity: 0.55; cursor: progress; }
+.ec-hint { font: 400 11.5px/1.3 var(--font-mono); color: var(--text-muted); }
+.ec-sig { width: 100%; padding: 14px; border: 1px dashed var(--line-strong); border-radius: var(--r-sm); background: #fff; overflow-x: auto; }
+
+/* Website builder */
+.wb-preview { border-radius: var(--r-xl); border: 1px solid var(--line); overflow: hidden; background: #fff; box-shadow: var(--shadow); }
+.wb-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f1eff5; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.wb-dots { display: flex; gap: 6px; } .wb-dots i { width: 10px; height: 10px; border-radius: 50%; background: #d9d6e3; display: block; }
+.wb-url { flex: 1 1 160px; min-width: 0; padding: 5px 12px; border-radius: 999px; background: #fff; font: 12px var(--font-mono); color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-frame-wrap { display: flex; justify-content: center; background: #e9e7ef; }
+.wb-frame { display: block; width: 100%; height: 640px; border: 0; background: #fff; transition: width 0.25s var(--ease); }
+.wb-frame.mobile { width: 390px; max-width: 100%; }
+.wb-build { display: grid; gap: 22px; padding: clamp(20px, 4vw, 40px); border-radius: var(--r-xl); background: var(--lilac-2); border: 1px solid var(--lilac); }
+.wb-packs { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.wb-pack { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: var(--r-lg); background: #fff; border: 2px solid var(--line); transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease); }
+.wb-pack:hover { border-color: var(--violet-muted); }
+.wb-pack[aria-pressed='true'] { border-color: var(--violet); box-shadow: 0 0 0 4px rgba(109, 74, 255, 0.12); }
+.wb-pack:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+.wb-pack ul { margin: 4px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text-soft); display: grid; gap: 3px; }
+.wb-price { font: 700 20px var(--font-display); letter-spacing: -0.02em; }

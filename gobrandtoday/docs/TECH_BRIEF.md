@@ -60,7 +60,14 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `packages/shared/src/brand-system.ts` | GoBrandToday's own tokens (`GBT_TOKENS`), `MARK_PATHS`, `generatePalette` (WCAG-checked), `contrast`, `onColor`, `swatch`, `FONT_TRIOS`, `googleFontsHref`. |
 | `packages/shared/src/logo.ts` | Logo constructions: `LOGO_STYLE_META`, `generateLooks`, `buildLook`, `lookToIdentity`, `logoSVG`, `iconSVG`, `Measurer`, `approxMeasure`. |
 | `packages/shared/src/symbols.ts` | Generative symbol families (`SYMBOL_FAMILIES`, `SYMBOL_META`, `familySymbol`, `drawSymbol`, `pickFamily`) and the AI-SVG sanitiser `sanitizeSymbolSvg`. |
-| `packages/shared/src/mockups.ts` | Nine application mockups as SVG (`MOCKUP_KINDS`, `mockupSVG`), `hexToCmyk`. |
+| `packages/shared/src/mockups.ts` | Application mockups as SVG: nine generic scenes (`BASE_MOCKUP_KINDS`) plus the industry scenes, `MOCKUP_KINDS`, `MOCKUP_META`, `mockupSVG`, `sceneContext` (colours, logo versions, graphic device and text helpers shared by scenes, toolkit and social kit), `hexToCmyk`. |
+| `packages/shared/src/scenes.ts` | Industry scenes (`SCENE_KINDS`, `SCENE_META`, `SCENES`): letterhead, coffee bag, neck label, hang tag, shopping bag, mithai box, candle, serum bottle, cans, bottles, menu, takeaway bag, product screen, payment card, ID badge, notebooks, water bottle, jewellery box, shipping box, stickers, channel banner, signboard, collar tag. |
+| `packages/shared/src/sectors.ts` | Business sectors (`SECTORS`, `SECTOR_META`): `detectSector` (brief words first, `~` marks weak words, then industry), `sectorForKit` (stored or inferred for older kits), `mockupsForSector`, `PRIMARY_MOCKUPS`. |
+| `packages/shared/src/elements.ts` | Brand toolkit (`ELEMENT_KINDS`, `ELEMENT_META`, `elementSVG`): supergraphic, pattern, icon set, seal, type wall, quiet/loud colour modes, photo frames, dividers, data device. Social kit (`SOCIAL_ASSETS`, `socialSVG`) and the website hero (`heroArtSVG`). |
+| `packages/shared/src/brandbook.ts` | `brandBookHTML`: the brand book as one self-contained HTML file (prints to PDF). |
+| `packages/shared/src/website.ts` | `websiteHTML` (first-draft one-page site), `WEBSITE_PACKAGES`, `WEBSITE_SECTIONS`, `WEBSITE_FEATURES`, `websiteBriefText` for the "we build it for you" request. |
+| `packages/shared/src/tokens.ts` | Design tokens: `cssTokens`, `tailwindTokens`, `jsonTokens` (W3C DTCG), `kitTokens`. |
+| `packages/shared/src/zip.ts` | Dependency-free stored ZIP writer (`makeZip`, `crc32`) for the whole-kit download. |
 | `packages/shared/src/experts.ts` | Bespoke services catalogue (`EXPERT_SERVICES`, `rankExperts`), `ExpertRequestSchema`, budgets and timelines. |
 
 ### `apps/api/src` (Fastify)
@@ -128,7 +135,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 |---|---|
 | `apps/web/lib/api.ts` | The only fetch wrapper: same-origin `/api`, CSRF and currency headers, `ApiError`, `track`. |
 | `apps/web/lib/providers.tsx` | `Providers` context: currency (INR default), current user, usage, system info, toasts. |
-| `apps/web/lib/export.ts` | Logo/icon SVG and PNG export with embedded font subsets; `download` (supports a host-provided saver). |
+| `apps/web/lib/export.ts` | Every download, generated in the browser with real font metrics: logo/icon SVG and PNG (embedded font subsets), `brandBookFile`/`downloadBrandBookHTML`, `websiteFile`/`downloadWebsiteHTML`, tokens, social kit PNGs, mockup and toolkit SVGs, `emailSignatureHTML`, `downloadKitZip`; `kitMockupInput`, `kitMockupKinds`; `download` (supports a host-provided saver). |
 | `apps/web/lib/seo-pages.ts` | `/tools/*` landing pages (generators and widget tools). |
 | `apps/web/components/ui.tsx` | Shared UI: `Shell`, `SourceBadge`, `DemoBanner`, `ScorePill`, `ScoreCard`, `ScoreBreakdown`, `Risks`, `Loading`, `CopyButton`, `useGoogleFonts`, `Empty`. |
 | `apps/web/components/Nav.tsx` | Top navigation. |
@@ -141,11 +148,13 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `apps/web/components/Studio.tsx` | Naming studio: brief, rounds, refinement, name cards, detail modal, shortlist, compare. |
 | `apps/web/components/NameCheck.tsx` | "I have a name" page body. |
 | `apps/web/components/Availability.tsx` | One availability vocabulary: `CoreTag`, `DomainList`, `DomainChips`, `DomainPrice`, `HandleList`, `HandleIdeas`, `AvailabilityPanel`. |
-| `apps/web/components/BrandView.tsx` | Brand page: polling while generating, look picker gate, tabs, export menu, assistant panel, imagery trigger. |
+| `apps/web/components/BrandView.tsx` | Brand page: polling while generating, look picker gate, tabs (Brand in a Box, Identity, Strategy, Launch kit, Website, Downloads, Assistant), assistant panel, imagery trigger. |
 | `apps/web/components/LookPicker.tsx` | Four looks side by side; choose or ask for more. |
 | `apps/web/components/Logo.tsx` | React wrappers for the SVG renderer: `Logo`, `LogoIcon`, `KitLogo`, `KitIcon`, `canvasMeasure`, `kitIdentity`. |
-| `apps/web/components/BrandGuidelines.tsx` | The brand book (screen and print). |
-| `apps/web/components/Mockups.tsx` | `Mockup`, `MockupGrid`. |
+| `apps/web/components/BrandGuidelines.tsx` | The brand book (screen and print), including the brand toolkit and industry-first applications. |
+| `apps/web/components/Mockups.tsx` | `Mockup`, `MockupGrid` (industry objects first, "show all"), `ToolkitElement`, `ToolkitGrid`, per-item SVG downloads. |
+| `apps/web/components/ExportCentre.tsx` | Downloads tab: whole kit ZIP; brand book PDF/HTML/Markdown/JSON; logo files; website draft; tokens; social kit; email signature. |
+| `apps/web/components/WebsiteBuilder.tsx` | Website tab: live first-draft site (desktop/mobile preview, download, open) and "we build it for you" packages + brief (sent as an experts request, service `website`). |
 | `apps/web/components/Dashboard.tsx` | Dashboard sections: home, brands, saved, domains/watchlist, handles, assistant, settings. |
 | `apps/web/components/AuthForm.tsx` | Login/signup form. |
 | `apps/web/components/Experts.tsx` | `ExpertsBox`, `ExpertRequestForm`, request modal. |
@@ -168,7 +177,7 @@ Browser ──► apps/web (Next.js) ──/api/* rewrite──► apps/api (Fas
 | `/` | Landing: composer, how it works, demo, pricing, experts, FAQ. |
 | `/create` | Naming studio. |
 | `/name/[name]` | Instant check for a name the user already has. |
-| `/brand/[id]` | Brand in a Box and tabs (Identity, Strategy, Launch kit, Website, Assistant). |
+| `/brand/[id]` | Brand in a Box and tabs (Identity, Strategy, Launch kit, Website, Downloads, Assistant). |
 | `/brand/[id]/guidelines` | Print-optimised guidelines (PDF via the browser). |
 | `/b/[slug]` | Public read-only brand. |
 | `/pricing` | Plans and experts. |
@@ -213,7 +222,7 @@ applied migration; generate a new one.
 - **`SocialResult`**: `status` (`available | taken | unknown | invalid | manual`), `method` (`official_api | public_endpoint | profile_probe | manual | demo`), `verified`, `url`.
 - **`GoBrandScore`**: `overall100`, `overall` (/10), `provisional`, 8 `components`, `seo`, `risks`.
   Weights (`SCORE_WEIGHTS`): brandability 18, memorability 15, pronunciation 13, distinctiveness 12, global 9, SEO 11, domain 13, social 9.
-- **`BrandKit`** (`BrandKitSchema`): strategy fields, voice, taglines, messaging, `identity`, `launch`, `website`.
+- **`BrandKit`** (`BrandKitSchema`): `sector?` (see section 6), strategy fields, voice, taglines, messaging, `identity`, `launch`, `website`.
   `identity` carries the chosen look (`style`, `seed`, `symbol?`, `case?`, palette, typography, mark) plus `looks[]`, `lookChosen`, `designSystem`, `usageRules`, and optional `essence`, `moodboard`, `concepts`. `motion` is legacy (optional, no longer generated or shown).
 - **`Look`**: `style` (one of `LOGO_STYLES`), `hue`, `fontTrio`, `markShape`, `seed`, `palette`, `symbol?` (`family` | sanitised `svg` | `imageUrl`), `case?`, `origin` (`ai` | `generative`).
 
@@ -230,6 +239,16 @@ applied migration; generate a new one.
   (`services/kit.ts`) runs `sanitizeSymbolSvg()` and stores it with palette-role colours.
 - **Rendering**: `logoSVG`/`iconSVG` return SVG strings; the browser passes `canvasMeasure` for exact text widths.
   Mockups nest the same SVGs.
+- **Graphic device**: the symbol (or, without one, the mark) drawn in one colour by `sceneContext().device`. Scenes,
+  the toolkit, the social kit and the website hero crop it big ("supergraphic") instead of repeating it small.
+  Rules and sources: [`DESIGN_RESEARCH.md`](DESIGN_RESEARCH.md).
+- **Industry scenes (`SCENE_KINDS`)**: `letterhead`, `coffeebag`, `necklabel`, `hangtag`, `shoppingbag`, `sweetbox`,
+  `candle`, `dropper`, `can`, `bottle`, `menu`, `deliverybag`, `dashboard`, `paycard`, `badge`, `notebook`,
+  `waterbottle`, `jewelbox`, `mailer`, `stickers`, `banner`, `signboard`, `pettag`.
+- **Sectors (`SECTORS`)**: `coffee`, `fashion`, `sweets`, `bakery`, `candles`, `beauty`, `beverage`, `food`,
+  `jewellery`, `pet`, `fitness`, `education`, `health`, `fintech`, `tech`, `creator`, `realestate`, `services`,
+  `retail`, `general`. `assembleKit` stores `kit.sector`; the brand book shows that sector's objects first (9 of 32).
+- **Toolkit (`ELEMENT_KINDS`)**: `poster`, `pattern`, `icons`, `seal`, `typewall`, `colourmodes`, `frames`, `dividers`, `progress`.
 
 ## 7. Configuration
 
@@ -247,6 +266,7 @@ Run modes: offline (no keys), demo (`DEMO_MODE=true`, labelled sample data), liv
 | `packages/shared/test/logo.test.ts` | Look generation rules, every style renders in light/dark/mono + icon. |
 | `packages/shared/test/symbols.test.ts` | Every symbol family, the SVG sanitiser (script/handler/href stripping), mockups, CMYK. |
 | `packages/shared/test/domain-pricing.test.ts` | Price estimates, `displayPrice`, Core 5 verdicts (demo never counts). |
+| `packages/shared/test/sectors.test.ts` | Sector detection (specific beats generic words, industry fallback), industry-first mockup order, every toolkit element and social asset renders, ZIP structure and CRC-32, website brief text. |
 | `apps/api/test/domain.test.ts` | RDAP (404/200, DNS cross-check, failure → unknown), registrar adapters, mock. |
 | `apps/api/test/social.test.ts` | Social checkers. |
 | `apps/api/test/ai.test.ts` | Offline name generator (count, constraints, Indian roots), strict JSON-schema conversion, offline kit → full kit, four looks, assistant changes. |

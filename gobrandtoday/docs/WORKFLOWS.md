@@ -86,9 +86,19 @@ stored as-is; a bytes result is stored in `brand_assets` and served by `GET /api
 
 ### A8. Export and share
 
-- **PDF**: `/brand/[id]/guidelines?print=1` opens the print-optimised `BrandGuidelines`; the browser prints to PDF.
-- **Logo/icon SVG/PNG**: client-side in `lib/export.ts` (`downloadLogoSVG/PNG`, `downloadIconSVG/PNG`) with the
-  Google Fonts subset embedded so files render anywhere.
+All downloads live in the **Downloads** tab (`ExportCentre.tsx`; the header's "Download kit" button opens it). Everything
+except Markdown/JSON is generated in the browser by `lib/export.ts`, so it uses real font metrics and works in the preview.
+
+- **Whole kit (ZIP)**: `downloadKitZip` → logos (SVG + PNG ×3 variants), icon + favicons, `brandBookFile` (HTML),
+  `websiteFile`, tokens, the first 9 industry mockups, the toolkit, social PNGs, email signature, Markdown/JSON
+  (fetched from the API) and a README → `makeZip` (stored, no compression).
+- **PDF**: `/brand/[id]/guidelines?print=1` opens the print-optimised `BrandGuidelines`; the browser prints to PDF
+  (not in the preview; the HTML brand book prints to PDF too).
+- **Brand book HTML**: `brandBookHTML` (`shared/brandbook.ts`) with logos, mockups and toolkit as inline SVG.
+- **Logo/icon SVG/PNG**: `downloadLogoSVG/PNG`, `downloadIconSVG/PNG` with the Google Fonts subset embedded so files
+  render anywhere. Social kit PNGs (`socialSVG` → `brandPng`) embed the fonts the same way.
+- **Tokens**: `cssTokens`, `tailwindTokens`, `jsonTokens` (`shared/tokens.ts`).
+- **Mockups and toolkit**: "SVG ↓" on each item (`downloadMockup`, `downloadElement`).
 - **Markdown/JSON**: `GET /api/brands/:id/export?format=md|json` (`toMarkdown` in `services/kit.ts`).
 - **Share**: `PATCH /api/brands/:id` `{ isPublic: true }` creates `shareSlug` → `/b/[slug]` reads
   `GET /api/public/brands/:slug`.
@@ -104,6 +114,19 @@ Guests are created lazily (A1). `POST /api/auth/signup` upgrades the guest row i
 `ExpertsBox` (Brand in a Box, dashboard, landing, pricing, tools) or `/experts` → `ExpertRequestForm` →
 `POST /api/experts/requests` (rate limit 5/hour; validated by `ExpertRequestSchema`; brand linked only if owned) →
 `expert_requests` row → optional POST to `EXPERTS_WEBHOOK_URL`. Fulfilment (scope, quote, payment) happens off-platform.
+
+### A10b. Website draft and "we build it for you"
+
+Website tab → `WebsiteBuilder` renders `websiteFile(kit)` into a sandboxed `<iframe srcDoc>` (desktop/mobile toggle),
+"Download HTML" saves the same file. Below it, the founder picks a `WEBSITE_PACKAGES` entry and fills a short brief →
+`POST /api/experts/requests` with `service: 'website'`, `budget` = package label, `details` = `websiteBriefText(...)`
+→ same intake as A10 (row in `expert_requests`, optional webhook). No payment is taken; fulfilment is manual.
+
+### A10c. Industry objects in the brand book
+
+`assembleKit` stores `kit.sector = detectSector(brief)`. The brand book and Brand in a Box call `kitMockupKinds(kit)`
+(`sectorForKit` → `mockupsForSector`), so a mithai shop sees a mithai box first and a clothing label a neck label.
+Kits made before sectors existed get a sector inferred from their own positioning and story.
 
 ### A11. Free tools
 
@@ -191,6 +214,17 @@ Every env var: `config/env.ts` + `.env.example` (checked by `docs:check`).
 - **Symbol family**: add to `SYMBOL_FAMILIES` and `SYMBOL_META`, plus a draw function in `DRAW` (`shared/symbols.ts`), in a
   100×100 box using only `SymbolColors`. Tests iterate all families.
 - List the new id in `docs/TECH_BRIEF.md` section 6 (checked by `docs:check`).
+
+### B8b. Add an industry scene, sector or toolkit element
+
+- **Scene**: add the id to `SCENE_KINDS`, a title/note to `SCENE_META` and a draw function to `SCENES`
+  (`shared/scenes.ts`) using only the `SceneCtx` it receives (colours, `logoOn`, `device`, `place`, `fit`). Put the logo
+  where the object's maker would; crop the device big with `superGraphic`. `symbols.test.ts` renders every kind.
+- **Sector**: add to `SECTORS` and `SECTOR_META` (`shared/sectors.ts`) with specific words (generic ones prefixed `~`),
+  industries and 3–5 mockups; add a case to `sectors.test.ts`.
+- **Toolkit element**: add to `ELEMENT_KINDS`, `ELEMENT_META` and `BUILD` (`shared/elements.ts`).
+- List the new id in `docs/TECH_BRIEF.md` section 6 (checked by `docs:check`). Render a contact sheet and look at it
+  for two or three logo styles before committing (see the design rules in `DESIGN_RESEARCH.md`).
 
 ### B9. Add a page
 

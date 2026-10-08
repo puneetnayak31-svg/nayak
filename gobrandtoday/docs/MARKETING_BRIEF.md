@@ -171,10 +171,19 @@ A studio-style brand book, generated for your brand:
 - **Colour:** 5 colour roles with HEX, RGB and CMYK values, usage proportions and **contrast-checked (WCAG) pairings**.
 - **Typography:** a Google Fonts trio (display, body, data) with a type scale.
 - **Pattern** made from the brand’s shapes.
+- **Brand toolkit:** the design elements a studio hands over beside the logo, all drawn from the brand’s one graphic
+  device: a supergraphic poster, a pattern, an 8-icon set in the logo’s style, a round seal/sticker, a type wall,
+  quiet and loud colour modes, photo frames, dividers and a data/progress ring. Each downloads as SVG.
 - **Imagery direction**, with an AI **moodboard** and **concept sketches** (generated with a free image model).
 - **Voice and UI:** tone of voice, do’s and don’ts, sample UI.
 - **Taglines:** 6–8 options.
-- **9 mockups:** business cards, app icon, social post, website, T-shirt, tote bag, coffee cup, shop sign, packaging.
+- **Mockups that fit the business (32 in total):** GoBrandToday works out what kind of business it is from the
+  idea and shows the objects that business actually uses first, 9 at a time. A clothing label sees a woven neck label,
+  hang tag and shopping bag; a mithai shop sees a mithai box, takeaway bag and shop sign; a coffee brand sees a cup,
+  coffee bag and menu; skincare sees a serum bottle and carton; a drinks brand sees cans and bottles; a SaaS or AI
+  product sees its product screen; fintech sees a payment card. Also: letterhead, candle jar, ID badge, notebooks,
+  water bottle, jewellery box, shipping box, sticker sheet, channel banner, signboard, pet collar tag, business cards,
+  app icon, social post, website, T-shirt, tote, packaging.
 - **Other looks**, so you can switch direction at any time. Every change is versioned, so you can undo.
 
 ### 5.9 Launch kit and website copy
@@ -190,11 +199,26 @@ Chat to edit the brand. Example prompts shown in the product:
 “Create a launch campaign” · “Give me a website homepage”.
 Changes are saved as new versions, so nothing is lost.
 
-### 5.11 Exports and sharing
-- Brand book as **PDF**.
-- Logo and icon as **SVG** and **PNG** (fonts embedded).
-- **Markdown** and **JSON** (handy for developers and AI tools).
+### 5.11 Downloads and sharing (one “Downloads” tab)
+- **Everything in one ZIP** (about 45 files, with a README).
+- Brand book as **PDF**, as a **web page (.html)** that works offline and prints to PDF, as **Markdown** and as **JSON**.
+- Logo as **SVG** and **PNG** in light, reversed and one-colour versions (fonts embedded); app icon and **favicons**.
+- **Social kit** at each platform’s exact size: profile picture, launch post, X header, LinkedIn banner, YouTube banner.
+- **For developers:** colours and fonts as **CSS variables**, a **Tailwind** theme and **design-token JSON** (Figma via Tokens Studio).
+- **Email signature** ready to paste into Gmail or Outlook.
+- Every mockup and toolkit element as **SVG**.
 - A **public share link** for your brand.
+
+### 5.11b Your website: free first draft, or we build it
+- **First-draft website, free:** a one-page site generated from the brand (logo, colours, fonts, headline, features,
+  benefits, story, FAQ, SEO title and description). Preview it on desktop and mobile, download it as one HTML file.
+- **“Want it live? We’ll build it for you.”** Pick a package, tell us what to show (products, services, gallery, team,
+  testimonials, blog…) and what it should do (contact form, WhatsApp, booking, payments, Hindi + English, store…):
+  - Launch page: from ₹9,999 / $199, 5–7 days (the draft, polished and live on your domain).
+  - Business website: from ₹34,999 / $699, 2–3 weeks (up to 6 pages, a CMS you can edit).
+  - Online store: from ₹64,999 / $1,299, 3–5 weeks (Shopify or WooCommerce, UPI and cards, GST invoices).
+  - Something custom: quoted.
+  - A written scope and fixed quote within one working day; no payment to send the brief. (See guardrail 13.8.)
 
 ### 5.12 Dashboard and accounts
 - Dashboard of your brands and shortlists.
@@ -212,7 +236,7 @@ Box title on the site: **“Need it crafted by hand? Our experts go bespoke.”*
 |---|---|---|
 | Bespoke logo & identity | ₹24,999 / $499 | 2–3 weeks |
 | Naming & brand strategy workshop | ₹14,999 / $299 | 1 week |
-| Website design & build | ₹39,999 / $799 | 3–4 weeks |
+| Website design & build | ₹9,999 / $199 (launch page; business site from ₹34,999 / $699; store from ₹64,999 / $1,299) | 5 days – 5 weeks |
 | Sonic branding & music | ₹19,999 / $399 | 2–3 weeks |
 | Packaging & label | ₹19,999 / $399 | 2–4 weeks |
 | Launch video & motion | ₹29,999 / $599 | 2–3 weeks |
@@ -296,8 +320,10 @@ See guardrails 13.4–13.6 before promoting paid plans.
 - 10 domain endings and 10 social platforms checked from one screen.
 - A score out of 10 from 8 transparent components.
 - 4 looks per brand, from 10 logo constructions and 13 symbol families.
-- 9 mockups in every brand book.
-- 5 export formats: PDF, PNG, SVG, JSON and Markdown.
+- 32 mockups, with the 9 that fit the business shown first (neck label for clothing, mithai box for sweets, serum bottle for skincare…).
+- A 9-piece brand toolkit (supergraphic, pattern, icon set, seal…) drawn from the logo.
+- One-click ZIP of the whole kit, plus PDF, HTML, PNG, SVG, JSON, Markdown, CSS/Tailwind tokens and platform-sized social images.
+- A free first-draft website for every brand.
 - Free plan, no card needed to start (payments aren’t live yet; see 13.4).
 
 **Suggested message angles:**
@@ -341,7 +367,7 @@ A second example used in the product copy is “A cosy candle brand for Gen Z”
 - **What is the GoBrand Score?** A transparent 0–10 score combining brandability, memorability, pronunciation,
   distinctiveness, global usability, SEO potential, and domain and social availability. Every component is
   explained. It’s guidance, not a guarantee.
-- **Do I own what I create?** Yes. Export your Brand Bible as PDF, PNG, SVG, JSON or Markdown. Fonts are free
+- **Do I own what I create?** Yes. Download everything as one ZIP, or your Brand Bible as PDF, HTML, Markdown or JSON, and your logo as SVG or PNG. Fonts are free
   Google Fonts. Before you invest, run a proper trademark search; we flag obvious risks, but it isn’t legal clearance.
 - **Is it built for India?** India-first: ₹ pricing, .in domains, Indian-language name roots, meaning checks
   and Indian registrar storefronts. Switch to $ any time.
@@ -365,6 +391,10 @@ Product screenshots in `docs/screenshots/` (attach the ones you need to the othe
 | [`09-availability.png`](screenshots/09-availability.png) | Domain and handle availability panel |
 | [`10-name-detail.png`](screenshots/10-name-detail.png) | Name detail with score breakdown |
 | [`11-experts.png`](screenshots/11-experts.png) | Experts services |
+| [`12-industry-mockups.png`](screenshots/12-industry-mockups.png) | Mockups chosen for the business (a mithai shop: mithai box, takeaway bag, shop sign) |
+| [`13-brand-toolkit.png`](screenshots/13-brand-toolkit.png) | Brand toolkit: supergraphic, pattern, icons, seal, type wall and more |
+| [`14-downloads.png`](screenshots/14-downloads.png) | Downloads tab: whole-kit ZIP, brand book, logo files, tokens, social kit |
+| [`15-website-builder.png`](screenshots/15-website-builder.png) | First-draft website and "we build it for you" packages |
 
 Visual style guidance: light Paper backgrounds with Graphite text and Magic Violet accents; generous white
 space; rounded cards; small sparks ✦ as accents (sparingly); Space Mono for numbers such as scores and prices.
@@ -389,7 +419,8 @@ These keep the marketing truthful. The product is built around honesty, so the m
 7. **Logos are vector constructions plus AI-drawn symbols, not AI-generated images.** Image AI is used only for
    moodboards and concept sketches. Don’t claim “AI paints your logo”.
 8. **Experts are fulfilled manually.** Requests are reviewed by the team. Confirm the expert network and capacity
-   before advertising specific services, turnaround times or guarantees.
+   before advertising specific services, turnaround times or guarantees. This includes the website packages
+   (“we build it for you”): the free first draft is automatic; the build is done by people.
 9. **Demo numbers are illustrative.** Kettlo, its score and its availability are example data. Label them
    “example” if shown, and don’t present them as a real customer.
 10. **No invented social proof:** no fake testimonials, user counts, ratings, press logos or customer brands.
@@ -399,6 +430,9 @@ These keep the marketing truthful. The product is built around honesty, so the m
     story describes generic tasks, not companies.
 13. **“AI”**: the app has an offline fallback generator when AI isn’t available, and labels it. Say “AI-powered”,
     not “every result is written by AI”.
+14. **Mockups are illustrations.** They show the real logo, colours and type on drawn objects (flat vector scenes, not
+    photos or print proofs). Say “see your brand on a mithai box”, not “print-ready packaging”. The website draft is a
+    starting point, not a finished, hosted site.
 
 ---
 

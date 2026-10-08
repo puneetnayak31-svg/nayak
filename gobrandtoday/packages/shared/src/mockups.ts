@@ -1,17 +1,22 @@
 /**
  * Brand applications ("mockups"): the real logo placed on everyday objects —
  * a business card, a phone, a social post, a website, merch, a cup, a shop
- * sign and packaging. Each scene is a self-contained SVG built from the same
- * logo renderer, so what you see is exactly what you'd export.
+ * sign and packaging, plus industry objects (scenes.ts) such as a woven neck
+ * label, a mithai box or a serum bottle. Each scene is a self-contained SVG
+ * built from the same logo renderer, so what you see is exactly what you'd
+ * export. sectors.ts decides which ones a brand sees first.
  */
-import { onColor, swatch } from './brand-system';
+import { MARK_PATHS, onColor, swatch } from './brand-system';
 import { approxMeasure, iconSVG, logoSVG, type LogoIdentity, type Measurer } from './logo';
+import { SCENES, SCENE_KINDS, SCENE_META, type SceneCtx, type SceneKind } from './scenes';
 import { drawSymbol } from './symbols';
+import { hash32 } from './text';
 
-export const MOCKUP_KINDS = ['card', 'phone', 'social', 'web', 'tshirt', 'tote', 'cup', 'storefront', 'packaging'] as const;
+export const BASE_MOCKUP_KINDS = ['card', 'phone', 'social', 'web', 'tshirt', 'tote', 'cup', 'storefront', 'packaging'] as const;
+export const MOCKUP_KINDS = [...BASE_MOCKUP_KINDS, ...SCENE_KINDS] as const;
 export type MockupKind = (typeof MOCKUP_KINDS)[number];
 
-export const MOCKUP_META: Record<MockupKind, { title: string; note: string }> = {
+const BASE_META: Record<(typeof BASE_MOCKUP_KINDS)[number], { title: string; note: string }> = {
   card: { title: 'Business cards', note: 'Reversed logo on the front, contact details in the data font on the back.' },
   phone: { title: 'App icon', note: 'The icon has to work at 60px among other apps. Keep it bold and simple.' },
   social: { title: 'Social post', note: 'One idea, one line of display type, the logo as a quiet sign-off.' },
@@ -22,6 +27,10 @@ export const MOCKUP_META: Record<MockupKind, { title: string; note: string }> = 
   storefront: { title: 'Shop sign', note: 'Reversed logo on the fascia; brand colours on the awning.' },
   packaging: { title: 'Packaging', note: 'Lead with the logo, then the product; tint for the side panels.' },
 };
+
+export const MOCKUP_META: Record<MockupKind, { title: string; note: string }> = { ...BASE_META, ...SCENE_META };
+
+const isScene = (k: MockupKind): k is SceneKind => (SCENE_KINDS as readonly string[]).includes(k);
 
 export interface MockupInput {
   id: LogoIdentity;
@@ -65,10 +74,15 @@ function wrapTo(text: string, measure: Measurer, font: { family: string; weight:
   return lines;
 }
 
-const shadow = (kind: string) =>
-  `<defs><filter id="sh-${kind}" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#16161A" flood-opacity="0.18"/></filter></defs>`;
+const shadow = (id: string) =>
+  `<defs><filter id="sh-${id}" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#16161A" flood-opacity="0.18"/></filter></defs>`;
 
-export function mockupSVG(kind: MockupKind, m: MockupInput): string {
+/**
+ * Everything a scene or toolkit element needs, built once from the identity:
+ * colours, the logo versions, the graphic device and text helpers. `key`
+ * makes SVG ids unique when several drawings share one page.
+ */
+export function sceneContext(m: MockupInput, key: string, size: { W: number; H: number } = { W: 800, H: 600 }): SceneCtx {
   const p = m.id.palette;
   const ink = swatch(p, 'ink');
   const brand = swatch(p, 'brand');
@@ -79,22 +93,65 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
   const dark = logoSVG(m.id, { variant: 'dark', measure: m.measure }).svg;
   const mono = logoSVG(m.id, { variant: 'mono', measure: m.measure }).svg;
   const icon = iconSVG(m.id, { measure: m.measure }).svg;
-  const D = `font-family="'${m.fonts.display}', sans-serif"`;
-  const B = `font-family="'${m.fonts.body}', sans-serif"`;
-  const M = `font-family="'${m.fonts.data}', monospace"`;
-  const symbolOr = (x: number, y: number, s: number, color: string) =>
-    m.id.symbol ? drawSymbol(m.id.symbol, `${m.id.name}:${m.id.seed}`, { brand: color, accent: color, ink: color, tint: color, paper: 'none' }, x, y, s) : place(icon, x, y, s, s);
-  const W = 800;
-  const H = 600;
   const meas = m.measure ?? approxMeasure;
   const dw = Math.max(...m.id.typography.display.weights);
-  const fitSize = (text: string, maxWidth: number, maxLines: number, start: number, min: number) => {
-    for (let size = start; size >= min; size -= 2) {
-      const lines = wrapTo(text, meas, { family: m.fonts.display, weight: dw, size }, maxWidth, 99);
-      if (lines.length <= maxLines) return { size, lines };
-    }
-    return { size: min, lines: wrapTo(text, meas, { family: m.fonts.display, weight: dw, size: min }, maxWidth, maxLines) };
+  const darkNoBg = dark.replace(/<rect width="100%" height="100%"[^>]*\/>/, '');
+  const inkRe = new RegExp(ink.replace('#', '#?'), 'gi');
+  // Mono knocks shapes out in white; on a coloured surface they take the surface colour instead.
+  const monoIn = (color: string, surface = '#FFFFFF') => mono.replace(/#FFFFFF/gi, '\u0000').replace(inkRe, color).replace(/\u0000/g, surface);
+  return {
+    ...size,
+    uid: `${key}-${(hash32(`${m.id.name}:${m.id.seed}:${brand}:${m.id.style}`) >>> 0).toString(36)}`,
+    ink,
+    brand,
+    accent,
+    tint,
+    paper,
+    light,
+    darkNoBg,
+    icon,
+    monoIn,
+    logoOn: (fill) => (fill === ink ? darkNoBg : fill === paper || fill === tint || fill.toUpperCase() === '#FFFFFF' ? light : monoIn(onColor(fill), fill)),
+    on: onColor,
+    device: (x, y, s, color) => {
+      if (m.id.symbol) return drawSymbol(m.id.symbol, `${m.id.name}:${m.id.seed}`, { brand: color, accent: color, ink: color, tint: color, paper: 'none' }, x, y, s);
+      const mk = MARK_PATHS[m.id.mark] ?? MARK_PATHS.spark;
+      return `<path d="${mk.d}" fill="${color}"${mk.evenOdd ? ' fill-rule="evenodd"' : ''} transform="translate(${f1(x)} ${f1(y)}) scale(${(s / 64).toFixed(4)})"/>`;
+    },
+    place,
+    fit: (text, maxWidth, maxLines, start, min) => {
+      for (let sz = start; sz >= min; sz -= 2) {
+        const lines = wrapTo(text, meas, { family: m.fonts.display, weight: dw, size: sz }, maxWidth, 99);
+        if (lines.length <= maxLines) return { size: sz, lines };
+      }
+      return { size: min, lines: wrapTo(text, meas, { family: m.fonts.display, weight: dw, size: min }, maxWidth, maxLines) };
+    },
+    esc,
+    D: `font-family="'${m.fonts.display}', sans-serif"`,
+    B: `font-family="'${m.fonts.body}', sans-serif"`,
+    M: `font-family="'${m.fonts.data}', monospace"`,
+    dw,
+    name: m.id.name,
+    tagline: m.tagline,
+    domain: m.domain,
+    handle: m.handle,
+    headline: m.headline,
+    cta: m.cta,
   };
+}
+
+export function mockupSVG(kind: MockupKind, m: MockupInput): string {
+  const c = sceneContext(m, kind);
+  const { W, H, uid, ink, brand, accent, tint, paper, light, icon, D, B, M, dw } = c;
+  const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"><title>${esc(m.id.name)} — ${MOCKUP_META[kind].title}</title>${shadow(uid)}`;
+  if (isScene(kind)) return `${svgOpen}${SCENES[kind](c)}</svg>`;
+
+  const dark = logoSVG(m.id, { variant: 'dark', measure: m.measure }).svg;
+  const mono = logoSVG(m.id, { variant: 'mono', measure: m.measure }).svg;
+  const symbolOr = (x: number, y: number, s: number, color: string) =>
+    m.id.symbol ? drawSymbol(m.id.symbol, `${m.id.name}:${m.id.seed}`, { brand: color, accent: color, ink: color, tint: color, paper: 'none' }, x, y, s) : place(icon, x, y, s, s);
+  const meas = m.measure ?? approxMeasure;
+  const fitSize = c.fit;
   let body = '';
 
   switch (kind) {
@@ -102,7 +159,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       body =
         `<rect width="${W}" height="${H}" fill="#E9E6EF"/>` +
         // back card (paper)
-        `<g filter="url(#sh-${kind})" transform="rotate(5 550 370)"><rect x="340" y="250" width="420" height="240" rx="14" fill="${paper}"/>` +
+        `<g filter="url(#sh-${uid})" transform="rotate(5 550 370)"><rect x="340" y="250" width="420" height="240" rx="14" fill="${paper}"/>` +
         place(light, 370, 276, 200, 52, 'xMinYMid') +
         `<text x="370" y="390" ${D} font-weight="700" font-size="22" fill="${ink}">Your Name</text>` +
         `<text x="370" y="414" ${B} font-size="14" fill="${ink}" fill-opacity="0.7">Founder</text>` +
@@ -110,7 +167,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
         `<text x="370" y="468" ${M} font-size="13" fill="${ink}">@${esc(m.handle)}</text>` +
         `<path d="M720 250 H746 A14 14 0 0 1 760 264 V476 A14 14 0 0 1 746 490 H720 Z" fill="${brand}"/></g>` +
         // front card (ink)
-        `<g filter="url(#sh-${kind})" transform="rotate(-5 250 210)"><rect x="40" y="90" width="420" height="240" rx="14" fill="${ink}"/>` +
+        `<g filter="url(#sh-${uid})" transform="rotate(-5 250 210)"><rect x="40" y="90" width="420" height="240" rx="14" fill="${ink}"/>` +
         place(dark, 90, 150, 320, 120) +
         `</g>`;
       break;
@@ -132,14 +189,14 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       }
       body =
         `<rect width="${W}" height="${H}" fill="${tint}"/>` +
-        `<g filter="url(#sh-${kind})"><rect x="275" y="40" width="250" height="520" rx="40" fill="#111"/><rect x="285" y="50" width="230" height="500" rx="32" fill="${ink}"/></g>` +
-        `<rect x="285" y="50" width="230" height="500" rx="32" fill="url(#wall-${kind})"/>` +
-        `<defs><linearGradient id="wall-${kind}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${brand}" stop-opacity="0.9"/><stop offset="1" stop-color="${ink}"/></linearGradient></defs>` +
+        `<g filter="url(#sh-${uid})"><rect x="275" y="40" width="250" height="520" rx="40" fill="#111"/><rect x="285" y="50" width="230" height="500" rx="32" fill="${ink}"/></g>` +
+        `<rect x="285" y="50" width="230" height="500" rx="32" fill="url(#wall-${uid})"/>` +
+        `<defs><linearGradient id="wall-${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${brand}" stop-opacity="0.9"/><stop offset="1" stop-color="${ink}"/></linearGradient></defs>` +
         `<text x="400" y="88" text-anchor="middle" ${D} font-weight="600" font-size="15" fill="#fff">9:41</text>` +
         grid +
         `<rect x="300" y="470" width="200" height="56" rx="18" fill="#fff" fill-opacity="0.18"/>` +
         // big icon callout
-        `<g filter="url(#sh-${kind})">${place(icon, 560, 210, 150, 150)}</g>` +
+        `<g filter="url(#sh-${uid})">${place(icon, 560, 210, 150, 150)}</g>` +
         `<text x="635" y="392" text-anchor="middle" ${M} font-size="13" fill="${ink}">1024 × 1024</text>`;
       break;
     }
@@ -147,7 +204,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       const { size: ts, lines } = fitSize(m.tagline, 340, 3, 46, 28);
       body =
         `<rect width="${W}" height="${H}" fill="#EDEBF2"/>` +
-        `<g filter="url(#sh-${kind})"><rect x="200" y="30" width="400" height="540" rx="18" fill="#fff"/></g>` +
+        `<g filter="url(#sh-${uid})"><rect x="200" y="30" width="400" height="540" rx="18" fill="#fff"/></g>` +
         place(icon, 218, 46, 34, 34) +
         `<text x="262" y="62" ${B} font-weight="700" font-size="13" fill="#111">${esc(m.handle)}</text>` +
         `<text x="262" y="78" ${B} font-size="11" fill="#666">Sponsored</text>` +
@@ -164,7 +221,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       const afterHead = 180 + lines.length * hs * 1.12;
       body =
         `<rect width="${W}" height="${H}" fill="#E6E4EC"/>` +
-        `<g filter="url(#sh-${kind})"><rect x="50" y="40" width="700" height="520" rx="14" fill="${paper}"/></g>` +
+        `<g filter="url(#sh-${uid})"><rect x="50" y="40" width="700" height="520" rx="14" fill="${paper}"/></g>` +
         `<rect x="50" y="40" width="700" height="40" rx="14" fill="#F1EFF5"/><rect x="50" y="66" width="700" height="14" fill="#F1EFF5"/>` +
         `<circle cx="74" cy="60" r="6" fill="#F25F5C"/><circle cx="94" cy="60" r="6" fill="#F2C14E"/><circle cx="114" cy="60" r="6" fill="#7BC67E"/>` +
         `<rect x="250" y="49" width="300" height="22" rx="11" fill="#fff"/><text x="400" y="65" text-anchor="middle" ${M} font-size="11" fill="#555">${esc(m.domain)}</text>` +
@@ -183,7 +240,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       const shirt = ink;
       body =
         `<rect width="${W}" height="${H}" fill="${tint}"/>` +
-        `<g filter="url(#sh-${kind})"><path d="M290 70 L350 50 Q400 90 450 50 L510 70 L610 140 L570 220 L520 195 L520 540 L280 540 L280 195 L230 220 L190 140 Z" fill="${shirt}"/></g>` +
+        `<g filter="url(#sh-${uid})"><path d="M290 70 L350 50 Q400 90 450 50 L510 70 L610 140 L570 220 L520 195 L520 540 L280 540 L280 195 L230 220 L190 140 Z" fill="${shirt}"/></g>` +
         `<path d="M350 50 Q400 90 450 50" fill="none" stroke="#000" stroke-opacity="0.25" stroke-width="6"/>` +
         (m.id.symbol ? symbolOr(430, 170, 60, onColor(shirt) === '#FFFFFF' ? paper : ink) : place(dark.replace(/<rect width="100%" height="100%"[^>]*\/>/, ''), 330, 170, 140, 60));
       break;
@@ -193,7 +250,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
       body =
         `<rect width="${W}" height="${H}" fill="#DCD6E6"/>` +
         `<path d="M330 170 Q330 70 400 70 Q470 70 470 170" fill="none" stroke="#D9CDB0" stroke-width="16"/>` +
-        `<g filter="url(#sh-${kind})"><path d="M260 170 L540 170 L560 540 L240 540 Z" fill="${canvas}"/></g>` +
+        `<g filter="url(#sh-${uid})"><path d="M260 170 L540 170 L560 540 L240 540 Z" fill="${canvas}"/></g>` +
         place(mono.replace(new RegExp(ink, 'g'), brand), 280, 280, 240, 140);
       break;
     }
@@ -240,7 +297,7 @@ export function mockupSVG(kind: MockupKind, m: MockupInput): string {
         `<g transform="translate(545 300) skewY(-24)">${place(icon, -34, 0, 68, 68)}</g>`;
     }
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"><title>${esc(m.id.name)} — ${MOCKUP_META[kind].title}</title>${shadow(kind)}${body}</svg>`;
+  return `${svgOpen}${body}</svg>`;
 }
 
 /* ------------------------------ colour specs ------------------------------ */

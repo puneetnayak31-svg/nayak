@@ -14,6 +14,7 @@ Start with [`../AGENTS.md`](../AGENTS.md) (rules, commands, read order). Then us
 | [`PROVIDERS.md`](PROVIDERS.md) | How to configure each AI, domain, social, image, auth and analytics provider. | add or change a provider or its env vars. |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Docker, hosts, production checklist, scaling. | change build, runtime or required config. |
 | [`LIMITATIONS.md`](LIMITATIONS.md) | Honest known limitations and future extension points. | fix one, or discover a new one. |
+| [`DESIGN_RESEARCH.md`](DESIGN_RESEARCH.md) | What top brand studios (Koto and peers) ship, and the rules our logos, toolkit and mockups follow. Research input, not a spec. | change the design rules for scenes, toolkit or logos. |
 | [`MARKETING_BRIEF.md`](MARKETING_BRIEF.md) | Everything marketing needs: pitch, features, plans, experts, our own brand, demo story, claims guardrails. Paste it into a chat to generate campaigns. | change a user-visible feature, price, plan limit, expert service or site copy. |
 
 **The code is the source of truth.** When a doc disagrees with the code, fix the doc in the same change.

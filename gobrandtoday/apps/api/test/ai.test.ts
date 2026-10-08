@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toSlug } from '@gbt/shared';
+import { brandBookHTML, cssTokens, jsonTokens, kitTokens, tailwindTokens, toSlug, websiteHTML } from '@gbt/shared';
 import { generateOfflineNames } from '../src/providers/ai/offline/names';
 import { generateOfflineKit } from '../src/providers/ai/offline/kit';
 import { offlineAssistant } from '../src/providers/ai/offline/assistant';
@@ -83,5 +83,31 @@ describe('brand kit', () => {
       const out = AssistantOutputSchema.parse(offlineAssistant({ name: 'Wicko', brief: brief(), kit, history: [], message }));
       expect(out.reply.length).toBeGreaterThan(5);
     }
+  });
+});
+
+describe('exports built from a kit', () => {
+  const kit = assembleKit('Mithaas', brief({ description: 'A mithai shop selling festive gift boxes' }), KitDraftSchema.parse(generateOfflineKit({ name: 'Mithaas', brief: brief({ description: 'A mithai shop selling festive gift boxes' }), sections: ['strategy', 'taglines', 'identity', 'launch', 'website'] })));
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10"></svg>';
+  it('stores the sector on new kits', () => {
+    expect(kit.sector).toBe('sweets');
+  });
+  it('website draft is a complete, escaped HTML page in the brand', () => {
+    const html = websiteHTML({ kit: { ...kit, website: { ...kit.website, headline: 'Sweets <b>& more</b>' } }, domain: 'mithaas.in', handle: 'mithaas', logo: svg, logoDark: svg, icon: svg, heroArt: svg });
+    expect(html.startsWith('<!doctype html>')).toBe(true);
+    expect(html).toContain('Sweets &lt;b&gt;&amp; more&lt;/b&gt;');
+    expect(html).toContain(kit.identity.palette.find((p) => p.role === 'brand')!.hex);
+    expect(html).not.toMatch(/undefined|NaN/);
+  });
+  it('brand book HTML includes every section it was given', () => {
+    const html = brandBookHTML({ kit, domain: 'mithaas.in', handle: 'mithaas', logos: { light: svg, dark: svg, mono: svg, icon: svg }, mockups: [{ title: 'Mithai box', note: 'n', svg }], elements: [{ title: 'Pattern', note: 'n', svg }], sectorLabel: 'Sweets & confectionery' });
+    for (const s of ['Brand essence', 'Logo', 'Colour', 'Typography', 'Brand toolkit', 'Voice', 'Applications', 'Mithai box']) expect(html).toContain(s);
+    expect(html).not.toMatch(/undefined|NaN/);
+  });
+  it('tokens come out in three formats', () => {
+    const t = kitTokens(kit);
+    expect(cssTokens(t)).toMatch(/--color-brand: #[0-9A-F]{6}/i);
+    expect(tailwindTokens(t)).toContain('fontFamily');
+    expect(() => JSON.parse(jsonTokens(t))).not.toThrow();
   });
 });

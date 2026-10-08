@@ -45,12 +45,13 @@ export const EXPERT_SERVICES: ExpertService[] = [
     fit: ['Trustworthy', 'fintech', 'saas', 'consulting', 'healthcare'],
   },
   {
+    // Packages and the brief live in website.ts; keep these prices in step with WEBSITE_PACKAGES.
     id: 'website',
     title: 'Website design & build',
-    pitch: 'A fast, beautiful launch site built on your new identity, with copy from your Brand Bible and a CMS you can edit.',
-    includes: ['Up to 5 pages, mobile-first', 'Built on Framer, Webflow or Next.js', 'Basic SEO, analytics and forms', 'Domain and email setup help', '30 days of fixes after launch'],
-    turnaround: '3–4 weeks',
-    from: { INR: 39999, USD: 799 },
+    pitch: 'We turn your first-draft website into a real one: a launch page, a full business site or an online store, on your domain.',
+    includes: ['Launch page from ₹9,999 / $199 (5–7 days)', 'Business website, up to 6 pages with a CMS, from ₹34,999 / $699 (2–3 weeks)', 'Online store with UPI and card payments from ₹64,999 / $1,299 (3–5 weeks)', 'Basic SEO, analytics, forms and WhatsApp button', 'Domain, email setup help and 30 days of fixes'],
+    turnaround: '5 days – 5 weeks',
+    from: { INR: 9999, USD: 199 },
     glyph: 'browser',
     fit: ['saas', 'ai', 'consulting', 'education', 'e-commerce'],
   },

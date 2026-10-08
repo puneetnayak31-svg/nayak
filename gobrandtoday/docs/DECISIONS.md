@@ -107,3 +107,25 @@ Deterministic, with published weights (sum 100), shown /10, provisional until ch
 `AGENTS.md` is the single entry point for AI agents (`CLAUDE.md`/`GEMINI.md` point to it). `npm test` runs
 `scripts/check-docs.mjs`, which fails when routes, env vars, tables, pages, modules, logo styles, symbol
 families or root scripts are undocumented.
+
+**D23 — Industry objects first, chosen by deterministic rules** · Active · Round 6
+Mockups are chosen by a business sector detected from the brief's words (specific words outweigh generic ones like
+"shop" or "app"), then its industry pick. Rules, not a model call: instant, free, testable and the same in the
+preview. The sector is stored on the kit (`kit.sector`) so it is stable; older kits infer it from their own text.
+
+**D24 — Downloads are generated in the browser** · Active · Round 6
+The ZIP, HTML brand book, website draft, tokens and social PNGs are built client-side (`lib/export.ts`) from the shared
+renderers. The browser has the real font metrics and the web fonts, the server stays light, and the preview works the
+same way. Markdown and JSON still come from the API (`toMarkdown`). The ZIP writer is our own (stored, no compression,
+`shared/zip.ts`): no dependency, and PNG/SVG gain little from deflate.
+
+**D25 — The website service reuses the experts intake** · Active · Round 6
+"We build it for you" requests go to `POST /api/experts/requests` with `service: 'website'`, the package as `budget`
+and the brief as `details` text. No new table or endpoint; fulfilment stays manual, like every expert service.
+Package prices live in `WEBSITE_PACKAGES`; the website entry in `EXPERT_SERVICES` must stay in step with them.
+
+**D26 — Design elements follow one graphic device** · Active · Round 6
+Toolkit elements, scenes and banners are drawn from a single device (the symbol, or the mark) cropped big, with
+quiet/loud colour modes. Studio research and the numeric rules are in `DESIGN_RESEARCH.md`; the numbers are our
+proposals, not published studio figures.
+

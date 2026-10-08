@@ -1,4 +1,36 @@
-import { googleFontsHref, iconSVG, logoSVG, toSlug, type BrandKit, type LogoIdentity, type LogoVariant } from '@gbt/shared';
+import {
+  ELEMENT_KINDS,
+  ELEMENT_META,
+  MOCKUP_KINDS,
+  MOCKUP_META,
+  PRIMARY_MOCKUPS,
+  SECTOR_META,
+  SOCIAL_ASSETS,
+  brandBookHTML,
+  cssTokens,
+  elementSVG,
+  googleFontsHref,
+  heroArtSVG,
+  iconSVG,
+  jsonTokens,
+  kitTokens,
+  logoSVG,
+  makeZip,
+  mockupSVG,
+  mockupsForSector,
+  sectorForKit,
+  socialSVG,
+  tailwindTokens,
+  toSlug,
+  websiteHTML,
+  type BrandKit,
+  type ElementKind,
+  type LogoIdentity,
+  type LogoVariant,
+  type MockupInput,
+  type MockupKind,
+  type SocialAsset,
+} from '@gbt/shared';
 import { canvasMeasure, kitIdentity } from '@/components/Logo';
 
 /** Hosts that can't follow <a download> (e.g. a sandboxed preview) can register their own saver. */
@@ -79,7 +111,7 @@ export async function downloadIconSVG(kit: BrandKit) {
   download(`${toSlug(kit.name)}-icon.svg`, out.svg, 'image/svg+xml');
 }
 
-async function svgToPng(svg: string, width: number, height: number, scale: number): Promise<Blob | null> {
+export async function svgToPng(svg: string, width: number, height: number, scale: number): Promise<Blob | null> {
   const img = new Image();
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   try {
@@ -108,4 +140,237 @@ export async function downloadIconPNG(kit: BrandKit) {
   const out = await buildSvg(kit, 'icon', 'light');
   const blob = await svgToPng(out.svg, out.width, out.height, 8);
   if (blob) download(`${toSlug(kit.name)}-icon.png`, blob);
+}
+
+/* ------------------------------ whole-kit exports ------------------------------ */
+
+export interface KitContext {
+  kit: BrandKit;
+  domain: string;
+  handle: string;
+  version?: number;
+}
+
+export const kitDomain = (kit: BrandKit, domain?: string | null) => domain ?? `${toSlug(kit.name)}.com`;
+export const kitHandle = (kit: BrandKit, handle?: string | null) => handle ?? toSlug(kit.name).replace(/-/g, '');
+
+/** Inputs every scene, element and social asset is drawn from. */
+export function kitMockupInput(kit: BrandKit, domain: string, handle: string): MockupInput {
+  const t = kit.identity.typography;
+  return {
+    id: kitIdentity(kit),
+    measure: typeof document === 'undefined' ? undefined : canvasMeasure,
+    fonts: { display: t.display.family, body: t.body.family, data: t.data.family },
+    tagline: kit.taglines[0] ?? kit.messaging.oneLiner,
+    headline: kit.website.headline,
+    subheadline: kit.website.subheadline,
+    cta: kit.website.cta,
+    domain,
+    handle,
+  };
+}
+
+/** The applications for this brand, its own industry's objects first. */
+export function kitMockupKinds(kit: BrandKit): MockupKind[] {
+  return mockupsForSector(sectorForKit(kit), MOCKUP_KINDS);
+}
+
+async function loadKitFonts(kit: BrandKit) {
+  const t = kit.identity.typography;
+  const href = googleFontsHref([t.display, t.body, t.data]);
+  if (!document.querySelector(`link[data-gf="${CSS.escape(href)}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.dataset.gf = href;
+    document.head.appendChild(link);
+  }
+  for (const f of [t.display, t.body, t.data]) {
+    try {
+      await document.fonts.load(`${Math.max(...f.weights)} 40px "${f.family}"`);
+    } catch {
+      /* system fallback */
+    }
+  }
+}
+
+const withCss = (svg: string, css: string) => (css ? svg.replace(/^<svg ([^>]*)>/, `<svg $1><style>${css}</style>`) : svg);
+
+/** Render an SVG to PNG with the brand's fonts embedded (so text survives rasterising). */
+async function brandPng(kit: BrandKit, svg: string, w: number, h: number, scale = 1): Promise<Blob | null> {
+  const t = kit.identity.typography;
+  const text = (svg.match(/>([^<>]+)</g) ?? []).join('').replace(/[<>]/g, '') + kit.name + kit.name.toUpperCase();
+  const css = await embeddedFontCss([t.display, t.body, t.data], [...new Set(text)].join('').slice(0, 900));
+  return svgToPng(withCss(svg, css), w, h, scale);
+}
+
+export function brandBookFile(ctx: KitContext): string {
+  const { kit, domain, handle } = ctx;
+  const m = kitMockupInput(kit, domain, handle);
+  const id = m.id;
+  const sector = sectorForKit(kit);
+  return brandBookHTML({
+    kit,
+    domain,
+    handle,
+    version: ctx.version,
+    sectorLabel: SECTOR_META[sector].label,
+    logos: {
+      light: logoSVG(id, { variant: 'light', measure: canvasMeasure }).svg,
+      dark: logoSVG(id, { variant: 'dark', measure: canvasMeasure }).svg.replace(/<rect width="100%" height="100%"[^>]*\/>/, ''),
+      mono: logoSVG(id, { variant: 'mono', measure: canvasMeasure }).svg,
+      icon: iconSVG(id, { measure: canvasMeasure }).svg,
+    },
+    mockups: kitMockupKinds(kit)
+      .slice(0, PRIMARY_MOCKUPS)
+      .map((k) => ({ title: MOCKUP_META[k].title, note: MOCKUP_META[k].note, svg: mockupSVG(k, m) })),
+    elements: ELEMENT_KINDS.map((k) => ({ title: ELEMENT_META[k].title, note: ELEMENT_META[k].note, svg: elementSVG(k, { ...m, personalities: kit.personality }) })),
+  });
+}
+
+export function websiteFile(ctx: KitContext): string {
+  const { kit, domain, handle } = ctx;
+  const m = kitMockupInput(kit, domain, handle);
+  return websiteHTML({
+    kit,
+    domain,
+    handle,
+    logo: logoSVG(m.id, { variant: 'light', measure: canvasMeasure }).svg,
+    logoDark: logoSVG(m.id, { variant: 'dark', measure: canvasMeasure }).svg.replace(/<rect width="100%" height="100%"[^>]*\/>/, ''),
+    icon: iconSVG(m.id, { measure: canvasMeasure }).svg,
+    heroArt: heroArtSVG(m),
+  });
+}
+
+export async function downloadBrandBookHTML(ctx: KitContext) {
+  await loadKitFonts(ctx.kit);
+  download(`${toSlug(ctx.kit.name)}-brand-guidelines.html`, brandBookFile(ctx), 'text/html');
+}
+
+export async function downloadWebsiteHTML(ctx: KitContext) {
+  await loadKitFonts(ctx.kit);
+  download(`${toSlug(ctx.kit.name)}-website-draft.html`, websiteFile(ctx), 'text/html');
+}
+
+export type TokenFormat = 'css' | 'tailwind' | 'json';
+export function tokensFile(kit: BrandKit, f: TokenFormat): { name: string; text: string; type: string } {
+  const slug = toSlug(kit.name);
+  const t = kitTokens(kit);
+  if (f === 'css') return { name: `${slug}-tokens.css`, text: cssTokens(t), type: 'text/css' };
+  if (f === 'tailwind') return { name: `${slug}-tailwind.config.js`, text: tailwindTokens(t), type: 'text/javascript' };
+  return { name: `${slug}-tokens.json`, text: jsonTokens(t), type: 'application/json' };
+}
+
+export function downloadTokens(kit: BrandKit, f: TokenFormat) {
+  const file = tokensFile(kit, f);
+  download(file.name, file.text, file.type);
+}
+
+export async function downloadSocial(ctx: KitContext, kind: SocialAsset) {
+  await loadKitFonts(ctx.kit);
+  const a = SOCIAL_ASSETS[kind];
+  const blob = await brandPng(ctx.kit, socialSVG(kind, kitMockupInput(ctx.kit, ctx.domain, ctx.handle)), a.w, a.h);
+  if (blob) download(`${toSlug(ctx.kit.name)}-${kind}-${a.w}x${a.h}.png`, blob);
+}
+
+export async function downloadSVGFile(kit: BrandKit, name: string, svg: string) {
+  await loadKitFonts(kit);
+  const t = kit.identity.typography;
+  const css = await embeddedFontCss([t.display, t.body, t.data], [...new Set((svg.match(/>([^<>]+)</g) ?? []).join('') + kit.name)].join('').slice(0, 900));
+  download(`${toSlug(kit.name)}-${name}.svg`, withCss(svg, css), 'image/svg+xml');
+}
+
+export async function downloadElement(ctx: KitContext, kind: ElementKind) {
+  await loadKitFonts(ctx.kit);
+  await downloadSVGFile(ctx.kit, kind, elementSVG(kind, { ...kitMockupInput(ctx.kit, ctx.domain, ctx.handle), personalities: ctx.kit.personality }));
+}
+
+export async function downloadMockup(ctx: KitContext, kind: MockupKind) {
+  await loadKitFonts(ctx.kit);
+  await downloadSVGFile(ctx.kit, `mockup-${kind}`, mockupSVG(kind, kitMockupInput(ctx.kit, ctx.domain, ctx.handle)));
+}
+
+/** An email signature as HTML (paste into Gmail or Outlook settings). */
+export function emailSignatureHTML(ctx: KitContext, person: { name: string; role: string }): string {
+  const p = ctx.kit.identity.palette;
+  const brand = p.find((s) => s.role === 'brand')?.hex ?? '#6D4AFF';
+  const ink = p.find((s) => s.role === 'ink')?.hex ?? '#16161A';
+  const e = (s: string) => s.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]!);
+  return `<table cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;color:${ink};font-size:13px;line-height:1.5"><tr><td style="padding-right:14px;border-right:3px solid ${brand}"><b style="font-size:15px">${e(person.name)}</b><br>${e(person.role)}, ${e(ctx.kit.name)}</td><td style="padding-left:14px"><a href="https://${e(ctx.domain)}" style="color:${brand};text-decoration:none;font-weight:bold">${e(ctx.domain)}</a><br>@${e(ctx.handle)}<br><span style="color:#777">${e(ctx.kit.taglines[0] ?? '')}</span></td></tr></table>`;
+}
+
+/**
+ * Everything in one ZIP: logos (SVG + PNG), favicons, brand book (HTML),
+ * website draft, tokens, mockups, toolkit, social kit and the Brand Bible
+ * text. `extra` lets the caller add files it already has (Markdown, JSON).
+ */
+export async function downloadKitZip(ctx: KitContext, extra: Array<{ name: string; data: string }> = [], onProgress?: (label: string) => void) {
+  const { kit } = ctx;
+  const slug = toSlug(kit.name);
+  await loadKitFonts(kit);
+  const id = kitIdentity(kit);
+  const t = kit.identity.typography;
+  const css = await embeddedFontCss([t.display, t.data], `${kit.name}${kit.name.toUpperCase()}${kit.name.toLowerCase()}>_EST.0123456789`);
+  const files: Array<{ name: string; data: Uint8Array | string }> = [];
+  const bytes = async (b: Blob | null) => (b ? new Uint8Array(await b.arrayBuffer()) : null);
+
+  onProgress?.('Logos');
+  for (const v of ['light', 'dark', 'mono'] as const) {
+    const out = logoSVG(id, { variant: v, measure: canvasMeasure, css, background: v === 'dark' });
+    files.push({ name: `logo/${slug}-logo-${v}.svg`, data: out.svg });
+    const png = await bytes(await svgToPng(out.svg, out.width, out.height, 4));
+    if (png) files.push({ name: `logo/${slug}-logo-${v}.png`, data: png });
+  }
+  const icon = iconSVG(id, { measure: canvasMeasure, css });
+  files.push({ name: `logo/${slug}-icon.svg`, data: icon.svg });
+  for (const size of [32, 180, 192, 512, 1024]) {
+    const png = await bytes(await svgToPng(icon.svg, icon.width, icon.height, size / icon.width));
+    if (png) files.push({ name: size === 32 ? `favicon/favicon-32.png` : size === 180 ? 'favicon/apple-touch-icon.png' : `favicon/icon-${size}.png`, data: png });
+  }
+  files.push({ name: 'favicon/favicon.svg', data: icon.svg });
+
+  onProgress?.('Brand book and website');
+  files.push({ name: `${slug}-brand-guidelines.html`, data: brandBookFile(ctx) });
+  files.push({ name: `website/${slug}-website-draft.html`, data: websiteFile(ctx) });
+
+  for (const f of ['css', 'tailwind', 'json'] as const) {
+    const tok = tokensFile(kit, f);
+    files.push({ name: `tokens/${tok.name}`, data: tok.text });
+  }
+
+  onProgress?.('Mockups and toolkit');
+  const m = kitMockupInput(kit, ctx.domain, ctx.handle);
+  for (const k of kitMockupKinds(kit).slice(0, PRIMARY_MOCKUPS)) files.push({ name: `mockups/${slug}-${k}.svg`, data: mockupSVG(k, m) });
+  for (const k of ELEMENT_KINDS) files.push({ name: `toolkit/${slug}-${k}.svg`, data: elementSVG(k, { ...m, personalities: kit.personality }) });
+
+  onProgress?.('Social kit');
+  for (const k of Object.keys(SOCIAL_ASSETS) as SocialAsset[]) {
+    const a = SOCIAL_ASSETS[k];
+    const png = await bytes(await brandPng(kit, socialSVG(k, m), a.w, a.h));
+    if (png) files.push({ name: `social/${slug}-${k}-${a.w}x${a.h}.png`, data: png });
+  }
+  files.push({ name: 'email-signature.html', data: emailSignatureHTML(ctx, { name: 'Your Name', role: 'Founder' }) });
+
+  for (const e of extra) files.push(e);
+  files.push({
+    name: 'README.txt',
+    data: [
+      `${kit.name}: brand kit from GoBrandToday`,
+      '',
+      `Open ${slug}-brand-guidelines.html in any browser. Print it to save a PDF.`,
+      'logo/      SVG for print and web, PNG for everything else',
+      'favicon/   website icons (add favicon.svg and apple-touch-icon.png to your site)',
+      'website/   a first-draft website you can open, edit or hand to a developer',
+      'tokens/    colours and fonts as CSS variables, a Tailwind theme and design-token JSON',
+      'mockups/   the logo on real objects for your industry',
+      'toolkit/   supergraphic, pattern, icons, seal and other brand elements',
+      'social/    profile picture and banners at each platform’s exact size',
+      '',
+      `Fonts (free on Google Fonts): ${t.display.family}, ${t.body.family}, ${t.data.family}.`,
+      'Before you print or file anything, run a trademark search on the name.',
+    ].join('\n'),
+  });
+  onProgress?.('Packing');
+  const zip = makeZip(files);
+  download(`${slug}-brand-kit.zip`, new Blob([zip as BlobPart], { type: 'application/zip' }));
 }

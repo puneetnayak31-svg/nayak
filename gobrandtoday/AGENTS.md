@@ -91,11 +91,13 @@ The app runs with **zero API keys**: AI falls back to the offline generator, dom
 | A file in `packages/shared/src`, `apps/api/src/{providers,services,routes}` or `apps/web/components` | The module index in `docs/TECH_BRIEF.md`. |
 | A web page | Page list in `docs/TECH_BRIEF.md`; `preview/router.tsx` + `preview/main.tsx` if it should work in the preview; `app/sitemap.ts` if public. |
 | `LOGO_STYLES` or `SYMBOL_FAMILIES` | `LOGO_STYLE_META` / `SYMBOL_META`, render cases in `logo.ts`, and the lists in `docs/TECH_BRIEF.md`. |
+| `SCENE_KINDS`, `SECTORS` or `ELEMENT_KINDS` | Their `*_META` and draw functions, tests, and the lists in `docs/TECH_BRIEF.md` section 6 (recipe B8b in `WORKFLOWS.md`). |
+| A download format | `apps/web/lib/export.ts`, `ExportCentre.tsx`, the ZIP contents and README in `downloadKitZip`, and `docs/WORKFLOWS.md` A8. |
 | Scope or a user-visible behaviour | `docs/SCOPE.md` and `docs/CHANGELOG.md`. |
 | Prices, plan limits, expert services, landing/site copy or a marketed feature | `docs/MARKETING_BRIEF.md` (including its claims guardrails, section 13). |
 | A decision recorded in `docs/DECISIONS.md` | That entry (mark it superseded and add the new decision). Don't silently reverse it. |
 
-`npm run docs:check` (also run by `npm test`) fails when routes, env vars, tables, pages, modules,
+`npm run docs:check` (also run by `npm test`) fails when routes, env vars, tables, pages, modules, industry scenes, sectors, toolkit elements,
 logo styles, symbol families or root scripts are missing from the docs. It prints which doc to fix.
 It can't check prose. Keeping descriptions accurate is your job.
 
@@ -119,6 +121,9 @@ It can't check prose. Keeping descriptions accurate is your job.
 - CSRF: every POST/PUT/PATCH/DELETE to `/api/*` must send `x-gbt-csrf: 1` (`lib/api.ts` does this). Tests must too.
 - The preview (`apps/web/preview`) can't reach the network. It must never claim a domain or handle is free.
 - Fonts: the product uses Space Grotesk / Manrope / Space Mono; user brands load Google Fonts on demand.
+- Downloads (ZIP, HTML brand book, website draft, tokens, social PNGs) are built in the browser by `lib/export.ts`, not by the API (D24). Only Markdown/JSON come from `GET /api/brands/:id/export`.
+- Inline SVGs nest other SVGs (logos inside mockups). CSS like `svg { width: 100% }` resizes the nested ones too; target the outer one (`.frame > svg`).
+- `next dev` writes `apps/web/AGENTS.md` (Next.js's own agent note). It is committed on purpose; leave it.
 
 ## 9. Git
 

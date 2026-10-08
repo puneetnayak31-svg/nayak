@@ -6,6 +6,36 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 ## Unreleased
 
+_Nothing yet._
+
+## Round 6 — Industry mockups, brand toolkit, downloads, website builder · 2026-10-08
+
+- **Added** industry scenes (`shared/scenes.ts`): 23 objects a studio would show for the business (woven neck label,
+  hang tag, mithai box, coffee bag, candle jar, serum bottle and carton, cans, bottles, menu, takeaway bag, product
+  screen, payment card, ID badge, notebooks, water bottle, jewellery box, shipping box, sticker sheet, channel banner,
+  signboard, collar tag, letterhead, shopping bag). 32 mockups in total.
+- **Added** sectors (`shared/sectors.ts`): `detectSector` reads the brief (specific words beat generic ones) and the
+  industry; `assembleKit` stores `kit.sector`; the brand book and Brand in a Box show that sector's objects first,
+  9 at a time with "show all" (D23). `BrandKitSchema.sector` is optional; older kits infer it.
+- **Added** the brand toolkit (`shared/elements.ts`): supergraphic, pattern, icon set, seal, type wall, quiet/loud colour
+  modes, photo frames, dividers and data device, all from the brand's one graphic device (D26), shown in the brand
+  book and downloadable as SVG. Research behind it: `docs/DESIGN_RESEARCH.md` (studio pages could not be fetched from
+  this environment; sources are search results, and the report says so).
+- **Added** a Downloads tab (`ExportCentre.tsx`) replacing the export menu: whole kit as a ZIP (`shared/zip.ts`),
+  brand book as HTML (`shared/brandbook.ts`), PDF, Markdown, JSON, logo files incl. one-colour, favicons, design
+  tokens (`shared/tokens.ts`: CSS, Tailwind, W3C JSON), social kit PNGs at platform sizes, email signature (D24).
+- **Added** the website builder (`WebsiteBuilder.tsx`, `shared/website.ts`): a live first-draft website from the kit
+  (desktop/mobile preview, one-file HTML download) and "we build it for you" packages with a brief, sent through the
+  experts intake as `service: 'website'` (D25).
+- **Changed** the "Website design & build" expert service to start from ₹9,999 / $199 (Launch page) and list the three
+  packages, in step with `WEBSITE_PACKAGES`.
+- **Changed** `mockupSVG` to share a `sceneContext`; SVG ids are now unique per brand and scene, so several mockups
+  can sit on one page.
+- **Changed** `scripts/check-docs.mjs` to also check `SCENE_KINDS`, `SECTORS` and `ELEMENT_KINDS` against `TECH_BRIEF.md`.
+- **Added** `apps/web/AGENTS.md`, written by `next dev` (Next.js 16's agent note). Committed on purpose so the tree stays clean.
+
+## Round 5b — Marketing brief · 2026-10-07 · `291182b`
+
 - **Added** `docs/MARKETING_BRIEF.md`: a paste-ready brief for generating marketing material (features, plans,
   experts, GoBrandToday's own brand, demo story) with claims guardrails, so campaigns never promise what isn't built.
 - **Fixed** the landing FAQ, which still said results show “Unverified”. It now matches the UI labels (“Likely free”, “Not checked”).

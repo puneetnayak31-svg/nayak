@@ -296,6 +296,8 @@ export type Look = z.infer<typeof LookSchema>;
 
 export const BrandKitSchema = z.object({
   name: z.string(),
+  /** Kind of business (shared/sectors.ts), so the brand book shows the right objects. Older kits omit it. */
+  sector: z.string().optional(),
   meaning: z.string(),
   story: z.string(),
   positioning: z.string(),

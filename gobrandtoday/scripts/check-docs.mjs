@@ -4,7 +4,7 @@
  * AI coding agents (and humans) rely on. Run by `npm test` and `npm run docs:check`.
  *
  * It checks presence, not prose: a route, env var, table, page, module, logo
- * style, symbol family, migration or root script that exists in code must be
+ * style, symbol family, industry scene, sector, toolkit element, migration or root script that exists in code must be
  * named in the right doc, and every relative link in the docs must resolve.
  * No dependencies — plain Node, so it runs anywhere the repo does.
  */
@@ -113,6 +113,15 @@ const families = listFrom('packages/shared/src/symbols.ts', 'SYMBOL_FAMILIES');
 if (!styles.length || !families.length) failures.push({ doc: 'scripts/check-docs.mjs', what: 'Could not parse LOGO_STYLES or SYMBOL_FAMILIES', items: ['update the parser'], hint: '' });
 fail(DOC.brief, 'Logo constructions (LOGO_STYLES) not documented', styles.filter((s) => !brief.includes(`\`${s}\``)), 'Add it to section 6 (Logo system).');
 fail(DOC.brief, 'Symbol families (SYMBOL_FAMILIES) not documented', families.filter((f) => !brief.includes(`\`${f}\``)), 'Add it to section 6 (Logo system).');
+for (const [file, name] of [
+  ['packages/shared/src/scenes.ts', 'SCENE_KINDS'],
+  ['packages/shared/src/sectors.ts', 'SECTORS'],
+  ['packages/shared/src/elements.ts', 'ELEMENT_KINDS'],
+]) {
+  const items = listFrom(file, name);
+  if (!items.length) failures.push({ doc: 'scripts/check-docs.mjs', what: `Could not parse ${name}`, items: ['update the parser'], hint: '' });
+  fail(DOC.brief, `${name} not documented`, items.filter((x) => !brief.includes(`\`${x}\``)), 'Add it to section 6 (Logo system).');
+}
 
 /* 8. Root scripts → AGENTS.md commands table */
 const scripts = Object.keys(JSON.parse(read('package.json')).scripts ?? {});

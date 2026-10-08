@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LOGO_STYLE_META, MARK_PATHS, swatch, toSlug, type BrandKit, type Brief, type DomainResult, type GoBrandScore, type SocialResult } from '@gbt/shared';
 import { ApiError, api, track } from '@/lib/api';
-import { download, downloadIconPNG, downloadIconSVG, downloadLogoPNG, downloadLogoSVG } from '@/lib/export';
+import { kitMockupKinds } from '@/lib/export';
 import { useApp } from '@/lib/providers';
 import { BrandGuidelines } from './BrandGuidelines';
 import { KitIcon, KitLogo } from './Logo';
 import { ExpertsBox } from './Experts';
 import { LookPicker } from './LookPicker';
+import { ExportCentre } from './ExportCentre';
 import { MockupGrid } from './Mockups';
+import { WebsiteBuilder } from './WebsiteBuilder';
 import { Mark, Spark } from './Spark';
 import { AvailabilityPanel, CoreTag } from './Availability';
 import { CopyButton, Loading, ScoreBreakdown, ScoreCard, SourceBadge, useGoogleFonts } from './ui';
@@ -36,7 +38,7 @@ export interface BrandDTO {
 /** True in the single-file preview build (no server: exports go through the host's save dialog, no PDF route). */
 const PREVIEW = process.env.NEXT_PUBLIC_PREVIEW === '1';
 
-const TABS = ['Brand in a Box', 'Identity', 'Strategy', 'Launch kit', 'Website', 'Assistant'] as const;
+const TABS = ['Brand in a Box', 'Identity', 'Strategy', 'Launch kit', 'Website', 'Downloads', 'Assistant'] as const;
 type Tab = (typeof TABS)[number];
 
 export function BrandView({ id }: { id: string }) {
@@ -175,7 +177,7 @@ export function BrandView({ id }: { id: string }) {
   }
   return (
     <div className="container stack gap-24" style={{ padding: '28px var(--gutter) 72px' }}>
-      <BrandHeader brand={brand} kit={kit} onUndo={undo} onChange={setBrand} demo={system?.mode === 'demo'} />
+      <BrandHeader brand={brand} kit={kit} onUndo={undo} onChange={setBrand} demo={system?.mode === 'demo'} onDownloads={() => setTab('Downloads')} />
       <div className="pagetabs no-print" role="tablist" aria-label="Brand sections">
         {TABS.map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}>
@@ -220,6 +222,7 @@ export function BrandView({ id }: { id: string }) {
       {tab === 'Strategy' && <StrategyTab brand={brand} kit={kit} onChange={setBrand} />}
       {tab === 'Launch kit' && <LaunchTab brand={brand} kit={kit} onChange={setBrand} />}
       {tab === 'Website' && <WebsiteTab brand={brand} kit={kit} onChange={setBrand} />}
+      {tab === 'Downloads' && <ExportCentre brandId={brand.id} kit={kit} domain={brand.domain} handle={brand.handle} version={brand.version} onOpenWebsite={() => setTab('Website')} />}
       {tab === 'Assistant' && <AssistantPanel brand={brand} onChange={setBrand} />}
     </div>
   );
@@ -227,16 +230,9 @@ export function BrandView({ id }: { id: string }) {
 
 /* ---------------------------------- header --------------------------------- */
 
-function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; kit: BrandKit; onUndo: () => void; onChange: (b: BrandDTO) => void; demo: boolean }) {
+function BrandHeader({ brand, kit, onUndo, onChange, demo, onDownloads }: { brand: BrandDTO; kit: BrandKit; onUndo: () => void; onChange: (b: BrandDTO) => void; demo: boolean; onDownloads: () => void }) {
   const { toast } = useApp();
   useGoogleFonts([kit.identity.typography.display, kit.identity.typography.body]);
-  const [menu, setMenu] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const on = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setMenu(false);
-    document.addEventListener('click', on);
-    return () => document.removeEventListener('click', on);
-  }, []);
 
   const share = async () => {
     try {
@@ -249,28 +245,6 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
       } else toast('Sharing turned off');
     } catch {
       toast('Could not update sharing', 'error');
-    }
-  };
-
-  const exportAs = async (f: string) => {
-    setMenu(false);
-    track('export', { format: f });
-    if (PREVIEW && (f === 'md' || f === 'json')) {
-      // The preview's API is in-browser: fetch the text, then hand it to the viewer's save dialog.
-      const text = await api<string>(`/api/brands/${brand.id}/export?format=${f}`);
-      download(`${toSlug(brand.name)}-brand-bible.${f}`, typeof text === 'string' ? text : JSON.stringify(text, null, 2), f === 'md' ? 'text/markdown' : 'application/json');
-      return;
-    }
-    if (f === 'pdf') window.open(`/brand/${brand.id}/guidelines?print=1`, '_blank');
-    if (f === 'png') await downloadLogoPNG(kit, 'light');
-    if (f === 'png-dark') await downloadLogoPNG(kit, 'dark');
-    if (f === 'svg') await downloadLogoSVG(kit, 'light');
-    if (f === 'svg-dark') await downloadLogoSVG(kit, 'dark');
-    if (f === 'icon') await downloadIconSVG(kit);
-    if (f === 'icon-png') await downloadIconPNG(kit);
-    if (f === 'json' || f === 'md') {
-      const res = await fetch(`/api/brands/${brand.id}/export?format=${f}`, { credentials: 'include' });
-      download(`${toSlug(brand.name)}-brand-bible.${f}`, await res.blob());
     }
   };
 
@@ -298,42 +272,9 @@ function BrandHeader({ brand, kit, onUndo, onChange, demo }: { brand: BrandDTO; 
           <button className="btn btn-ghost btn-sm" onClick={share}>
             {brand.isPublic ? 'Shared ✓' : 'Share'}
           </button>
-          <div ref={ref} style={{ position: 'relative' }}>
-            <button className="btn btn-dark btn-sm" onClick={() => setMenu((m) => !m)} aria-expanded={menu} aria-haspopup="menu">
-              Export ▾
-            </button>
-            {menu && (
-              <div role="menu" className="card sm stack" style={{ position: 'absolute', right: 0, top: 48, zIndex: 30, padding: 6, minWidth: 230, boxShadow: 'var(--shadow-lg)' }}>
-                {(PREVIEW
-                  ? [
-                      ['svg', 'Logo — SVG (light)'],
-                      ['svg-dark', 'Logo — SVG (dark)'],
-                      ['png', 'Logo — PNG (light)'],
-                      ['icon', 'App icon — SVG'],
-                      ['icon-png', 'App icon — PNG'],
-                      ['md', 'Brand Bible — Markdown'],
-                      ['json', 'Brand Bible — JSON'],
-                    ]
-                  : [
-                  ['pdf', 'Brand guidelines (PDF)'],
-                  ['png', 'Logo — PNG (light)'],
-                  ['png-dark', 'Logo — PNG (dark)'],
-                  ['svg', 'Logo — SVG (light)'],
-                  ['svg-dark', 'Logo — SVG (dark)'],
-                  ['icon', 'App icon — SVG'],
-                  ['icon-png', 'App icon — PNG'],
-                  ['md', 'Brand Bible — Markdown'],
-                  ['json', 'Brand Bible — JSON'],
-                    ]
-                ).map(([k, l]) => (
-                  <button key={k} role="menuitem" className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', border: 0 }} onClick={() => exportAs(k!)}>
-                    {l}
-                  </button>
-                ))}
-                {PREVIEW && <span className="tiny muted" style={{ padding: '6px 10px' }}>PDF, PNG and SVG downloads work in the full app.</span>}
-              </div>
-            )}
-          </div>
+          <button className="btn btn-dark btn-sm" onClick={onDownloads}>
+            Download kit ↓
+          </button>
         </div>
       </div>
     </header>
@@ -436,10 +377,10 @@ function BoxTab({ brand, kit, go }: { brand: BrandDTO; kit: BrandKit; go: (t: Ta
         <div className="row between wrap gap-8">
           <h3 className="h3">{brand.name} in the wild</h3>
           <button className="btn-link small" onClick={() => go('Identity')}>
-            All 9 applications →
+            All applications →
           </button>
         </div>
-        <MockupGrid kit={kit} kinds={['card', 'social', 'storefront']} domain={brand.domain} handle={brand.handle} caption={false} />
+        <MockupGrid kit={kit} kinds={kitMockupKinds(kit).slice(0, 3)} domain={brand.domain} handle={brand.handle} caption={false} />
       </div>
 
       {(brand.domains || brand.socials) && (
@@ -653,32 +594,9 @@ function WebsiteTab({ brand, kit, onChange }: { brand: BrandDTO; kit: BrandKit; 
   const display = `'${kit.identity.typography.display.family}'`;
   return (
     <div className="stack gap-16">
+      <WebsiteBuilder brandId={brand.id} kit={kit} domain={brand.domain} handle={brand.handle} />
+      <h3 className="h3" style={{ marginTop: 8 }}>Website copy</h3>
       <Regenerate brand={brand} section="website" label="Website copy" onChange={onChange} />
-      {/* A live preview of the homepage in the brand's own identity */}
-      <div className="card" style={{ background: swatch(p, 'paper'), padding: 0, overflow: 'hidden' }}>
-        <div className="row between" style={{ padding: '16px 24px', borderBottom: '1px solid rgba(0,0,0,.06)' }}>
-          <KitLogo kit={kit} height={30} />
-          <span style={{ background: brandColor, color: '#fff', borderRadius: 12, padding: '8px 14px', fontWeight: 700, fontSize: 14 }}>{W.cta}</span>
-        </div>
-        <div className="stack gap-16" style={{ padding: 'clamp(28px,5vw,64px) 24px', alignItems: 'flex-start', maxWidth: 820 }}>
-          <h2 style={{ fontFamily: display, fontSize: 'clamp(34px,5vw,56px)', letterSpacing: '-0.04em', lineHeight: 1.02, color: swatch(p, 'ink') }}>{W.headline}</h2>
-          <p style={{ fontSize: 19, color: '#36315A' }}>{W.subheadline}</p>
-          <span style={{ background: brandColor, color: '#fff', borderRadius: 16, padding: '14px 22px', fontWeight: 700, display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-            <Mark shape={kit.identity.mark.shape} size={14} color="#fff" />
-            {W.cta}
-          </span>
-        </div>
-        <div className="grid-3" style={{ padding: '0 24px 32px' }}>
-          {W.features.map((f) => (
-            <div key={f.title} style={{ background: '#fff', borderRadius: 20, padding: 20, border: '1px solid rgba(0,0,0,.06)' }}>
-              <strong style={{ fontFamily: display }}>{f.title}</strong>
-              <p className="small soft" style={{ marginTop: 6 }}>
-                {f.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
       <div className="grid-2">
         <Block title="Headline" text={W.headline} />
         <Block title="Subheadline" text={W.subheadline} />

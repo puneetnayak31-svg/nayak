@@ -10,6 +10,7 @@ import {
   SYMBOL_FAMILIES,
   SYMBOL_META,
   buildLook,
+  detectSector,
   generateLooks,
   generatePalette,
   hash32,
@@ -126,6 +127,7 @@ export function assembleKit(name: string, brief: Brief, draft: KitDraft, opts: {
   const looks = completeLooks(name, brief, draft.identity.looks, opts.seed);
   return {
     name,
+    sector: detectSector(brief),
     meaning: draft.strategy.meaning,
     story: draft.strategy.story,
     positioning: draft.strategy.positioning,

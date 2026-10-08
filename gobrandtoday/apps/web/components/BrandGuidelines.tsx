@@ -4,7 +4,7 @@ import { useMemo, type CSSProperties, type ReactNode } from 'react';
 import {
   LOGO_STYLE_META,
   MARK_PATHS,
-  MOCKUP_KINDS,
+  SECTOR_META,
   SYMBOL_META,
   contrast,
   drawSymbol,
@@ -12,12 +12,13 @@ import {
   hexToRgb,
   onColor,
   swatch,
+  sectorForKit,
   toSlug,
   type BrandKit,
 } from '@gbt/shared';
 import { useApp } from '@/lib/providers';
 import { KitIcon, KitLogo, Logo, lookIdentity } from './Logo';
-import { Mockup } from './Mockups';
+import { MockupGrid, ToolkitGrid } from './Mockups';
 import { Mark } from './Spark';
 import { useGoogleFonts } from './ui';
 
@@ -25,7 +26,7 @@ import { useGoogleFonts } from './ui';
  * A user's brand guidelines, structured like a studio brand book:
  * essence → logo system → clear space & sizes → backgrounds → misuse →
  * colour (HEX/RGB/CMYK, proportions, contrast) → type scale → pattern →
- * imagery → voice & UI → applications (mockups) → other looks.
+ * toolkit → imagery → voice & UI → applications (industry mockups first) → other looks.
  * Printable to PDF.
  */
 export function BrandGuidelines({
@@ -421,6 +422,12 @@ export function BrandGuidelines({
         </div>
       </Section>
 
+      {/* Toolkit */}
+      <Section>
+        {head('Brand toolkit', 'The graphic elements that sit around the logo, all drawn from one graphic device. Use one device, one pattern and one accent per surface.')}
+        <ToolkitGrid kit={kit} domain={domainText} handle={handleText} />
+      </Section>
+
       {/* Imagery */}
       <Section>
         {head('Imagery', kit.identity.designSystem.photography)}
@@ -489,12 +496,8 @@ export function BrandGuidelines({
 
       {/* Applications */}
       <Section>
-        {head('Applications', 'How the identity lives in the world. Every mockup uses your real logo, colours and type.')}
-        <div className="mockup-grid">
-          {MOCKUP_KINDS.map((k) => (
-            <Mockup key={k} kit={kit} kind={k} domain={domainText} handle={handleText} />
-          ))}
-        </div>
+        {head('Applications', `How the identity lives in the world, starting with the objects a ${SECTOR_META[sectorForKit(kit)].label.toLowerCase()} brand actually uses. Every mockup uses your real logo, colours and type.`)}
+        <MockupGrid kit={kit} domain={domainText} handle={handleText} download />
       </Section>
 
       {kit.identity.looks.length > 1 && (

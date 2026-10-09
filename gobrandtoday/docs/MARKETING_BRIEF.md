@@ -17,7 +17,7 @@ domain, social handles, score, logo, guidelines and launch content, all in one t
 
 **Site headline:** “Your idea deserves a brand✦”
 
-**Site sub-headline:** “Tell us what you’re building. We’ll find the name, domain, social handles and identity to launch it.”
+**Site sub-headline:** “Type one sentence. Get a name, checked domains and handles, a logo, a brand book and your launch kit.”
 
 **Elevator pitch (about 30 seconds):**
 Naming and branding a new business usually takes nine browser tabs and three weekends. You try a thesaurus,

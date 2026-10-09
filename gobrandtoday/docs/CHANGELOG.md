@@ -8,6 +8,14 @@ user-visible behaviour, new or removed modules, endpoints, env vars, and decisio
 
 _Nothing yet._
 
+## Round 10 — Handover context · 2026-10-09
+
+- **Added** `chatContext.md`: the build chat's full context (every founder request verbatim, round-by-round timeline,
+  preferences, working agreements, deliverable links, a post-launch checklist), linked from both AGENTS.md files and
+  the docs index. AGENTS.md section 6 now asks for it to be updated after each round.
+- **Changed** AGENTS.md's product summary to the current feature set; LIMITATIONS gains the signature-logo, repurpose
+  tool and illustrative-hero notes; the landing screenshot in `docs/screenshots/` shows the new hero.
+
 ## Round 9 — The hero shows the magic; currency to Settings; Identity type; signature logo · 2026-10-08
 
 - **Changed** the landing hero to show what you get instead of listing it: an example idea types itself and a Brand in a

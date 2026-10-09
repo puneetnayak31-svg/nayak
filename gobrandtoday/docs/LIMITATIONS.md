@@ -13,6 +13,9 @@
 11. **Estimated prices are typical, not quotes.** Without a registrar API the price table in `domain-pricing.ts` is used and labelled “est.”; promotions, taxes and premium prices appear at checkout.
 12. **The preview build can't check anything live.** It runs in a sandbox with no network, so every domain and handle is “not checked” with a link; it uses Claude (with the viewer's consent) for names, kits and symbols when available.
 13. **Domain watchlist re-checks are manual.** Scheduled monitoring and alerts are on the roadmap.
+14. **Gmail won't show a pasted signature logo.** The email signature embeds the brand icon as a data URL, which Apple Mail and Outlook keep but Gmail drops; the founder must host the PNG and paste its link (the Downloads card explains this).
+15. **The logo repurpose tool works with the image it's given.** It can't redraw a low-resolution logo, recolour a raster logo or remove a background; a logo that would vanish on a colour is placed on a tile instead.
+16. **Landing-page examples are illustrative.** The hero's "magic" shows three fixed worked examples (labelled Example), not live results.
 
 # Future extension points
 
@@ -25,5 +28,5 @@
 | Domain and handle monitoring | Cron over `domain_watch` → email/push |
 | Team collaboration, agency mode, approvals | `projects` / `brands` → add an `organisations` and `members` table |
 | Payments | `BillingProvider` + `subscriptions` |
-| Generate an actual website | `website` kit section → static site generator |
+| Publish the website draft | `websiteFile` (already generated) → hosting/deploy provider and a custom domain |
 | PPTX / DOCX export | Render from the same `BrandKit` JSON |

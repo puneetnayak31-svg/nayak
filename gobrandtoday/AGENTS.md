@@ -7,8 +7,13 @@ code, **the code wins**: fix this file in the same change.
 ## 1. What this project is
 
 GoBrandToday is an India-first AI brand studio. A user goes from an idea to a brand name, checked domains
-and social handles, a transparent GoBrand Score, four logo "looks", a full brand book (guidelines and
-mockups) and launch copy.
+and social handles, a transparent GoBrand Score, four logo "looks", a full brand book (guidelines, industry
+mockups and a brand toolkit), a social media kit (profile picture, post, LinkedIn/X/YouTube banners), a website
+draft, launch copy and one-click downloads. Free SEO tools (name generators, domain and username checkers, and a
+logo-to-social-kit add-on) and an experts service sit around that core.
+
+**New to this project?** Read [`chatContext.md`](chatContext.md) once: it records every request the founder made,
+what shipped in each round, their preferences and the working agreements. This file and the code still win.
 
 It is an npm-workspaces TypeScript monorepo:
 
@@ -27,7 +32,8 @@ It is an npm-workspaces TypeScript monorepo:
 5. [`docs/DECISIONS.md`](docs/DECISIONS.md) — deliberate choices. Do not "fix" these without being asked.
 6. The area doc you need: [`docs/API.md`](docs/API.md), [`docs/PROVIDERS.md`](docs/PROVIDERS.md),
    [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md),
-   [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md). History is in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+   [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md). History is in [`docs/CHANGELOG.md`](docs/CHANGELOG.md); the founder's
+   requests and preferences, round by round, are in [`chatContext.md`](chatContext.md).
 
 ## 3. Commands (run from `gobrandtoday/`)
 
@@ -95,6 +101,7 @@ The app runs with **zero API keys**: AI falls back to the offline generator, dom
 | `SCENE_KINDS`, `SECTORS` or `ELEMENT_KINDS` | Their `*_META` and draw functions, tests, and the lists in `docs/TECH_BRIEF.md` section 6 (recipe B8b in `WORKFLOWS.md`). |
 | A download format | `apps/web/lib/export.ts`, `ExportCentre.tsx`, the ZIP contents and README in `downloadKitZip`, and `docs/WORKFLOWS.md` A8. |
 | Scope or a user-visible behaviour | `docs/SCOPE.md` and `docs/CHANGELOG.md`. |
+| A round of work the founder asked for | Add it to the timeline in `chatContext.md` (section 5) and append their message to its Appendix A. |
 | Prices, plan limits, expert services, landing/site copy or a marketed feature | `docs/MARKETING_BRIEF.md` (including its claims guardrails, section 13). |
 | A decision recorded in `docs/DECISIONS.md` | That entry (mark it superseded and add the new decision). Don't silently reverse it. |
 

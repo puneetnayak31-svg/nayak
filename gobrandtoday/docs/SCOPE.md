@@ -8,8 +8,9 @@ marketing copy. Check the code paths listed.
 
 GoBrandToday takes someone from "I have an idea" (or "I have a name") to a brand they can launch:
 a name, real domain and social-handle checks with prices, a transparent GoBrand Score, four
-genuinely different logo looks, a studio-style brand book with mockups, launch copy, website copy and an
-AI assistant for edits. It is **India-first**: ₹ pricing by default (switchable to $), Indian registrar
+genuinely different logo looks, a studio-style brand book with industry mockups and a brand toolkit, a social
+media kit (profile picture, post, LinkedIn/X/YouTube banners), launch copy, a website draft with website copy,
+one-click downloads (ZIP, PDF, HTML, logo files, tokens) and an AI assistant for edits. It is **India-first**: ₹ pricing by default (switchable to $), Indian registrar
 storefronts, `.in`/`.co.in`, Indian-language name roots and Hindi meaning checks.
 
 ## Who it is for

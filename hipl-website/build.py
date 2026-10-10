@@ -231,7 +231,7 @@ def q_page(q):
 
 
 def render_tokens(body, root):
-    home = root or "./"
+    home = root + "index.html"
     body = body.replace("{{root}}", root).replace("{{home}}", home)
     def sabha_token(m):
         args = m.group(2) or ""
@@ -319,16 +319,14 @@ def layout(meta, body, root, path):
 <link rel="icon" href="{root}assets/brand/hipl-favicon.svg" type="image/svg+xml">
 <link rel="icon" href="{root}assets/img/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="{root}assets/img/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Instrument+Sans:wght@400;500;600;700&family=Mukta:wght@400;700&display=swap">
+<link rel="stylesheet" href="{root}assets/fonts/fonts.css">
 <link rel="stylesheet" href="{root}assets/css/site.css">
 </head>
 <body class="{body_class}" data-root="{root}">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="{root or './'}" aria-label="HIPL home">{header_logo}</a>
+    <a class="brand" href="{root}index.html" aria-label="HIPL home">{header_logo}</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav class="nav" id="site-nav" aria-label="Main">
       {"".join(nav_items)}

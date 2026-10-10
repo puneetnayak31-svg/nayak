@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HIPL Launch Kit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* HIPL launch kit — single look on the Sabha identity: chalk ground, midnight bands. */
+:root { --midnight:#14123A; --m2:#2A2650; --line-d:#3B3670; --saffron:#FF8A1F; --ink:#B4530A; --marigold:#FFC93C; --lotus:#FF6FA3; --chalk:#F7F3EC; --sand:#E9E3D7; --paper:#FFFFFF; --line:#DDD5C6; --muted:#5B577A; --soft:#C9C3E8;
+  --dis:"Unbounded","Arial Black",Arial,sans-serif; --txt:"Instrument Sans","Helvetica Neue",Arial,sans-serif; --g:clamp(16px,4vw,56px); color-scheme: light; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--chalk); color: var(--midnight); font: 400 1.0625rem/1.6 var(--txt); }
+img { max-width: 100%; display: block; height: auto; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--saffron); outline-offset: 3px; }
+h1, h2, h3 { font-family: var(--dis); margin: 0; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(2.4rem, 7vw, 5.5rem); line-height: .98; letter-spacing: -.03em; }
+h2 { font-weight: 800; font-size: clamp(1.5rem, 3.2vw, 2.4rem); line-height: 1.08; letter-spacing: -.02em; }
+h3 { font-weight: 600; font-size: 1.05rem; }
+p { margin: 0; }
+.wrap { max-width: calc(1280px + 2 * var(--g)); margin-inline: auto; padding-inline: var(--g); }
+.sec { padding-block: clamp(48px, 7vw, 96px); }
+.dark { background: var(--midnight); color: var(--chalk); }
+.sand { background: var(--sand); }
+.eyebrow { font-size: .8125rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--ink); }
+.dark .eyebrow { color: var(--marigold); }
+.muted { color: var(--muted); } .dark .muted { color: var(--soft); }
+.head { display: grid; gap: 10px; margin-bottom: clamp(22px, 3vw, 36px); max-width: 780px; }
+.grid { display: grid; gap: 18px; grid-template-columns: repeat(var(--c, 4), minmax(0, 1fr)); }
+@media (max-width: 960px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: center; padding-block: clamp(48px, 7vw, 104px); }
+.hero .lock { width: min(520px, 100%); }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.tile { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.tile figure { margin: 0; display: grid; place-items: center; aspect-ratio: 4 / 3; padding: 18px; }
+.tile figure img { max-height: 100%; object-fit: contain; }
+.tile b { font-size: .9375rem; }
+.tile span { font-size: .8125rem; color: var(--muted); }
+.tile a { font-size: .8125rem; font-weight: 700; color: var(--ink); }
+.dark .tile span { color: var(--soft); }
+.shot { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.shot a.img { display: block; background: #CFC8BA; }
+.shot a.img:hover { outline: 3px solid var(--saffron); }
+.shot b { font-size: .9375rem; } .shot span { font-size: .8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.copy { background: var(--paper); border-left: 6px solid var(--saffron); padding: 20px 22px; display: grid; gap: 12px; min-width: 0; }
+.copy pre { margin: 0; white-space: pre-wrap; font: 400 .98rem/1.55 var(--txt); }
+.copy .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.btn { min-height: 40px; padding: 8px 16px; border: 2px solid var(--midnight); background: var(--midnight); color: var(--chalk); font: 700 .875rem var(--txt); cursor: pointer; }
+.btn:hover { background: var(--saffron); border-color: var(--saffron); color: var(--midnight); }
+.files { display: grid; gap: 2px; background: var(--line-d); border: 2px solid var(--line-d); }
+.files div { background: var(--midnight); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 16px; }
+.files code { font: 600 .9rem/1.4 ui-monospace, Menlo, monospace; color: var(--marigold); overflow-wrap: anywhere; }
+@media (max-width: 640px) { .files div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
+.steps li { border-top: 3px solid var(--saffron); padding-top: 14px; display: grid; gap: 6px; counter-increment: s; align-content: start; }
+.steps li:nth-child(2) { border-color: var(--marigold); } .steps li:nth-child(3) { border-color: var(--lotus); } .steps li:nth-child(4) { border-color: var(--midnight); }
+.steps li::before { content: counter(s, decimal-leading-zero); font: 800 1.4rem var(--dis); color: var(--ink); }
+@media (max-width: 960px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.swatches { display: grid; grid-template-columns: 4fr 2fr 1.4fr 1fr 2.6fr; min-height: 180px; }
+.swatches div { padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: .8125rem; min-width: 0; }
+.swatches b { font-family: var(--dis); font-size: .95rem; }
+@media (max-width: 640px) { .swatches { grid-template-columns: minmax(0, 1fr); } .swatches div { min-height: 72px; } }
+footer { padding-block: 40px; font-size: .875rem; }
+</style>
+</head>
+<body>
+
+<header class="dark">
+  <div class="wrap hero">
+    <div style="display:grid;gap:22px">
+      <span class="eyebrow">HIPL · Launch kit v1.0</span>
+      <h1>Everything you need to go live.</h1>
+      <p class="muted" style="max-width:52ch;font-size:1.15rem">Logos, 21 ready-to-post images, launch copy for every channel, a launch checklist and a setup guide. All on the Sabha identity.</p>
+    </div>
+    <img class="lock" src="logos/svg/hipl-lockup-stacked-on-dark.svg" alt="HIPL — Hinduism in Public Life, stacked lockup">
+  </div>
+</header>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Launch in five steps</span><h2>From this kit to a live site.</h2></div>
+    <ol class="steps">
+      <li><h3>Fill the placeholders</h3><p class="muted" style="font-size:.9375rem">Speakers, dates, venue, team, contact, website address. Every <b>[BRACKET]</b> goes.</p></li>
+      <li><h3>Clear the fact-checks</h3><p class="muted" style="font-size:.9375rem">Resolve every <b>VERIFY</b> marker against the named edition and translation.</p></li>
+      <li><h3>Deploy</h3><p class="muted" style="font-size:.9375rem">Vercel: root <code>hipl-website</code>, build <code>python3 build.py</code>, output <code>dist</code>.</p></li>
+      <li><h3>Connect forms</h3><p class="muted" style="font-size:.9375rem">Newsletter, questions, RSVPs, pitches. Add spam protection and confirmation emails.</p></li>
+      <li><h3>Post</h3><p class="muted" style="font-size:.9375rem">Set up profiles, then follow the launch-week plan below.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec sand">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Logos</span><h2>Master files only. Never retype the logo.</h2><p class="muted">Outlined SVGs exported from the master Sabha artwork, plus transparent PNGs. Under 240px wide, use the compact version (symbol + HIPL).</p></div>
+    <div class="grid">
+      <div class="tile"><figure style="background:#fff"><img src="logos/png/hipl-lockup-horizontal-on-light.png" alt="Primary horizontal lockup on light"></figure><b>Primary lockup</b><span>On white or chalk</span></div>
+      <div class="tile"><figure style="background:var(--midnight)"><img src="logos/png/hipl-lockup-horizontal-on-dark.png" alt="Horizontal lockup on dark"></figure><b>Lockup on dark</b><span>On midnight</span></div>
+      <div class="tile"><figure style="background:var(--midnight)"><img src="logos/png/hipl-lockup-stacked-on-dark.png" alt="Stacked lockup on dark" style="max-width:60%"></figure><b>Stacked lockup</b><span>Square spaces, stories</span></div>
+      <div class="tile"><figure style="background:#fff"><img src="logos/png/hipl-compact-on-light.png" alt="Compact symbol and HIPL"></figure><b>Compact</b><span>Under 240px wide</span></div>
+      <div class="tile"><figure style="background:#fff"><img src="logos/png/hipl-symbol-on-light.png" alt="Symbol, full colour" style="max-width:50%"></figure><b>Symbol</b><span>Full colour</span></div>
+      <div class="tile"><figure style="background:var(--saffron)"><img src="logos/png/hipl-symbol-mono-midnight.png" alt="Symbol, one colour midnight" style="max-width:50%"></figure><b>Symbol, one colour</b><span>On saffron or marigold</span></div>
+      <div class="tile"><figure style="background:#fff"><img src="logos/png/hipl-lockup-mono-midnight.png" alt="Mono dark lockup"></figure><b>Mono dark</b><span>Print, stamps, newspaper</span></div>
+      <div class="tile"><figure style="background:#fff;gap:16px;grid-auto-flow:column"><img src="logos/png/hipl-avatar.png" alt="Social avatar" style="width:96px"><img src="logos/png/hipl-favicon.png" alt="App icon" style="width:44px"></figure><b>Avatar and app icon</b><span>Profiles, favicon</span></div>
+    </div>
+    <div style="margin-top:36px;display:grid;gap:12px">
+      <span class="eyebrow">Colour</span>
+      <div class="swatches">
+        <div style="background:var(--midnight);color:var(--chalk)"><b>Midnight</b>#14123A · 40%</div>
+        <div style="background:var(--saffron)"><b>Saffron Flare</b>#FF8A1F · 20%</div>
+        <div style="background:var(--marigold)"><b>Marigold</b>#FFC93C</div>
+        <div style="background:var(--lotus)"><b>Lotus</b>#FF6FA3</div>
+        <div style="background:var(--chalk);box-shadow:inset 0 0 0 1px var(--line)"><b>Chalk</b>#F7F3EC · 25%</div>
+      </div>
+      <p class="muted" style="font-size:.9375rem">Use dark saffron #B4530A for small text on light backgrounds. Unbounded for headlines, Instrument Sans for text, Mukta for Hindi.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Social images</span><h2>Ready to post. Tap any image to open it full size.</h2><p class="muted">Placeholders like [WEBSITE URL] and [DATE] are marked in the templates; edit <code>templates/social.html</code> and run <code>templates/render.mjs</code> to re-export.</p></div>
+    <h3 style="margin-bottom:14px">Instagram: launch and carousel (1080 × 1350)</h3>
+    <div class="grid" style="--c:5">
+      <div class="shot"><a class="img" href="social/instagram-01-launch.png" target="_blank"><img src="social/instagram-01-launch.png" alt="Launch post: Ask anything. Argue well. Keep the circle open." loading="lazy"></a><b>Launch post</b><span>Day 1</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-1.png" target="_blank"><img src="social/instagram-carousel-1.png" alt="Carousel 1: Six ways in. One conversation." loading="lazy"></a><b>Carousel 1/8</b><span>Six ways in</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-2.png" target="_blank"><img src="social/instagram-carousel-2.png" alt="Carousel 2: HIPL Dialogues" loading="lazy"></a><b>Carousel 2/8</b><span>Dialogues</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-3.png" target="_blank"><img src="social/instagram-carousel-3.png" alt="Carousel 3: HIPL Interviews" loading="lazy"></a><b>Carousel 3/8</b><span>Interviews</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-4.png" target="_blank"><img src="social/instagram-carousel-4.png" alt="Carousel 4: The First 100 Questions" loading="lazy"></a><b>Carousel 4/8</b><span>100 Questions</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-5.png" target="_blank"><img src="social/instagram-carousel-5.png" alt="Carousel 5: HIPL Explorations" loading="lazy"></a><b>Carousel 5/8</b><span>Explorations</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-6.png" target="_blank"><img src="social/instagram-carousel-6.png" alt="Carousel 6: The Reading Circle" loading="lazy"></a><b>Carousel 6/8</b><span>Reading Circle</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-7.png" target="_blank"><img src="social/instagram-carousel-7.png" alt="Carousel 7: The Weekly Dispatch" loading="lazy"></a><b>Carousel 7/8</b><span>Dispatch</span></div>
+      <div class="shot"><a class="img" href="social/instagram-carousel-8.png" target="_blank"><img src="social/instagram-carousel-8.png" alt="Carousel 8: What have you always wanted to ask?" loading="lazy"></a><b>Carousel 8/8</b><span>Call to action</span></div>
+      <div class="shot"><a class="img" href="social/instagram-dialogue-01-poster.png" target="_blank"><img src="social/instagram-dialogue-01-poster.png" alt="Dialogue 01 poster" loading="lazy"></a><b>Dialogue 01 poster</b><span>Fill date, venue, city</span></div>
+    </div>
+    <h3 style="margin:36px 0 14px">Instagram: series posts</h3>
+    <div class="grid" style="--c:5">
+      <div class="shot"><a class="img" href="social/instagram-question-001.png" target="_blank"><img src="social/instagram-question-001.png" alt="Question 001 of 100: Can a tradition question itself?" loading="lazy"></a><b>Question 001/100</b><span>1080 × 1080</span></div>
+      <div class="shot"><a class="img" href="social/instagram-exploration-dharma.png" target="_blank"><img src="social/instagram-exploration-dharma.png" alt="Exploration: Dharma, one word, many meanings" loading="lazy"></a><b>Exploration card</b><span>1080 × 1350</span></div>
+      <div class="shot"><a class="img" href="social/instagram-write-for-hipl.png" target="_blank"><img src="social/instagram-write-for-hipl.png" alt="Write for HIPL: Your voice belongs in the circle" loading="lazy"></a><b>Write for HIPL</b><span>1080 × 1350</span></div>
+      <div class="shot"><a class="img" href="social/story-launch.png" target="_blank"><img src="social/story-launch.png" alt="Story: launch" loading="lazy"></a><b>Story: launch</b><span>1080 × 1920</span></div>
+      <div class="shot"><a class="img" href="social/story-ask-a-question.png" target="_blank"><img src="social/story-ask-a-question.png" alt="Story: ask a question" loading="lazy"></a><b>Story: ask</b><span>1080 × 1920</span></div>
+    </div>
+    <h3 style="margin:36px 0 14px">Web, YouTube, headers</h3>
+    <div class="grid" style="--c:3">
+      <div class="shot"><a class="img" href="social/og-default.png" target="_blank"><img src="social/og-default.png" alt="Website share image" loading="lazy"></a><b>Website share image</b><span>1200 × 630 · already in the site</span></div>
+      <div class="shot"><a class="img" href="social/youtube-thumbnail-72-vs-22.png" target="_blank"><img src="social/youtube-thumbnail-72-vs-22.png" alt="YouTube thumbnail: 72 vs 22" loading="lazy"></a><b>YouTube thumbnail</b><span>1280 × 720</span></div>
+      <div class="shot"><a class="img" href="social/newsletter-header.png" target="_blank"><img src="social/newsletter-header.png" alt="Weekly Dispatch header" loading="lazy"></a><b>Newsletter header</b><span>1200 × 400</span></div>
+      <div class="shot"><a class="img" href="social/x-header.png" target="_blank"><img src="social/x-header.png" alt="X header" loading="lazy"></a><b>X header</b><span>1500 × 500</span></div>
+      <div class="shot"><a class="img" href="social/linkedin-banner.png" target="_blank"><img src="social/linkedin-banner.png" alt="LinkedIn banner" loading="lazy"></a><b>LinkedIn banner</b><span>1584 × 396</span></div>
+      <div class="shot"><a class="img" href="social/profile-avatar.png" target="_blank" style="background:#fff"><img src="social/profile-avatar.png" alt="Profile avatar" loading="lazy" style="width:60%;margin:auto;padding:12px 0"></a><b>Profile picture</b><span>1080 × 1080, transparent</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sand">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Launch copy</span><h2>Copy, paste, replace the brackets.</h2><p class="muted">The full set, with the day-by-day plan, templates for question and Dialogue posts, Dispatch Issue 01 and a press note, is in <code>copy/launch-copy.md</code>.</p></div>
+    <div class="grid" style="--c:2">
+      <div class="copy"><div class="row"><b>Instagram / X bio</b><button class="btn" type="button" data-copy="c1">Copy</button></div><pre id="c1">Hinduism in Public Life. Debates, interviews, a sourced library and the questions you've always wanted to ask. Heritage that thinks forward.</pre></div>
+      <div class="copy"><div class="row"><b>One line</b><button class="btn" type="button" data-copy="c2">Copy</button></div><pre id="c2">HIPL is where Hindu ideas get argued well.</pre></div>
+      <div class="copy"><div class="row"><b>Instagram launch caption</b><button class="btn" type="button" data-copy="c3">Copy</button></div><pre id="c3">Ask anything. Argue well. Keep the circle open.
+
+HIPL (Hinduism in Public Life) is live. We're a modern ideas platform for Hindu thought: public debates, long conversations, a sourced library, and a box for the questions you've always wanted to ask.
+
+Our mark is a sabha, an assembly, drawn as a circle of voices. Every bar is a different person. That's the idea.
+
+Start with a question → link in bio.</pre></div>
+      <div class="copy"><div class="row"><b>X / Threads</b><button class="btn" type="button" data-copy="c4">Copy</button></div><pre id="c4">HIPL — Hinduism in Public Life is live.
+
+Monthly debates where the room votes before and after. Long interviews. A sourced library where every claim says what kind of claim it is. And 100 questions we've promised to answer in public.
+
+Ask yours: [WEBSITE URL]/questions</pre></div>
+      <div class="copy"><div class="row"><b>WhatsApp</b><button class="btn" type="button" data-copy="c5">Copy</button></div><pre id="c5">Namaste! We've just launched HIPL — Hinduism in Public Life.
+
+It's a new platform for thoughtful conversations about Hindu ideas: public debates, interviews, a sourced library, and a box where you can ask the questions you've always wanted to ask.
+
+Ask one here: [WEBSITE URL]/questions
+Get the 5-minute weekly letter: [WEBSITE URL]/dispatch</pre></div>
+      <div class="copy"><div class="row"><b>Write for HIPL call</b><button class="btn" type="button" data-copy="c6">Copy</button></div><pre id="c6">Anyone can write for HIPL.
+
+Essays, personal stories ("My Hinduism"), reviews, responses and stories from your town. We edit with you, publish under your name, and nothing goes live until you approve it. Voices is unpaid at launch, and we'd rather say so up front.
+
+Pitch: [WEBSITE URL]/write</pre></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Launch week</span><h2>Seven days, seven posts.</h2></div>
+    <div class="grid" style="--c:4">
+      <div class="tile" style="border-top:3px solid var(--saffron);padding-top:12px"><b>Day 1 · Launch</b><span>Launch post, carousel, both stories, LinkedIn, WhatsApp</span></div>
+      <div class="tile" style="border-top:3px solid var(--marigold);padding-top:12px"><b>Day 2 · Question 001</b><span>Start the 100 Questions series</span></div>
+      <div class="tile" style="border-top:3px solid var(--lotus);padding-top:12px"><b>Day 3 · Exploration</b><span>Dharma: one word, many meanings</span></div>
+      <div class="tile" style="border-top:3px solid var(--midnight);padding-top:12px"><b>Day 4 · Dialogue 01</b><span>Only once date, venue and speakers are confirmed</span></div>
+      <div class="tile" style="border-top:3px solid var(--saffron);padding-top:12px"><b>Day 5 · Write for HIPL</b><span>Call for pitches</span></div>
+      <div class="tile" style="border-top:3px solid var(--marigold);padding-top:12px"><b>Day 6 · Interview trailer</b><span>72 vs 22, once filmed</span></div>
+      <div class="tile" style="border-top:3px solid var(--lotus);padding-top:12px"><b>Day 7 · Dispatch 01</b><span>First issue goes out on the fixed day and time</span></div>
+      <div class="tile" style="border-top:3px solid var(--midnight);padding-top:12px"><b>Every day</b><span>Review new questions within 24 hours; reply to pitches within 10 working days</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec dark">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">In the repository</span><h2>What's in the kit</h2></div>
+    <div class="files">
+      <div><code>hipl-website/</code><span>The website: 28 pages, built with <code>python3 build.py</code> into <code>dist/</code>.</span></div>
+      <div><code>hipl-website/EDITOR-GUIDE.md</code><span>How to update pages, build an Exploration, publish answers and handle pitches.</span></div>
+      <div><code>hipl-launch-kit/logos/</code><span>14 logo SVGs (outlined) and transparent PNGs, plus favicon sizes.</span></div>
+      <div><code>hipl-launch-kit/social/</code><span>21 ready-to-post PNGs at platform sizes.</span></div>
+      <div><code>hipl-launch-kit/copy/launch-copy.md</code><span>Bios, captions, LinkedIn post, WhatsApp, launch-week plan, post templates, Dispatch Issue 01, press note.</span></div>
+      <div><code>hipl-launch-kit/LAUNCH-CHECKLIST.md</code><span>Content, technical, social, launch day and week-one checks.</span></div>
+      <div><code>hipl-launch-kit/DEPLOY.md</code><span>Hosting on Vercel, Netlify or GitHub Pages; connecting forms; analytics; the path to Next.js + Payload CMS.</span></div>
+      <div><code>hipl-launch-kit/templates/</code><span>Source artboards and the render script to re-export every image.</span></div>
+      <div><code>hipl-launch-kit.zip</code><span>Everything above in one download.</span></div>
+    </div>
+  </div>
+</section>
+<footer class="wrap muted">HIPL — Hinduism in Public Life · Heritage that thinks forward.</footer>
+<script>
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var el = document.getElementById(b.getAttribute("data-copy"));
+      var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1800); };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected"; };
+      try { navigator.clipboard.writeText(el.textContent).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+</script>
+</body>
+</html>

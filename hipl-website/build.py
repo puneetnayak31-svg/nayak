@@ -186,6 +186,8 @@ def layout(meta, body, root, path):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#14123A">
 <link rel="icon" href="{root}assets/brand/hipl-favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{root}assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="{root}assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Instrument+Sans:wght@400;500;600;700&family=Mukta:wght@400;700&display=swap">

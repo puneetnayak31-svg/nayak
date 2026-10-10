@@ -1,0 +1,90 @@
+<!--meta {"title": "Explorations", "description": "HIPL Explorations: a permanent library of clear, sourced, interactive explainers on Hindu ideas, texts and stories, in three series.", "nav": "explorations"} -->
+<section class="band-dark on-dark" style="position:relative;overflow:hidden">
+  <div class="wrap page-hero" style="position:relative">
+    <!--sabha live style="position:absolute;width:620px;right:-220px;top:-120px;opacity:.85"-->
+    <span class="eyebrow" style="position:relative">HIPL Explorations · Knowledge library</span>
+    <h1 style="max-width:14ch;position:relative">Explore Hindu ideas, stories and questions.</h1>
+    <p class="lede muted" style="position:relative">36 evergreen entries in three connected series. Every claim is sourced and labelled. No login, ever.</p>
+    <form class="inline-form" role="search" style="max-width:640px;position:relative" onsubmit="event.preventDefault();document.getElementById('all').scrollIntoView();">
+      <label class="sr-only" for="x-search">Search Explorations</label>
+      <input id="x-search" type="search" placeholder="Try dharma, Ramayana, career, Nachiketa" data-filter="q" form="x-filters">
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">Three series</span><h2>Pick a door.</h2></div></div>
+    <div class="grid" style="--cols:3">
+      <a class="series-card series-hindu-universe" href="{{root}}explorations/hindu-universe.html"><!--sabha--><span class="tag">12 entries</span><div class="stack" style="--gap:10px"><h3>The Hindu Universe</h3><p>Core ideas, texts, philosophical schools, thinkers, traditions and history.</p></div><span class="arrow-link" style="justify-self:start;border-color:var(--midnight)">Enter the series</span></a>
+      <a class="series-card series-stories-that-stay" href="{{root}}explorations/stories-that-stay.html"><!--sabha--><span class="tag">12 entries</span><div class="stack" style="--gap:10px"><h3>Stories That Stay</h3><p>Retellings of stories, dilemmas and characters, with context and interpretations.</p></div><span class="arrow-link" style="justify-self:start;border-color:var(--midnight)">Enter the series</span></a>
+      <a class="series-card series-ancient-ideas-modern-life" href="{{root}}explorations/ancient-ideas-modern-life.html"><!--sabha--><span class="tag">12 entries</span><div class="stack" style="--gap:10px"><h3>Ancient Ideas, Modern Life</h3><p>Hindu ideas in conversation with today's questions.</p></div><span class="arrow-link" style="justify-self:start;border-color:var(--midnight)">Enter the series</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section band-sand">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">Start here</span><h2>New to all this? Begin with these three.</h2></div><p class="small muted" style="max-width:40ch">A map of the whole tradition, one big word, and one unforgettable story.</p></div>
+    <div class="grid" style="--cols:3">{{xcards:start}}</div>
+  </div>
+</section>
+
+<section class="section" id="all">
+  <div class="wrap" data-filter-scope="#all .x-card">
+    <form id="x-filters" onsubmit="event.preventDefault()"></form>
+    <div class="sec-head"><div><span class="eyebrow">The library</span><h2>All 36 entries</h2></div><span class="result-count" aria-live="polite"></span></div>
+    <div class="filters">
+      <input type="hidden" data-filter="q" id="x-q-mirror">
+      <div class="field"><label for="xf-series">Series</label><select id="xf-series" data-filter="series"><option value="">All series</option><option value="hindu-universe">The Hindu Universe</option><option value="stories-that-stay">Stories That Stay</option><option value="ancient-ideas-modern-life">Ancient Ideas, Modern Life</option></select></div>
+      <div class="field"><label for="xf-topic">Topic</label><select id="xf-topic" data-filter="topics"><option value="">All topics</option><option>Ideas</option><option>Texts</option><option>Stories</option><option>Ethics</option><option>Philosophy</option><option>Traditions</option><option>Society</option><option>Practice</option><option>Self</option><option>History</option><option>Work</option><option>Family</option><option>Science</option><option>Future</option></select></div>
+      <div class="field"><label for="xf-type">Page type</label><select id="xf-type" data-filter="type"><option value="">All types</option><option value="explainer">Explainer</option><option value="story">Illustrated Story</option><option value="interactive">Interactive</option></select></div>
+      <div class="field"><label for="xf-level">Level</label><select id="xf-level" data-filter="level"><option value="">Any level</option><option>Beginner</option><option>Deeper</option></select></div>
+      <div class="field"><label for="xf-read">Read time</label><select id="xf-read" data-filter="read"><option value="">Any length</option><option value="u10">Under 10 min</option><option value="10-20">10–20 min</option><option value="20p">20+ min</option></select></div>
+    </div>
+    <div class="grid" style="--cols:3">{{xcards:all}}</div>
+    <div class="empty filter-empty" hidden><h3>Nothing matches yet.</h3><p class="small muted">Try fewer filters, or ask it as one of the 100 Questions.</p><button class="btn small dark" type="button" data-filter-reset>Clear filters</button></div>
+  </div>
+</section>
+
+<section class="section tight band-sand">
+  <div class="wrap stack" style="--gap:18px">
+    <div class="sec-head" style="margin-bottom:0"><div><span class="eyebrow">Concept glossary</span><h2 style="font-size:clamp(1.4rem,2.6vw,2rem)">Tap a term for a short definition.</h2></div></div>
+    <div class="glossary">{{glossary}}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div class="stack" style="--gap:18px">
+      <span class="eyebrow">How we know what we say</span>
+      <h2>Every key claim says what kind of claim it is.</h2>
+      <p>Original texts and critical editions first, then named translations, then peer-reviewed scholarship, then lived tradition, always labelled as one community's view. We never cite blogs, forwards, quote sites or AI text.</p>
+      <a class="arrow-link" href="{{root}}about.html#standards">Our editorial standards</a>
+    </div>
+    <div class="stack" style="--gap:14px">
+      <div class="row" style="--gap:10px"><span class="claim" data-kind="text"></span><span class="small">Directly from a named text and edition</span></div>
+      <div class="row" style="--gap:10px"><span class="claim" data-kind="tradition"></span><span class="small">Belief or practice of a named tradition</span></div>
+      <div class="row" style="--gap:10px"><span class="claim" data-kind="historians"></span><span class="small">Evidence-based historical scholarship</span></div>
+      <div class="row" style="--gap:10px"><span class="claim" data-kind="debate"></span><span class="small">A live disagreement; both sides shown</span></div>
+      <div class="row" style="--gap:10px"><span class="claim" data-kind="asks"></span><span class="small">Our own question to you</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section band-lotus">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow" style="color:var(--midnight)">From Voices</span><h2>Community writing, kept separate from the library.</h2></div><a class="btn dark" href="{{root}}write.html">Write for HIPL</a></div>
+    <div class="grid" style="--cols:3">
+      <a class="card linked" href="{{root}}voices/sample-essay.html"><div class="meta"><span class="tag lotus">My Hinduism</span><span class="sample-flag">Sample</span></div><h3>The prayer I stopped saying, and the one I kept</h3><p class="small muted">[WRITER NAME] for HIPL</p></a>
+      <article class="card"><div class="meta"><span class="tag outline">Essay</span><span class="sample-flag">Sample</span></div><h3>What a temple committee taught me about democracy</h3><p class="small muted">[WRITER NAME] for HIPL</p></article>
+      <article class="card"><div class="meta"><span class="tag marigold">Local story</span><span class="sample-flag">Sample</span></div><h3>The last lamp-maker on our street</h3><p class="small muted">[WRITER NAME] for HIPL</p></article>
+    </div>
+  </div>
+</section>
+<script>
+  // Hero search drives the library filter.
+  (function () { var s = document.getElementById("x-search"), m = document.getElementById("x-q-mirror"); if (!s || !m) return;
+    s.removeAttribute("data-filter"); s.addEventListener("input", function () { m.value = s.value; m.dispatchEvent(new Event("input")); }); })();
+</script>

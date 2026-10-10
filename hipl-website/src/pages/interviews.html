@@ -1,0 +1,64 @@
+<!--meta {"title": "Interviews", "description": "HIPL Interviews: two in-depth, one-to-one conversations a month with people who live Hindu ideas in public life. Watch, listen, suggest a guest.", "nav": "interviews"} -->
+<section class="band-marigold">
+  <div class="wrap page-hero">
+    <span class="eyebrow" style="color:var(--midnight)">HIPL Interviews · 2 a month</span>
+    <h1 style="max-width:16ch">Long conversations with people who live these ideas.</h1>
+    <p class="lede">Scholars, artists, practitioners, entrepreneurs and young voices. One host, one guest, one theme, 30 to 45 minutes. On YouTube and podcast apps.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split rev">
+    <button class="video" type="button" data-youtube="[VIDEO ID]" aria-label="Play the latest episode"><!--sabha--><span class="play" aria-hidden="true"></span><span class="cap"><span>Latest episode · [RUNTIME]</span><span>Loads from YouTube on click</span></span></button>
+    <div class="stack" style="--gap:18px">
+      <div class="row"><span class="tag">Latest</span><span class="tag outline">Old Roots, New Forms</span><span class="sample-flag">Sample</span></div>
+      <h2>72 vs 22: What does dharma mean to you?</h2>
+      <p>An elder and a Gen Z guest answer the same five questions side by side. It's the monthly special: two generations, one table.</p>
+      <p class="small muted">With [ELDER GUEST NAME] and [GEN Z GUEST NAME] · Host [HOST NAME]</p>
+      <div class="row"><a class="btn dark" href="{{root}}interviews/sample-episode.html">Episode page</a><a class="arrow-link" href="#suggest">Suggest a guest</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="section band-sand">
+  <div class="wrap" data-filter-scope=".ep-card">
+    <div class="sec-head"><div><span class="eyebrow">All episodes</span><h2>Filter by theme</h2></div><span class="result-count" aria-live="polite"></span></div>
+    <div class="filter-chips" data-filter="theme" role="group" aria-label="Theme" style="margin-bottom:24px">
+      <button type="button" data-value="" aria-pressed="true">All</button>
+      <button type="button" data-value="texts" aria-pressed="false">Texts &amp; ideas</button>
+      <button type="button" data-value="arts" aria-pressed="false">Arts</button>
+      <button type="button" data-value="practice" aria-pressed="false">Practice</button>
+      <button type="button" data-value="generations" aria-pressed="false">Generations</button>
+      <button type="button" data-value="work" aria-pressed="false">Work &amp; public life</button>
+    </div>
+    <div class="grid" style="--cols:3">
+      <a class="card linked ep-card" data-theme="generations" href="{{root}}interviews/sample-episode.html"><div style="aspect-ratio:16/9;background:var(--marigold);display:flex;align-items:flex-end;padding:14px;font:800 2rem var(--f-display)">72 vs 22</div><div class="meta"><span>Generations</span><span>[RUNTIME]</span><span class="sample-flag">Sample</span></div><h3>What does dharma mean to you?</h3><p class="small muted">An elder and a Gen Z guest, the same questions.</p></a>
+      <article class="card ep-card" data-theme="texts"><div style="aspect-ratio:16/9;background:var(--midnight);display:flex;align-items:flex-end;padding:14px"><span class="tag saffron">Scholar or writer</span></div><div class="meta"><span>Texts &amp; ideas</span><span class="status answering">Planned</span></div><h3>What do the texts actually say about dharma?</h3><p class="small muted">[GUEST NAME], [ROLE]</p></article>
+      <article class="card ep-card" data-theme="arts"><div style="aspect-ratio:16/9;background:var(--lotus);display:flex;align-items:flex-end;padding:14px"><span class="tag">Artist or musician</span></div><div class="meta"><span>Arts</span><span class="status answering">Planned</span></div><h3>How do you reinvent a tradition without losing it?</h3><p class="small muted">[GUEST NAME], [ROLE]</p></article>
+      <article class="card ep-card" data-theme="practice"><div style="aspect-ratio:16/9;background:var(--saffron);display:flex;align-items:flex-end;padding:14px"><span class="tag">Practitioner</span></div><div class="meta"><span>Practice</span><span class="status answering">Planned</span></div><h3>What does faith look like in daily work?</h3><p class="small muted">[GUEST NAME], priest, teacher or seva worker</p></article>
+      <article class="card ep-card" data-theme="generations"><div style="aspect-ratio:16/9;background:var(--chalk);box-shadow:inset 0 0 0 2px var(--midnight);display:flex;align-items:flex-end;padding:14px"><span class="tag">Young creator</span></div><div class="meta"><span>Generations</span><span class="status answering">Planned</span></div><h3>What do people my age actually believe?</h3><p class="small muted">[GUEST NAME], [ROLE]</p></article>
+      <article class="card ep-card" data-theme="work"><div style="aspect-ratio:16/9;background:var(--midnight-2);display:flex;align-items:flex-end;padding:14px"><span class="tag marigold">Elder</span></div><div class="meta"><span>Work &amp; public life</span><span class="status answering">Planned</span></div><h3>What has changed in 60 years, and what should not?</h3><p class="small muted">[GUEST NAME], [ROLE]</p></article>
+    </div>
+    <div class="empty filter-empty" hidden><h3>No episodes in this theme yet.</h3><button class="btn small dark" type="button" data-filter-reset>Show all episodes</button></div>
+  </div>
+</section>
+
+<section class="section" id="suggest">
+  <div class="wrap split">
+    <div class="stack" style="--gap:16px">
+      <span class="eyebrow">Suggest a guest</span>
+      <h2>Who should we sit down with?</h2>
+      <p>A scholar who explains things clearly, an artist reinventing a form, a priest who also runs a start-up, your grandmother. Tell us who and why.</p>
+    </div>
+    <form class="form js-form" data-kind="guest" novalidate>
+      <div class="form-row">
+        <div class="field"><label for="g-who">Guest's name</label><input id="g-who" name="guest" type="text" required></div>
+        <div class="field"><label for="g-type">Type of guest</label><select id="g-type" name="type"><option>Scholar or writer</option><option>Artist or musician</option><option>Practitioner</option><option>Young creator or professional</option><option>Elder</option></select></div>
+      </div>
+      <div class="field"><label for="g-why">Why this person? What should we ask?</label><textarea id="g-why" name="why" required></textarea></div>
+      <div class="field"><label for="g-email">Your email <span class="hint">(optional, only if you want a reply)</span></label><input id="g-email" name="email" type="email"></div>
+      <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <button class="btn dark" type="submit">Send suggestion</button>
+    </form>
+  </div>
+</section>

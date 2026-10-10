@@ -1,0 +1,90 @@
+{
+  "series": [
+    {
+      "slug": "hindu-universe",
+      "name": "The Hindu Universe",
+      "short": "Hindu Universe",
+      "accent": "saffron",
+      "line": "Core ideas, texts, philosophical schools, thinkers, traditions and history.",
+      "intro": "Start here if you want the big picture: the ideas, texts and schools that Hindu thought keeps returning to, each explained with its sources named and its debates left open.",
+      "concepts": ["dharma", "karma", "atman", "moksha", "bhakti", "rta"]
+    },
+    {
+      "slug": "stories-that-stay",
+      "name": "Stories That Stay",
+      "short": "Stories That Stay",
+      "accent": "marigold",
+      "line": "Retellings of stories, dilemmas and characters, with context and interpretations.",
+      "intro": "Great stories travel because they leave you with a question. Each retelling here names its version, shows how different traditions read it and stops to ask what you would have done.",
+      "concepts": ["dharma", "svadharma", "atman", "seva"]
+    },
+    {
+      "slug": "ancient-ideas-modern-life",
+      "name": "Ancient Ideas, Modern Life",
+      "short": "Ancient Ideas, Modern Life",
+      "accent": "lotus",
+      "line": "Hindu ideas in conversation with today's questions.",
+      "intro": "Careers, screens, rivers, grandparents. These entries bring old ideas into new rooms. They are framed as questions, not verdicts, and every claim says what kind of claim it is.",
+      "concepts": ["seva", "dharma", "ahimsa", "karma"]
+    }
+  ],
+  "types": {
+    "explainer": "Explainer",
+    "story": "Illustrated Story",
+    "interactive": "Interactive"
+  },
+  "entries": [
+    {"n": 1, "title": "Hinduism: Where Do You Even Begin?", "series": "hindu-universe", "type": "interactive", "element": "Clickable map of traditions, texts and schools", "priority": "start", "level": "Beginner", "read": 12, "topics": ["Traditions", "Texts"], "hook": "Thousands of texts, hundreds of traditions, no single founder. Here is a map you can actually use."},
+    {"n": 2, "title": "Dharma: One Word, Many Meanings", "series": "hindu-universe", "type": "explainer", "element": "Meaning layers + everyday scenarios", "priority": "start", "level": "Beginner", "read": 11, "topics": ["Ideas", "Ethics"], "slug": "dharma", "built": true, "hook": "Your grandmother, a judge and a Buddhist monk might all use the word dharma, and mean three different things."},
+    {"n": 3, "title": "From the Vedas to the Upanishads", "series": "hindu-universe", "type": "interactive", "element": "Scrollable timeline + text explorer", "priority": "later", "level": "Deeper", "read": 18, "topics": ["Texts", "History"]},
+    {"n": 4, "title": "The Bhagavad Gita: A Conversation Before a Battle", "series": "hindu-universe", "type": "explainer", "element": "Chapter-by-chapter guide", "priority": "start", "level": "Beginner", "read": 15, "topics": ["Texts", "Ethics"], "hook": "Eighteen chapters, one battlefield, one long conversation. A guide to what is actually said, chapter by chapter."},
+    {"n": 5, "title": "Six Schools, Six Ways of Seeing the World", "series": "hindu-universe", "type": "explainer", "element": "Compare-the-schools cards", "priority": "start", "level": "Deeper", "read": 14, "topics": ["Philosophy", "Ideas"], "slug": "six-schools", "built": true, "hook": "How do we know anything? What is the world made of? Six classical schools gave six different starting points."},
+    {"n": 6, "title": "Atman: Who Are You, Really?", "series": "hindu-universe", "type": "explainer", "element": "Contrasting views side by side", "priority": "later", "level": "Deeper", "read": 12, "topics": ["Philosophy", "Self"]},
+    {"n": 7, "title": "Why So Many Gods?", "series": "hindu-universe", "type": "explainer", "element": "Visual guide", "priority": "later", "sensitive": true, "level": "Beginner", "read": 10, "topics": ["Traditions", "Practice"]},
+    {"n": 8, "title": "Samudra Manthan: The Churning of the Ocean", "series": "hindu-universe", "type": "story", "element": "Story map + character cards", "priority": "later", "level": "Beginner", "read": 9, "topics": ["Stories"]},
+    {"n": 9, "title": "Karma: Is Everything Really Written?", "series": "hindu-universe", "type": "interactive", "element": "Everyday scenarios", "priority": "later", "level": "Beginner", "read": 10, "topics": ["Ideas", "Ethics"]},
+    {"n": 10, "title": "Bhakti: The Power of Devotion", "series": "hindu-universe", "type": "story", "element": "Audio-visual poet profiles", "priority": "later", "level": "Beginner", "read": 16, "topics": ["Practice", "Poetry"]},
+    {"n": 11, "title": "Moksha: What Does Freedom Actually Mean?", "series": "hindu-universe", "type": "explainer", "element": "Concept comparison cards", "priority": "later", "level": "Deeper", "read": 12, "topics": ["Philosophy", "Ideas"]},
+    {"n": 12, "title": "One Tradition, Many Traditions", "series": "hindu-universe", "type": "interactive", "element": "Cultural map + timeline", "priority": "later", "level": "Deeper", "read": 22, "topics": ["Traditions", "History"]},
+
+    {"n": 13, "title": "Arjuna's Dilemma", "series": "stories-that-stay", "type": "interactive", "element": "\"What would you do?\" dilemma", "priority": "start", "level": "Beginner", "read": 9, "topics": ["Stories", "Ethics"], "slug": "arjunas-dilemma", "built": true, "hook": "Two armies. Teachers and cousins on the other side. Arjuna puts down his bow. What do you do?"},
+    {"n": 14, "title": "Nachiketa and the King of Death", "series": "stories-that-stay", "type": "story", "element": "Choose-your-question narrative", "priority": "start", "level": "Beginner", "read": 13, "topics": ["Stories", "Self"], "slug": "nachiketa", "built": true, "hook": "A teenager is sent to Death, and refuses every reward Death offers, until he gets an answer."},
+    {"n": 15, "title": "Savitri's Journey", "series": "stories-that-stay", "type": "story", "element": "Character journey", "priority": "later", "level": "Beginner", "read": 10, "topics": ["Stories"]},
+    {"n": 16, "title": "Ekalavya: Merit, Access and Sacrifice", "series": "stories-that-stay", "type": "explainer", "element": "Multiple perspectives", "priority": "later", "sensitive": true, "level": "Deeper", "read": 12, "topics": ["Stories", "Society"]},
+    {"n": 17, "title": "The Exile That Changed Everything", "series": "stories-that-stay", "type": "story", "element": "Chapter-based visual story", "priority": "later", "level": "Beginner", "read": 20, "topics": ["Stories"]},
+    {"n": 18, "title": "Krishna and Sudama", "series": "stories-that-stay", "type": "story", "element": "Short illustrated story", "priority": "start", "level": "Beginner", "read": 7, "topics": ["Stories", "Friendship"], "hook": "Two old friends, one palace, a handful of rice. A short story about what we bring and what we receive."},
+    {"n": 19, "title": "Harishchandra and the Cost of Truth", "series": "stories-that-stay", "type": "interactive", "element": "Ethical choice narrative", "priority": "later", "level": "Beginner", "read": 11, "topics": ["Stories", "Ethics"]},
+    {"n": 20, "title": "The Race Around the World", "series": "stories-that-stay", "type": "story", "element": "Story with interpretations", "priority": "later", "level": "Beginner", "read": 6, "topics": ["Stories"]},
+    {"n": 21, "title": "The Clever Jackal and the Lion", "series": "stories-that-stay", "type": "story", "element": "Illustrated fable", "priority": "later", "level": "Beginner", "read": 6, "topics": ["Stories"]},
+    {"n": 22, "title": "Ashtavakra: Who Gets to Be a Thinker?", "series": "stories-that-stay", "type": "story", "element": "Philosophical encounter", "priority": "later", "level": "Deeper", "read": 10, "topics": ["Stories", "Philosophy"]},
+    {"n": 23, "title": "Draupadi's Question", "series": "stories-that-stay", "type": "explainer", "element": "Source-led multiple perspectives", "priority": "later", "sensitive": true, "level": "Deeper", "read": 14, "topics": ["Stories", "Gender"]},
+    {"n": 24, "title": "One Ramayana, Many Ramayanas", "series": "stories-that-stay", "type": "interactive", "element": "Comparative story map", "priority": "start", "level": "Beginner", "read": 12, "topics": ["Stories", "Traditions"], "slug": "many-ramayanas", "built": true, "hook": "There is no single Ramayana. There are hundreds, and they don't all agree."},
+
+    {"n": 25, "title": "Dharma in the Age of Career Ambition", "series": "ancient-ideas-modern-life", "type": "interactive", "element": "Workplace scenarios", "priority": "start", "level": "Beginner", "read": 10, "topics": ["Work", "Ethics"], "hook": "A promotion, a shortcut, a manager who fudges the numbers. What does dharma say at your desk?"},
+    {"n": 26, "title": "The Self in the Age of Social Media", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Visual essay + reflection prompts", "priority": "later", "level": "Beginner", "read": 9, "topics": ["Self", "Technology"]},
+    {"n": 27, "title": "Sacred Rivers, Shared Responsibility", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "River story + case study", "priority": "later", "level": "Beginner", "read": 11, "topics": ["Environment", "Practice"]},
+    {"n": 28, "title": "Seva: From an Idea to an Action", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Story-led explainer + action challenge", "priority": "start", "level": "Beginner", "read": 9, "topics": ["Practice", "Society"], "hook": "Seva is often translated as service. Here is what the idea asks of you, and one small thing to try this week."},
+    {"n": 29, "title": "Can You Modernise Tradition Without Losing It?", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Before/after visual comparison", "priority": "later", "level": "Beginner", "read": 10, "topics": ["Society", "Traditions"]},
+    {"n": 30, "title": "My Grandparents, My Generation and Faith", "series": "ancient-ideas-modern-life", "type": "story", "element": "Intergenerational story (pairs with Interviews)", "priority": "start", "level": "Beginner", "read": 12, "topics": ["Family", "Practice"], "hook": "Same questions, sixty years apart. An illustrated story built from HIPL's elder and Gen Z interviews."},
+    {"n": 31, "title": "Ancient Philosophy and Modern Science", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Evidence-led comparison", "priority": "later", "sensitive": true, "level": "Deeper", "read": 15, "topics": ["Science", "Philosophy"]},
+    {"n": 32, "title": "Pluralism: How Do We Live With Difference?", "series": "ancient-ideas-modern-life", "type": "interactive", "element": "Scenarios", "priority": "start", "level": "Beginner", "read": 11, "topics": ["Society", "Ethics"], "hook": "Neighbours who pray differently, friends who don't pray at all. Scenarios on living well with difference."},
+    {"n": 33, "title": "Who Gets to Interpret Tradition?", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Multiple perspectives", "priority": "later", "sensitive": true, "level": "Deeper", "read": 13, "topics": ["Society", "Traditions"]},
+    {"n": 34, "title": "Ahimsa in a World of Conflict", "series": "ancient-ideas-modern-life", "type": "interactive", "element": "Ethical dilemma with sourced views", "priority": "later", "sensitive": true, "level": "Deeper", "read": 14, "topics": ["Ethics", "Society"]},
+    {"n": 35, "title": "What Does a Good Society Owe Its People?", "series": "ancient-ideas-modern-life", "type": "explainer", "element": "Scenario-based explainer", "priority": "later", "level": "Deeper", "read": 12, "topics": ["Society", "Ethics"]},
+    {"n": 36, "title": "What Will Hindu Culture Look Like in 2050?", "series": "ancient-ideas-modern-life", "type": "interactive", "element": "Future-thinking poll", "priority": "later", "level": "Beginner", "read": 8, "topics": ["Future", "Society"]}
+  ],
+  "concepts": [
+    {"term": "dharma", "deva": "धर्म", "iast": "dharma", "short": "From the root dhṛ, to hold or support. Dharma is what holds things together: cosmic order, right conduct, duty and one's own path. Its meaning shifts with context and tradition.", "page": true},
+    {"term": "karma", "deva": "कर्म", "iast": "karma", "short": "Literally action. Also the idea that actions have consequences that shape what follows, in this life and, in many traditions, in future lives."},
+    {"term": "svadharma", "deva": "स्वधर्म", "iast": "svadharma", "short": "One's own dharma: the duty or path that fits a person's role, nature and stage of life. A key idea in the Bhagavad Gita."},
+    {"term": "moksha", "deva": "मोक्ष", "iast": "mokṣa", "short": "Liberation or release from the cycle of birth and death (saṃsāra). Traditions differ on what liberation is and how it is reached."},
+    {"term": "atman", "deva": "आत्मन्", "iast": "ātman", "short": "The self. In the Upanishads, the inner self that is not the body or the mind. Schools disagree on how the self relates to Brahman."},
+    {"term": "bhakti", "deva": "भक्ति", "iast": "bhakti", "short": "Devotion, or loving participation in the divine. Also the name for devotional movements and poets across India's languages."},
+    {"term": "seva", "deva": "सेवा", "iast": "sevā", "short": "Service offered without seeking reward, to people, community or the divine."},
+    {"term": "rta", "deva": "ऋत", "iast": "ṛta", "short": "The Vedic idea of cosmic order and truth that keeps the world running in rhythm. Often discussed as a forerunner of dharma."},
+    {"term": "ahimsa", "deva": "अहिंसा", "iast": "ahiṃsā", "short": "Non-harm: not injuring living beings in thought, word or deed. Central in Hindu, Jain and Buddhist ethics."},
+    {"term": "brahman", "deva": "ब्रह्मन्", "iast": "brahman", "short": "In the Upanishads and Vedanta, ultimate reality: the ground of everything that exists."},
+    {"term": "shreyas", "deva": "श्रेयस्", "iast": "śreyas", "short": "The good: what is truly beneficial in the long run. The Katha Upanishad contrasts it with preyas, the merely pleasant."},
+    {"term": "preyas", "deva": "प्रेयस्", "iast": "preyas", "short": "The pleasant: what feels good now. The Katha Upanishad asks the reader to choose śreyas, the good, over it."}
+  ]
+}

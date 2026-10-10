@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://hipl.example/</loc></url>
+  <url><loc>https://hipl.example/about</loc></url>
+  <url><loc>https://hipl.example/components</loc></url>
+  <url><loc>https://hipl.example/contributors/sample-writer</loc></url>
+  <url><loc>https://hipl.example/corrections</loc></url>
+  <url><loc>https://hipl.example/dialogues</loc></url>
+  <url><loc>https://hipl.example/dialogues/01-can-tradition-evolve</loc></url>
+  <url><loc>https://hipl.example/dispatch</loc></url>
+  <url><loc>https://hipl.example/dispatch/issue-00</loc></url>
+  <url><loc>https://hipl.example/explorations</loc></url>
+  <url><loc>https://hipl.example/explorations/ancient-ideas-modern-life</loc></url>
+  <url><loc>https://hipl.example/explorations/concepts/dharma</loc></url>
+  <url><loc>https://hipl.example/explorations/hindu-universe</loc></url>
+  <url><loc>https://hipl.example/explorations/hindu-universe/dharma</loc></url>
+  <url><loc>https://hipl.example/explorations/hindu-universe/six-schools</loc></url>
+  <url><loc>https://hipl.example/explorations/stories-that-stay</loc></url>
+  <url><loc>https://hipl.example/explorations/stories-that-stay/arjunas-dilemma</loc></url>
+  <url><loc>https://hipl.example/explorations/stories-that-stay/many-ramayanas</loc></url>
+  <url><loc>https://hipl.example/explorations/stories-that-stay/nachiketa</loc></url>
+  <url><loc>https://hipl.example/interviews</loc></url>
+  <url><loc>https://hipl.example/interviews/sample-episode</loc></url>
+  <url><loc>https://hipl.example/privacy</loc></url>
+  <url><loc>https://hipl.example/questions</loc></url>
+  <url><loc>https://hipl.example/reading-circle</loc></url>
+  <url><loc>https://hipl.example/reading-circle/guide</loc></url>
+  <url><loc>https://hipl.example/voices</loc></url>
+  <url><loc>https://hipl.example/voices/sample-essay</loc></url>
+  <url><loc>https://hipl.example/write</loc></url>
+</urlset>

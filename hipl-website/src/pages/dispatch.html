@@ -1,0 +1,44 @@
+<!--meta {"title": "The Weekly Dispatch", "description": "The Weekly Dispatch: one email every week, a five-minute read, with the same six sections in the same order. Subscribe and reply.", "nav": "dispatch"} -->
+<section class="band-lotus">
+  <div class="wrap page-hero">
+    <span class="eyebrow" style="color:var(--midnight)">The Weekly Dispatch · Every week</span>
+    <div class="split" style="align-items:end">
+      <div class="stack" style="--gap:18px">
+        <h1 style="max-width:12ch">Five minutes. Every week. Never skipped.</h1>
+        <p class="lede">One email that people look forward to opening. It ties together everything HIPL does, and ends with a question for you. The best replies feature the next week.</p>
+      </div>
+      <form class="form js-form" data-kind="dispatch" novalidate style="background:var(--chalk);padding:clamp(20px,3vw,32px)">
+        <div class="field"><label for="d-email">Email address</label><input id="d-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="field"><label for="d-name">First name <span class="hint">(optional)</span></label><input id="d-name" name="name" type="text" autocomplete="given-name"></div>
+        <label class="check"><input type="checkbox" name="consent" required><span>Send me the Weekly Dispatch. One email a week, unsubscribe any time. <a href="{{root}}privacy.html">Privacy</a></span></label>
+        <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="btn dark" type="submit">Subscribe</button>
+        <p class="tiny muted">Arrives every [DAY] at [TIME]. For example, Sunday 8 am.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">Inside every issue</span><h2>The same six sections, in the same order.</h2></div><a class="arrow-link" href="{{root}}dispatch/issue-00.html">Read a sample issue</a></div>
+    <div class="grid" style="--cols:3">
+      <div class="rule-top"><span class="eyebrow">01</span><h3>One idea worth thinking about</h3><p class="small muted">A short essay of about 300 words.</p></div>
+      <div class="rule-top marigold"><span class="eyebrow">02</span><h3>This week in Hindu culture and public life</h3><p class="small muted">Two or three developments, explained calmly.</p></div>
+      <div class="rule-top lotus"><span class="eyebrow">03</span><h3>One positive story</h3><p class="small muted">A person or community doing something good.</p></div>
+      <div class="rule-top midnight"><span class="eyebrow">04</span><h3>From HIPL</h3><p class="small muted">The latest Dialogue, Interview, Exploration or answered question.</p></div>
+      <div class="rule-top"><span class="eyebrow">05</span><h3>Three things to read, watch or hear</h3><p class="small muted">Good links from anywhere.</p></div>
+      <div class="rule-top marigold"><span class="eyebrow">06</span><h3>One question for you</h3><p class="small muted">Reply to the email. The best replies feature next week.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section band-sand">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">Archive</span><h2>Past issues</h2></div><span class="small muted">Every issue is also posted here.</span></div>
+    <div class="q-list">
+      <a class="q-item" href="{{root}}dispatch/issue-00.html" style="text-decoration:none;grid-template-columns:96px minmax(0,1fr) auto"><span class="qn">Issue 00</span><div><h3>One idea worth thinking about: can a tradition question itself?</h3><div class="meta"><span>[DATE]</span><span class="sample-flag">Sample</span></div></div><span class="arrow-link" aria-hidden="true">Read</span></a>
+    </div>
+    <p class="small muted" style="margin-top:14px">Issue 01 goes out on launch week.</p>
+  </div>
+</section>

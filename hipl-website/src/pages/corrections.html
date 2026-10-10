@@ -1,0 +1,22 @@
+<!--meta {"title": "Corrections", "description": "HIPL's corrections log, and how to report an error in any Exploration, Voices piece or Dispatch issue.", "nav": ""} -->
+<section class="section">
+  <div class="wrap split">
+    <div class="stack" style="--gap:18px">
+      <span class="eyebrow">Corrections</span>
+      <h1 style="font-size:clamp(2rem,5vw,3.2rem)">When we get it wrong, we say so.</h1>
+      <p>When we find an error, we fix it, add a dated note at the foot of the entry ("Corrected on [date]: …"), and log it here.</p>
+      <div class="empty" style="text-align:left;justify-items:start"><h3>Corrections log</h3><p class="small muted">No corrections yet. The log starts at launch.</p></div>
+    </div>
+    <div class="stack" style="--gap:18px" id="report">
+      <span class="eyebrow">Suggest a correction</span>
+      <form class="form js-form" data-kind="correction" novalidate>
+        <div class="field"><label for="cr-page">Which page?</label><input id="cr-page" name="page" type="text" required placeholder="Title or link"></div>
+        <div class="field"><label for="cr-what">What's wrong, and what should it say?</label><textarea id="cr-what" name="what" required></textarea></div>
+        <div class="field"><label for="cr-src">Your source <span class="hint">(edition, page or link)</span></label><input id="cr-src" name="source" type="text"></div>
+        <div class="field"><label for="cr-email">Email <span class="hint">(optional, if you'd like a reply)</span></label><input id="cr-email" name="email" type="email"></div>
+        <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="btn dark" type="submit" style="justify-self:start">Send correction</button>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,45 @@
+<!--meta {"title": "Component library", "description": "The twelve reusable Explorations components, as editors assemble them in the CMS.", "nav": ""} -->
+<section class="band-dark on-dark">
+  <div class="wrap page-hero">
+    <span class="eyebrow">For editors</span>
+    <h1 style="max-width:14ch">The Explorations component library</h1>
+    <p class="lede muted">Every entry is assembled from these twelve components in the CMS, with no custom code per entry. Each one works by keyboard, needs no login and has a plain-text fallback.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap stack" style="--gap:56px">
+    <div class="grid" style="--cols:4">
+      <a class="card linked" href="{{root}}explorations/hindu-universe/dharma.html#ch5"><b>Knowledge Cards</b><span class="small muted">Swipe 4–10 cards; save any card as a 1080×1350 image.</span></a>
+      <a class="card linked" href="{{root}}explorations/hindu-universe/dharma.html#ch1"><b>Chapter</b><span class="small muted">Numbered section with an anchor link.</span></a>
+      <a class="card linked" href="{{root}}explorations/hindu-universe/dharma.html#ch4"><b>Pull Quote</b><span class="small muted">Won't publish without a source.</span></a>
+      <a class="card linked" href="{{root}}explorations/stories-that-stay/nachiketa.html#cast"><b>Character Cards</b><span class="small muted">Tap to open; carousel on mobile.</span></a>
+      <a class="card linked" href="{{root}}explorations/stories-that-stay/many-ramayanas.html#map"><b>Explore the Map</b><span class="small muted">Keyboard-navigable points; list fallback.</span></a>
+      <a class="card linked" href="#timeline"><b>Timeline</b><span class="small muted">Date ranges with confidence labels.</span></a>
+      <a class="card linked" href="{{root}}explorations/stories-that-stay/arjunas-dilemma.html#choose"><b>What Would You Do?</b><span class="small muted">No score; perspectives on every option.</span></a>
+      <a class="card linked" href="{{root}}explorations/hindu-universe/six-schools.html#compare"><b>Compare Cards</b><span class="small muted">Table on desktop, swipe cards on mobile.</span></a>
+      <a class="card linked" href="{{root}}explorations/hindu-universe/dharma.html#layers"><b>Meaning Layers</b><span class="small muted">Tap through literal → cosmic → ethical.</span></a>
+      <a class="card linked" href="#claims"><b>Claim Label</b><span class="small muted">Five labels with tooltips.</span></a>
+      <a class="card linked" href="{{root}}explorations/hindu-universe/dharma.html#reflect"><b>Poll / Reflection</b><span class="small muted">Anonymous; results after voting.</span></a>
+      <a class="card linked" href="#concepts"><b>Concept Pop-up</b><span class="small muted">Tap an underlined term.</span></a>
+    </div>
+
+    <div class="split" id="timeline">
+      <div class="stack" style="--gap:12px"><span class="eyebrow">Timeline</span><h2>Date ranges, not false precision.</h2><p class="small muted">Each event has a label, a date or range, a confidence level ("approximate", "debated"), text and a source. Placeholder events shown.</p></div>
+      <div class="timeline">
+        <div class="tl-item"><span class="when">[c. DATE RANGE]</span><span class="conf">Approximate</span><b>[Event label]</b><p class="small">[One or two sentences.] <sup class="fn"><a href="#">1</a></sup></p></div>
+        <div class="tl-item debated"><span class="when">[c. DATE RANGE]</span><span class="conf">Debated</span><b>[Event label]</b><p class="small">[Both scholarly positions summarised.] <span class="claim" data-kind="debate"></span></p></div>
+        <div class="tl-item"><span class="when">[DATE RANGE]</span><span class="conf">Approximate</span><b>[Event label]</b><p class="small">[One or two sentences.]</p></div>
+      </div>
+    </div>
+
+    <div class="split" id="claims">
+      <div class="stack" style="--gap:12px"><span class="eyebrow">Claim labels</span><h2>Hover, focus or tap a label.</h2></div>
+      <div class="row"><span class="claim" data-kind="text"></span><span class="claim" data-kind="tradition"></span><span class="claim" data-kind="historians"></span><span class="claim" data-kind="debate"></span><span class="claim" data-kind="asks"></span></div>
+    </div>
+
+    <div class="split" id="concepts">
+      <div class="stack" style="--gap:12px"><span class="eyebrow">Concept pop-ups</span><h2>Underlined terms open a short definition.</h2></div>
+      <p class="prose">Krishna speaks of <button class="concept" data-concept="karma">karma</button> and <button class="concept" data-concept="svadharma">svadharma</button>; the Upanishads speak of <button class="concept" data-concept="atman">ātman</button> and <button class="concept" data-concept="brahman">brahman</button>; many traditions practise <button class="concept" data-concept="seva">seva</button> and <button class="concept" data-concept="ahimsa">ahiṃsā</button>.</p>
+    </div>
+  </div>
+</section>

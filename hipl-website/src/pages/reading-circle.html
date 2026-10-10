@@ -1,0 +1,73 @@
+<!--meta {"title": "Reading Circle", "description": "The HIPL Reading Circle: one text, one question, one conversation a month, online and in person. Read along, then join the discussion.", "nav": "reading-circle"} -->
+<section class="band-dark on-dark" style="position:relative;overflow:hidden">
+  <div class="wrap page-hero" style="position:relative">
+    <!--sabha style="position:absolute;width:480px;right:-160px;bottom:-200px;--c1:var(--marigold);--c2:var(--marigold);--c3:var(--saffron);--core:var(--midnight)"-->
+    <span class="eyebrow" style="position:relative">The HIPL Reading Circle · Monthly</span>
+    <h1 style="max-width:13ch;position:relative">One text. One question. One conversation.</h1>
+    <p class="lede muted" style="position:relative">Every month we pick a short text and one guiding question. Read at your own pace, then talk it through with 12 to 20 people, online or in person.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split rev">
+    <div class="card" style="background:var(--marigold);padding:clamp(24px,4vw,48px);gap:22px">
+      <div class="row" style="justify-content:space-between"><span class="tag">This month</span><span class="sample-flag">Sample month</span></div>
+      <h2>Katha Upanishad: the Nachiketa dialogue</h2>
+      <div class="stack" style="--gap:6px"><span class="eyebrow" style="color:var(--midnight)">Guiding question</span><p class="big-quote" style="font-size:clamp(1.3rem,2.6vw,2rem)">When should you refuse what is pleasant for what is good?</p></div>
+      <p class="small">Short enough to finish in a month. Freely available in Sanskrit with translations on the Gita Supersite; we name the translation we use in the guide.</p>
+      <div class="row"><a class="btn dark" href="{{root}}reading-circle/guide.html">Open the 2-page reading guide</a><a class="arrow-link" href="{{root}}explorations/stories-that-stay/nachiketa.html">The story, illustrated</a></div>
+    </div>
+    <div class="stack" style="--gap:20px">
+      <span class="eyebrow">Sessions</span>
+      <div class="card" style="gap:8px"><span class="tag saffron" style="justify-self:start">Online</span><b style="font-family:var(--f-display);font-size:1.2rem">[DATE] · [TIME]</b><span class="small muted">60 minutes · video call · link sent on sign-up</span></div>
+      <div class="card" style="gap:8px"><span class="tag" style="justify-self:start">In person</span><b style="font-family:var(--f-display);font-size:1.2rem">[DATE] · [TIME]</b><span class="small muted">[VENUE], [CITY] · 60 minutes · 12–20 seats</span></div>
+      <div class="speaker"><span class="avatar-ph">F</span><div><b>Facilitator: [FACILITATOR NAME]</b><p class="small muted">[Role]</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section band-sand">
+  <div class="wrap split">
+    <div class="stack" style="--gap:18px">
+      <span class="eyebrow">How it works</span>
+      <ol class="steps">
+        <li><div><b>Start of the month</b>We announce the text and the guiding question, with a 2-page reading guide.</div></li>
+        <li><div><b>Read along</b>At your own pace. Texts are short and freely or legally available.</div></li>
+        <li><div><b>End of the month</b>A facilitator leads a 60-minute discussion for 12–20 people, online and in one city.</div></li>
+        <li><div><b>Afterwards</b>We publish a short summary of what the group discussed.</div></li>
+      </ol>
+    </div>
+    <div class="stack" style="--gap:18px" id="join">
+      <span class="eyebrow">Sign up</span>
+      <h2>Join this month's circle</h2>
+      <form class="form js-form" data-kind="circle" novalidate>
+        <div class="form-row">
+          <div class="field"><label for="c-name">Name</label><input id="c-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
+        </div>
+        <fieldset><legend>Which session?</legend>
+          <div class="choice-row">
+            <label class="chip-input"><input type="radio" name="session" value="online" required><span>Online</span></label>
+            <label class="chip-input"><input type="radio" name="session" value="in-person"><span>In person, [CITY]</span></label>
+          </div>
+        </fieldset>
+        <label class="check"><input type="checkbox" name="consent" required><span>Email me the reading guide and session details. <a href="{{root}}privacy.html">Privacy</a></span></label>
+        <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="btn dark" type="submit" style="justify-self:start">Save my place</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">Coming up</span><h2>The kind of texts we read</h2></div></div>
+    <div class="grid" style="--cols:4">
+      <div class="rule-top"><b style="font-family:var(--f-display)">A chapter of the Bhagavad Gita</b><span class="small muted">One chapter, one month.</span></div>
+      <div class="rule-top marigold"><b style="font-family:var(--f-display)">An Upanishad</b><span class="small muted">Like the Katha, with Nachiketa.</span></div>
+      <div class="rule-top lotus"><b style="font-family:var(--f-display)">A Bhakti poet's verses</b><span class="small muted">In translation, with the original.</span></div>
+      <div class="rule-top midnight"><b style="font-family:var(--f-display)">A modern essay</b><span class="small muted">By an Indian thinker, or the text behind that month's Dialogue.</span></div>
+    </div>
+    <div class="empty" style="margin-top:32px"><h3>Past circles</h3><p class="small muted">The archive of texts, questions and discussion summaries starts after the first circle.</p></div>
+  </div>
+</section>

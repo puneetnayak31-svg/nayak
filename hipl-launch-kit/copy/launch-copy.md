@@ -135,9 +135,12 @@ Voice check: curious, confident, warm, witty, evidence-led, open to disagreement
 >
 > Every HIPL explainer names its sources and labels each key claim as what the text says, what a tradition holds, what historians find, what scholars debate, or a question HIPL is asking. The first public Dialogue, "Can tradition evolve without losing its essence?", takes place on [DATE] at [VENUE].
 >
-> "[QUOTE FROM FOUNDER — to be written and approved by the founder]," said [NAME], [ROLE].
+> "[QUOTE FROM THE FOUNDER — to be written and approved by Prannv Dhawan]," said Prannv Dhawan, founder of HIPL and an Advocate at the Supreme Court of India.
 >
 > Contact: [NAME], [EMAIL]
+
+### Founder line (for bios and introductions)
+> HIPL was founded by Prannv Dhawan, an Advocate at the Supreme Court of India. Its working test for everything it publishes: does it strengthen the language, deepen the faith, build the country?
 
 ## Hashtags (use sparingly, 3–5 max)
 #HIPL #HinduismInPublicLife #HeritageThatThinksForward #First100Questions #HIPLDialogues

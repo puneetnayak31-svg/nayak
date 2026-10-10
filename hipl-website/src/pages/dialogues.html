@@ -4,7 +4,7 @@
     <span class="eyebrow">HIPL Dialogues · Monthly</span>
     <h1 style="max-width:15ch">One hard question. Two sides. The room decides.</h1>
     <p class="lede muted">Once a month, people who genuinely disagree debate one question on stage. The audience votes before and after, and we announce which way the room moved.</p>
-    <div class="row"><a class="btn" href="{{root}}dialogues/01-can-tradition-evolve.html">Next Dialogue: RSVP</a><a class="btn ghost" href="#topics">Vote for a future topic</a></div>
+    <div class="row"><a class="btn" href="{{root}}dialogues/01-can-tradition-evolve.html">Next Dialogue: RSVP</a><a class="btn ghost" href="#watch">Watch past Dialogues</a><a class="btn ghost" href="#topics">Vote for a future topic</a></div>
   </div>
 </section>
 
@@ -51,13 +51,27 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section band-dark on-dark" id="watch">
   <div class="wrap">
-    <div class="sec-head"><div><span class="eyebrow">Archive</span><h2>Past Dialogues</h2></div></div>
-    <div class="empty">
-      <!--sabha style="width:72px;height:72px;--core:var(--midnight)"-->
-      <h3>The archive starts after Dialogue 01.</h3>
-      <p class="muted small" style="max-width:52ch">Each past Dialogue will have its recording, the before-and-after vote and a short summary of the strongest arguments on both sides.</p>
+    <div class="sec-head"><div><span class="eyebrow">Watch</span><h2>Every Dialogue, in full.</h2></div><p class="muted" style="max-width:44ch">After each event we upload the whole Dialogue with captions, the before-and-after vote and a short summary. Clips go to Instagram and YouTube Shorts.</p></div>
+    <div class="split rev" style="margin-bottom:clamp(32px,4vw,48px)">
+      <button class="video" type="button" data-youtube="[VIDEO ID]" aria-label="Play the latest Dialogue recording"><!--sabha--><span class="play" aria-hidden="true"></span><span class="cap"><span>Dialogue 01 · full recording · [RUNTIME]</span><span>Loads from YouTube on click</span></span></button>
+      <div class="stack" style="--gap:16px">
+        <div class="row"><span class="tag saffron">Latest recording</span><span class="sample-flag">Uploaded after the event</span></div>
+        <h3 style="font-size:clamp(1.4rem,2.6vw,2rem);font-weight:800">Can tradition evolve without losing its essence?</h3>
+        <p class="muted">[SPEAKER NAMES] · Moderated by [MODERATOR NAME] · [DATE], [CITY]</p>
+        <div class="stack" style="--gap:8px">
+          <p class="tiny muted">How the room voted <span class="sample-flag">Sample</span></p>
+          <div class="vote-bar" aria-label="Sample before: 38% agree, 24% unsure, 38% disagree"><span class="agree" style="flex-basis:38%">Before 38%</span><span class="unsure" style="flex-basis:24%">24%</span><span class="disagree" style="flex-basis:38%">38%</span></div>
+          <div class="vote-bar" aria-label="Sample after: 47% agree, 11% unsure, 42% disagree"><span class="agree" style="flex-basis:47%">After 47%</span><span class="unsure" style="flex-basis:11%">11%</span><span class="disagree" style="flex-basis:42%">42%</span></div>
+        </div>
+        <a class="btn" href="{{root}}dialogues/01-can-tradition-evolve.html#watch" style="justify-self:start">Watch with key moments and transcript</a>
+      </div>
+    </div>
+    <div class="grid" style="--cols:3">
+      <a class="card linked dark" href="{{root}}dialogues/01-can-tradition-evolve.html#watch" style="border:1.5px solid var(--midnight-line)"><div style="aspect-ratio:16/9;background:var(--midnight-2);display:grid;place-items:center;position:relative;overflow:hidden"><!--sabha style="position:absolute;width:70%;opacity:.35"--><span class="play-mini" aria-hidden="true"></span></div><div class="meta"><span>Dialogue 01</span><span>[RUNTIME]</span></div><h3>Can tradition evolve without losing its essence?</h3><p class="small muted">Recording added after the event</p></a>
+      <article class="card dark" style="border:1.5px dashed var(--midnight-line)"><div style="aspect-ratio:16/9;background:var(--midnight-2)"></div><div class="meta"><span>Dialogue 02</span><span class="status answering" style="color:var(--chalk)">Next</span></div><h3>[TOPIC CHOSEN BY THE VOTE]</h3><p class="small muted">Recording after the event</p></article>
+      <article class="card dark" style="border:1.5px dashed var(--midnight-line)"><div style="aspect-ratio:16/9;background:var(--midnight-2)"></div><div class="meta"><span>Dialogue 03</span></div><h3>[TOPIC]</h3><p class="small muted">Recording after the event</p></article>
     </div>
   </div>
 </section>

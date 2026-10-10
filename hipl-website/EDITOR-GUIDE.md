@@ -8,6 +8,7 @@ A short guide to updating the site in its current static form. Every change is: 
 |---|---|
 | A page's text | `src/pages/<page>.html` (the file mirrors the URL) |
 | The list of 36 Explorations, series, glossary terms | `src/data/explorations.json` |
+| 100 Questions: questions, answers, who answers, comments | `src/data/questions.json` |
 | Header menu and footer | `NAV` and `layout()` in `build.py` |
 | Colours, type, components | `assets/css/site.css` |
 | Interactive behaviour | `assets/js/site.js` |
@@ -36,7 +37,13 @@ Shortcuts the build understands inside pages:
 
 ## Publish a 100 Questions answer
 
-In `src/pages/questions.html`, copy a `q-item` row. Set `data-theme` (`belief`, `texts`, `caste`, `gender`, `ritual`, `science`, `public`) and `data-status` (`received`, `answering`, `answered`). Use the matching status pill, and link to the answer once it exists. Update the counter (`data-count` and `{{ring:N}}`).
+All questions live in `src/data/questions.json`. The build makes the list on `/questions` and one page per question at `/questions/001`, `/questions/002` and so on.
+
+1. Add a new question with the next number `n`, the question `q`, `asked_by` (or "Anonymous"), a `theme` and `"status": "received"`.
+2. When someone agrees to answer, set `"status": "answering"` and fill `answerer` with their `name` and `title`. The page then shows "Being answered by…" prominently.
+3. When the answer is in, set `"status": "answered"`, add the `answer` paragraphs, `answered_on`, the answerer's `bio`, and `"video": true` if there's a video answer (add the YouTube ID on the page when it's live).
+4. Approved comments go in `comments` as `{"name": "...", "place": "...", "text": "..."}`. Every comment is moderated before it appears.
+5. Update the counter on the home page and the `{{ring:N}}` grid when the number of published questions changes.
 
 ## Handle a Voices pitch
 

@@ -171,6 +171,7 @@
     circle: "You're signed up for this month's Reading Circle. We'll email the reading guide and the session link or address.",
     pitch: "Pitch received. The editor replies to every pitch within 10 working days. A confirmation email is on its way.",
     guest: "Thank you for the suggestion. The interviews team reads every one.",
+    comment: "Thank you. Your comment has been received and will appear once a moderator has reviewed it.",
     correction: "Thank you. An editor will check this against the source and log any correction on the corrections page."
   };
   $$(".js-form").forEach(function (form) {

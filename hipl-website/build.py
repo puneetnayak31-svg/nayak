@@ -25,6 +25,8 @@ SITE_URL = "https://hipl.example"  # replace with the real domain before launch
 
 DATA = json.load(open(os.path.join(ROOT, "src", "data", "explorations.json")))
 SERIES = {s["slug"]: s for s in DATA["series"]}
+QUESTIONS = json.load(open(os.path.join(ROOT, "src", "data", "questions.json")))["questions"]
+Q_STATUS = {"received": "Waiting for an answer", "answering": "Being answered", "answered": "Answered"}
 
 NAV = [
     ("dialogues", "Dialogues", "dialogues.html"),
@@ -103,6 +105,131 @@ def x_card(e, root):
     )
 
 
+def initials(name):
+    return "?" if name.startswith("[") else "".join(w[0] for w in name.split()[:2]).upper()
+
+
+def q_by(a, label, size=""):
+    return (
+        f'<div class="q-by{" " + size if size else ""}"><span class="avatar-ph">{initials(a["name"])}</span>'
+        f'<div><span class="eyebrow">{label}</span><b>{esc(a["name"])}</b><span class="q-title">{esc(a["title"])}</span></div></div>'
+    )
+
+
+def q_item(q, root):
+    href = f'{root}questions/{q["n"]:03d}.html'
+    video_tag = '<span class="tag saffron">Video answer</span>' if q.get("video") and q["status"] != "received" else ""
+    parts = [f'<a class="q-card" href="{href}" data-status="{q["status"]}">',
+             f'<div class="q-top"><span class="qn">{q["n"]:03d}/100</span><span class="status {q["status"]}">{Q_STATUS[q["status"]]}</span>'
+             f'{video_tag}</div>',
+             f'<h3>{esc(q["q"])}</h3><p class="asked">Asked by {esc(q["asked_by"])}</p>']
+    if q["status"] == "answered":
+        parts.append(q_by(q["answerer"], "Answered by"))
+        parts.append(f'<p class="excerpt">{esc(q["answer"][0])}</p>')
+        parts.append(f'<div class="q-foot"><span class="arrow-link">Read the answer</span><span>{len(q["comments"])} comment{"s" if len(q["comments"]) != 1 else ""}</span></div>')
+    elif q["status"] == "answering":
+        parts.append(q_by(q["answerer"], "Being answered by"))
+        parts.append('<div class="q-foot"><span class="arrow-link">See the question</span></div>')
+    else:
+        parts.append('<div class="q-foot"><span class="arrow-link">See the question</span></div>')
+    parts.append("</a>")
+    return "".join(parts)
+
+
+def q_page(q):
+    n = q["n"]
+    ns = [x["n"] for x in QUESTIONS]
+    i = ns.index(n)
+    prev_q = QUESTIONS[i - 1] if i > 0 else None
+    next_q = QUESTIONS[i + 1] if i < len(QUESTIONS) - 1 else None
+    meta = {"title": f'Question {n:03d}: {q["q"]}', "description": f'The First 100 Questions, {n:03d}/100: {q["q"]}', "nav": "questions"}
+    if q["status"] == "answered":
+        a = q["answerer"]
+        video = (f'<button class="video" type="button" data-youtube="[VIDEO ID]" aria-label="Play the video answer"><!--sabha--><span class="play" aria-hidden="true"></span>'
+                 f'<span class="cap"><span>Video answer · {esc(a["name"])}</span><span>Loads from YouTube on click</span></span></button>') if q.get("video") else ""
+        paras = "".join(f"<p>{esc(p)}</p>" for p in q["answer"])
+        answer = f"""
+      <div class="answer-card">
+        {q_by(a, "Answered by", "big")}
+        <p class="small muted">{esc(a.get("bio", ""))}</p>
+      </div>
+      {video}
+      <div class="stack" style="--gap:12px">
+        <span class="eyebrow">{"The answer, in writing" if q.get("video") else "The answer"}</span>
+        <div class="prose answer-text">{paras}</div>
+        <p class="small muted">Answered on {esc(q.get("answered_on", "[DATE]"))}. <span class="sample-flag">Sample answer, written to test the layout</span></p>
+      </div>"""
+    elif q["status"] == "answering":
+        a = q["answerer"]
+        answer = f"""
+      <div class="answer-card">
+        {q_by(a, "Being answered by", "big")}
+        <p class="small">The answer is being prepared{" as a video" if q.get("video") else ""}. It will appear here, and in the Weekly Dispatch, as soon as it's ready.</p>
+      </div>"""
+    else:
+        answer = """
+      <div class="answer-card waiting">
+        <span class="eyebrow">Waiting for an answer</span>
+        <p>We've published this question and are finding the right scholar or guest to answer it. Every one of the first 100 questions will be answered in public.</p>
+      </div>"""
+    comments = "".join(
+        f'<li class="comment"><span class="avatar-ph">{initials(c["name"])}</span><div><b>{esc(c["name"])}</b> <span class="small muted">{esc(c.get("place", ""))}</span><p>{esc(c["text"])}</p></div></li>'
+        for c in q["comments"]
+    ) or '<li class="small muted">No comments yet. Start the conversation.</li>'
+    sample_note = '<p class="small muted"><span class="sample-flag">Sample comments</span></p>' if q["comments"] else ""
+    nav = ""
+    if prev_q:
+        nav += f'<a class="q-nav" href="{{{{root}}}}questions/{prev_q["n"]:03d}.html"><span class="eyebrow">← Previous</span><b>{esc(prev_q["q"])}</b></a>'
+    else:
+        nav += "<span></span>"
+    if next_q:
+        nav += f'<a class="q-nav next" href="{{{{root}}}}questions/{next_q["n"]:03d}.html"><span class="eyebrow">Next →</span><b>{esc(next_q["q"])}</b></a>'
+    body = f"""
+<section class="band-saffron">
+  <div class="wrap page-hero" style="max-width:calc(900px + 2 * var(--gutter))">
+    <nav class="crumbs" aria-label="Breadcrumb" style="color:var(--midnight)"><a href="{{{{root}}}}questions.html">The First 100 Questions</a><span>/</span><span>{n:03d}</span></nav>
+    <div class="row" style="justify-content:space-between"><span class="q-big num">{n:03d}<small>/100</small></span><span class="status {q["status"]}" style="font-size:.9375rem">{Q_STATUS[q["status"]]}</span></div>
+    <h1 style="font-size:clamp(2rem,5vw,3.6rem)">{esc(q["q"])}</h1>
+    <p>Asked by {esc(q["asked_by"])} · {esc(q["theme"])}</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap stack" style="--gap:36px;max-width:calc(900px + 2 * var(--gutter))">
+    {answer}
+    <div class="share" aria-label="Share this question"><a data-share="whatsapp" href="#">WhatsApp</a><a data-share="x" href="#">X</a><a data-share="linkedin" href="#">LinkedIn</a><button type="button" data-share="copy">Copy link</button></div>
+  </div>
+</section>
+<section class="section band-sand" id="comments">
+  <div class="wrap split" style="max-width:calc(1100px + 2 * var(--gutter))">
+    <div class="stack" style="--gap:16px">
+      <span class="eyebrow">Comments</span>
+      <h2>{len(q["comments"])} comment{"s" if len(q["comments"]) != 1 else ""}</h2>
+      <ul class="comments">{comments}</ul>
+      {sample_note}
+    </div>
+    <div class="stack" style="--gap:14px">
+      <span class="eyebrow">Add a comment</span>
+      <form class="form js-form" data-kind="comment" novalidate>
+        <div class="form-row">
+          <div class="field"><label for="cm-name">Name</label><input id="cm-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="cm-city">City <span class="hint">(optional)</span></label><input id="cm-city" name="city" type="text"></div>
+        </div>
+        <div class="field"><label for="cm-text">Your comment</label><textarea id="cm-text" name="comment" maxlength="1000" required></textarea></div>
+        <label class="check"><input type="checkbox" name="consent" required><span>Publish my comment with my name. I understand comments are reviewed before they appear. <a href="{{{{root}}}}privacy.html">Privacy</a></span></label>
+        <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="btn dark" type="submit" style="justify-self:start">Post comment</button>
+        <p class="tiny muted">Disagree freely, argue kindly. Abuse, spam and personal attacks are removed.</p>
+      </form>
+    </div>
+  </div>
+</section>
+<section class="section tight">
+  <div class="wrap q-navs" style="max-width:calc(1100px + 2 * var(--gutter))">{nav}</div>
+</section>
+"""
+    return meta, body
+
+
 def render_tokens(body, root):
     home = root or "./"
     body = body.replace("{{root}}", root).replace("{{home}}", home)
@@ -154,6 +281,10 @@ def render_tokens(body, root):
 
     body = re.sub(r"\{\{ring:(\d+)\}\}", lambda m: "".join('<i class="on"></i>' if i < int(m.group(1)) else "<i></i>" for i in range(100)), body)
     body = body.replace("{{glossary}}", glossary(None))
+    body = body.replace("{{qlist}}", "".join(q_item(q, root) for q in QUESTIONS))
+    body = body.replace("{{qlatest}}", next(q_item(q, root) for q in QUESTIONS if q["status"] == "answered"))
+    body = body.replace("{{qcount}}", str(len(QUESTIONS)))
+    body = body.replace("{{qcount3}}", f"{len(QUESTIONS):03d}")
     return body
 
 
@@ -166,7 +297,7 @@ def layout(meta, body, root, path):
         cur = ' aria-current="page"' if meta.get("nav") == key else ""
         nav_items.append(f'<a href="{root}{href}"{cur}>{label}</a>')
     canonical = SITE_URL + "/" + path.replace("index.html", "").replace(".html", "")
-    header_logo = read_svg("hipl-compact-on-dark.svg").replace("<svg ", '<svg class="wm" style="height:34px;width:auto" ', 1)
+    header_logo = read_svg("hipl-lockup-horizontal-on-dark.svg").replace("<svg ", '<svg class="lockup" ', 1)
     footer_logo = read_svg("hipl-lockup-horizontal-on-dark.svg").replace("<svg ", '<svg class="footer-lockup" ', 1)
     body_class = meta.get("body_class", "")
     fid = re.sub(r"[^a-z0-9]+", "-", path.lower())
@@ -333,6 +464,9 @@ def main():
     for s in DATA["series"]:
         meta, body = series_page(s)
         pages.append((f"explorations/{s['slug']}.html", meta, body))
+    for q in QUESTIONS:
+        meta, body = q_page(q)
+        pages.append((f"questions/{q['n']:03d}.html", meta, body))
 
     sitemap = []
     for rel, meta, body in pages:

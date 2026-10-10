@@ -6,9 +6,44 @@
     <div class="row" style="position:relative"><span class="tag saffron">HIPL Dialogues · 01</span><span class="sample-flag">Sample event page</span></div>
     <h1 style="max-width:16ch;position:relative">Can tradition evolve without losing its essence?</h1>
     <p class="lede" style="color:var(--marigold);position:relative">[DATE] · [TIME] · [VENUE], [CITY]</p>
-    <div class="row" style="position:relative"><a class="btn" href="#rsvp">RSVP for a free seat</a><a class="btn ghost" href="#ask">Send a question</a></div>
+    <div class="row" style="position:relative"><a class="btn" href="#rsvp">RSVP for a free seat</a><a class="btn ghost" href="#watch">Watch the recording</a><a class="btn ghost" href="#ask">Send a question</a></div>
   </div>
 </section>
+
+<section class="section band-sand" id="watch">
+  <div class="wrap split rev">
+    <div class="stack" style="--gap:22px">
+      <button class="video" type="button" data-youtube="[VIDEO ID]" aria-label="Play the full recording of Dialogue 01"><!--sabha--><span class="play" aria-hidden="true"></span><span class="cap"><span>Full recording · [RUNTIME] · Captions</span><span>Loads from YouTube on click</span></span></button>
+      <div class="stack" style="--gap:12px">
+        <span class="eyebrow">Key moments</span>
+        <ol class="steps" style="counter-reset:none">
+          <li style="grid-template-columns:72px minmax(0,1fr)"><div><b>[00:00] The first vote</b>[One line, added by the editor from the recording.]</div></li>
+          <li style="grid-template-columns:72px minmax(0,1fr)"><div><b>[00:00] The case for "yes"</b>[One line.]</div></li>
+          <li style="grid-template-columns:72px minmax(0,1fr)"><div><b>[00:00] The case for "not without loss"</b>[One line.]</div></li>
+          <li style="grid-template-columns:72px minmax(0,1fr)"><div><b>[00:00] Audience questions</b>[One line.]</div></li>
+          <li style="grid-template-columns:72px minmax(0,1fr)"><div><b>[00:00] The second vote</b>[One line.]</div></li>
+        </ol>
+      </div>
+      <details class="fallback"><summary>Read the full transcript</summary><div class="prose small"><p class="ph">[Transcript added by the editor after the event. Speaker names in bold, timestamps every few minutes.]</p></div></details>
+    </div>
+    <div class="stack" style="--gap:18px">
+      <span class="eyebrow">Watch the Dialogue</span>
+      <h2>The whole debate, uploaded after the event.</h2>
+      <p>Before the event, this space waits for the recording. Afterwards it holds the full video, the key moments, the transcript, and how the room's vote moved.</p>
+      <div class="stack" style="--gap:10px">
+        <p class="small"><b>How the room voted</b> <span class="sample-flag">Sample</span></p>
+        <p class="tiny muted">Before</p>
+        <div class="vote-bar" aria-label="Sample before: 38% agree, 24% unsure, 38% disagree"><span class="agree" style="flex-basis:38%">38%</span><span class="unsure" style="flex-basis:24%">24%</span><span class="disagree" style="flex-basis:38%">38%</span></div>
+        <p class="tiny muted">After</p>
+        <div class="vote-bar" aria-label="Sample after: 47% agree, 11% unsure, 42% disagree"><span class="agree" style="flex-basis:47%">47%</span><span class="unsure" style="flex-basis:11%">11%</span><span class="disagree" style="flex-basis:42%">42%</span></div>
+        <div class="legend"><span><i style="background:var(--saffron)"></i>Agree</span><span><i style="background:var(--chalk);box-shadow:inset 0 0 0 1px var(--midnight)"></i>Unsure</span><span><i style="background:var(--lotus)"></i>Disagree</span></div>
+      </div>
+      <div class="notice"><b>Summary</b><span class="ph">[A short summary of the strongest arguments on both sides, written after the event.]</span></div>
+      <div class="share" aria-label="Share this Dialogue"><a data-share="whatsapp" href="#">WhatsApp</a><a data-share="x" href="#">X</a><a data-share="linkedin" href="#">LinkedIn</a><button type="button" data-share="copy">Copy link</button></div>
+    </div>
+  </div>
+</section>
+
 
 <section class="section">
   <div class="wrap split rev">
@@ -95,23 +130,3 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="wrap split">
-    <div class="stack" style="--gap:16px">
-      <span class="eyebrow">After the event</span>
-      <h2>The recording, the vote, the summary.</h2>
-      <p>This section fills in after the Dialogue: the full video with captions, the before-and-after vote, and a short summary of the strongest arguments on both sides.</p>
-    </div>
-    <div class="stack" style="--gap:18px">
-      <button class="video" type="button" data-youtube="[VIDEO ID]" aria-label="Play the recording of Dialogue 01"><!--sabha--><span class="play" aria-hidden="true"></span><span class="cap"><span>Recording · added after the event</span><span>Loads from YouTube on click</span></span></button>
-      <div class="stack" style="--gap:10px">
-        <p class="small"><b>How the result will look</b> <span class="sample-flag">Sample</span></p>
-        <p class="tiny muted">Before</p>
-        <div class="vote-bar" aria-label="Sample before: 38% agree, 24% unsure, 38% disagree"><span class="agree" style="flex-basis:38%">38%</span><span class="unsure" style="flex-basis:24%">24%</span><span class="disagree" style="flex-basis:38%">38%</span></div>
-        <p class="tiny muted">After</p>
-        <div class="vote-bar" aria-label="Sample after: 47% agree, 11% unsure, 42% disagree"><span class="agree" style="flex-basis:47%">47%</span><span class="unsure" style="flex-basis:11%">11%</span><span class="disagree" style="flex-basis:42%">42%</span></div>
-        <div class="legend"><span><i style="background:var(--saffron)"></i>Agree</span><span><i style="background:var(--chalk);box-shadow:inset 0 0 0 1px var(--midnight)"></i>Unsure</span><span><i style="background:var(--lotus)"></i>Disagree</span></div>
-      </div>
-    </div>
-  </div>
-</section>

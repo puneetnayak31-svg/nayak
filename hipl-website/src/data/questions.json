@@ -1,0 +1,79 @@
+{
+  "note": "Sample questions for the preview. Answerers are placeholders until a named scholar or guest has agreed to answer. Statuses: received, answering, answered.",
+  "questions": [
+    {
+      "n": 1,
+      "q": "Can a tradition question itself?",
+      "asked_by": "A reader from [CITY]",
+      "theme": "Belief and self",
+      "status": "answered",
+      "answerer": {"name": "[SCHOLAR NAME]", "title": "[Title, institution]", "bio": "[Two-line bio of the person answering: their field, their work, why HIPL asked them.]"},
+      "video": true,
+      "answered_on": "[DATE]",
+      "answer": [
+        "Yes, and it has done so for a very long time. Classical Indian philosophy grew through debate. A thinker was expected to set out the strongest version of the opposing view, the pūrvapakṣa, before answering it. Schools within the tradition argued with each other, and with Buddhist and Jain thinkers, for centuries.",
+        "Questioning also runs through the texts themselves. The Upanishads are full of students pressing their teachers. In the Katha Upanishad, a boy turns down every reward Death offers him until Death answers his question.",
+        "So perhaps the better question is not whether a tradition can question itself, but who gets to ask, and whether we listen to the answers."
+      ],
+      "comments": [
+        {"name": "Sample reader", "place": "[CITY]", "text": "I always assumed questioning was a modern thing. Good to know the tradition had a method for it."},
+        {"name": "Sample reader", "place": "[CITY]", "text": "Would love a follow-up on who was allowed to take part in these debates, and who wasn't."}
+      ]
+    },
+    {
+      "n": 2,
+      "q": "What does dharma actually mean? Everyone uses it differently.",
+      "asked_by": "Anonymous",
+      "theme": "Texts and stories",
+      "status": "answered",
+      "answerer": {"name": "[SCHOLAR NAME]", "title": "[Title, institution]", "bio": "[Two-line bio of the person answering.]"},
+      "video": false,
+      "answered_on": "[DATE]",
+      "answer": [
+        "You're right that everyone uses it differently, and they're not wrong to. The word comes from the Sanskrit root dhṛ, to hold or support. At its simplest, dharma is what holds things together.",
+        "From there it grows several meanings: the order of the universe, right conduct and social duty, and svadharma, the path that belongs to you. Buddhist and Jain traditions use the same word in their own ways too.",
+        "So when someone says dharma, it's worth asking which of these they mean. Often it's more than one at once."
+      ],
+      "comments": [
+        {"name": "Sample reader", "place": "[CITY]", "text": "My grandmother used it to mean 'the right thing to do'. This helps."}
+      ]
+    },
+    {
+      "n": 3,
+      "q": "Is Hinduism a religion, a philosophy or a way of life?",
+      "asked_by": "A student from [CITY]",
+      "theme": "Belief and self",
+      "status": "answering",
+      "answerer": {"name": "[SCHOLAR NAME]", "title": "[Title, institution]"},
+      "video": true,
+      "comments": []
+    },
+    {
+      "n": 4,
+      "q": "Can Hindu society confront caste honestly?",
+      "asked_by": "Anonymous",
+      "theme": "Society and caste",
+      "status": "answering",
+      "answerer": {"name": "[SCHOLAR NAME]", "title": "[Title, institution]"},
+      "video": true,
+      "comments": []
+    },
+    {
+      "n": 5,
+      "q": "Why does Krishna tell Arjuna to fight?",
+      "asked_by": "A reader from [CITY]",
+      "theme": "Texts and stories",
+      "status": "answering",
+      "answerer": {"name": "[SCHOLAR NAME]", "title": "[Title, institution]"},
+      "video": false,
+      "comments": []
+    },
+    {"n": 6, "q": "Do I need to believe in God to call myself Hindu?", "asked_by": "Anonymous", "theme": "Belief and self", "status": "received", "comments": []},
+    {"n": 7, "q": "Is there one \"correct\" Ramayana?", "asked_by": "A reader from [CITY]", "theme": "Texts and stories", "status": "received", "comments": []},
+    {"n": 8, "q": "Is dharma relevant at work?", "asked_by": "A professional from [CITY]", "theme": "Public life", "status": "received", "comments": []},
+    {"n": 9, "q": "Why are women's voices so rare in debates about tradition?", "asked_by": "Anonymous", "theme": "Gender", "status": "received", "comments": []},
+    {"n": 10, "q": "What is the point of a ritual if I don't understand the Sanskrit?", "asked_by": "A reader from [CITY]", "theme": "Ritual", "status": "received", "comments": []},
+    {"n": 11, "q": "Do ancient texts really contain modern science?", "asked_by": "Anonymous", "theme": "Science", "status": "received", "comments": []},
+    {"n": 12, "q": "Can I love Hindi without fighting over it?", "asked_by": "A student from [CITY]", "theme": "Public life", "status": "received", "comments": []}
+  ]
+}

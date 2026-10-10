@@ -5,6 +5,7 @@ The website for HIPL — Hinduism in Public Life, on the Sabha identity (Directi
 ```bash
 python3 build.py                  # build into dist/
 python3 -m http.server -d dist    # preview at http://localhost:8000
+python3 build.py --offline        # self-contained pages for opening from disk (CSS/JS inside each page)
 ```
 
 ## What's here

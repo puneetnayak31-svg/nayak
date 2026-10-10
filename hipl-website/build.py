@@ -440,8 +440,33 @@ def series_page(s):
     return meta, body
 
 
+def inline_assets(page, root):
+    """Offline build: put CSS and JS inside each page, so a page opened on its own
+    still looks right, and warn when it was opened from inside a zip file."""
+    def read(*parts):
+        with open(os.path.join(DIST, *parts), encoding="utf-8") as f:
+            return f.read()
+    fonts = read("assets", "fonts", "fonts.css").replace("url(", f"url({root}assets/fonts/")
+    css = read("assets", "css", "site.css")
+    js = [read("assets", "js", "data.js"), read("assets", "js", "site.js")]
+    safe = lambda t: t.replace("</", "<\\/")
+    page = page.replace(f'<link rel="stylesheet" href="{root}assets/fonts/fonts.css">', f"<style>{fonts}</style>")
+    page = page.replace(f'<link rel="stylesheet" href="{root}assets/css/site.css">', f"<style>{css}</style>")
+    page = page.replace(f'<script src="{root}assets/js/data.js"></script>', f"<script>{safe(js[0])}</script>")
+    page = page.replace(f'<script src="{root}assets/js/site.js"></script>', f"<script>{safe(js[1])}</script>")
+    note = (
+        '<div id="zip-note" hidden style="background:#FFC93C;color:#14123A;padding:16px 20px;font:600 16px/1.5 sans-serif;border-bottom:3px solid #14123A">'
+        "This page was opened from inside the zip file, so the other pages can't open from here. "
+        "Close this window, right-click the zip file, choose <b>Extract All</b> (Windows) or double-click it (Mac), "
+        "then open <b>Open HIPL website</b> in the extracted folder.</div>"
+        f'<script>(function(){{var i=new Image();i.onerror=function(){{document.getElementById("zip-note").hidden=false}};i.src="{root}assets/brand/hipl-favicon.svg";}})();</script>'
+    )
+    return page.replace('<a class="skip" href="#main">Skip to content</a>', note + '<a class="skip" href="#main">Skip to content</a>', 1)
+
+
 def main():
     preview = "--preview" in sys.argv
+    offline = "--offline" in sys.argv
     if os.path.isdir(DIST):
         shutil.rmtree(DIST)
     os.makedirs(DIST)
@@ -471,6 +496,8 @@ def main():
         depth = rel.count("/")
         root = "../" * depth
         out = layout(meta, render_tokens(body, root), root, rel)
+        if offline:
+            out = inline_assets(out, root)
         dest = os.path.join(DIST, rel)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         with open(dest, "w") as f:

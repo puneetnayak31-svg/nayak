@@ -6,11 +6,16 @@
   <url><loc>https://hipl.example/contributors/sample-writer</loc></url>
   <url><loc>https://hipl.example/corrections</loc></url>
   <url><loc>https://hipl.example/dialogues</loc></url>
-  <url><loc>https://hipl.example/dialogues/01-can-tradition-evolve</loc></url>
   <url><loc>https://hipl.example/dispatch</loc></url>
   <url><loc>https://hipl.example/dispatch/issue-00</loc></url>
+  <url><loc>https://hipl.example/events/dialogue-02</loc></url>
+  <url><loc>https://hipl.example/events/heritage-walk-01</loc></url>
+  <url><loc>https://hipl.example/events/launch-2026</loc></url>
+  <url><loc>https://hipl.example/events/salon-01</loc></url>
+  <url><loc>https://hipl.example/events/seva-saturday-01</loc></url>
   <url><loc>https://hipl.example/explorations</loc></url>
   <url><loc>https://hipl.example/explorations/ancient-ideas-modern-life</loc></url>
+  <url><loc>https://hipl.example/explorations/ancient-ideas-modern-life/seva</loc></url>
   <url><loc>https://hipl.example/explorations/concepts/dharma</loc></url>
   <url><loc>https://hipl.example/explorations/hindu-universe</loc></url>
   <url><loc>https://hipl.example/explorations/hindu-universe/dharma</loc></url>
@@ -19,8 +24,9 @@
   <url><loc>https://hipl.example/explorations/stories-that-stay/arjunas-dilemma</loc></url>
   <url><loc>https://hipl.example/explorations/stories-that-stay/many-ramayanas</loc></url>
   <url><loc>https://hipl.example/explorations/stories-that-stay/nachiketa</loc></url>
+  <url><loc>https://hipl.example/in-person</loc></url>
   <url><loc>https://hipl.example/interviews</loc></url>
-  <url><loc>https://hipl.example/interviews/sample-episode</loc></url>
+  <url><loc>https://hipl.example/interviews/72-vs-22-dharma</loc></url>
   <url><loc>https://hipl.example/privacy</loc></url>
   <url><loc>https://hipl.example/questions</loc></url>
   <url><loc>https://hipl.example/questions/001</loc></url>
@@ -38,6 +44,6 @@
   <url><loc>https://hipl.example/reading-circle</loc></url>
   <url><loc>https://hipl.example/reading-circle/guide</loc></url>
   <url><loc>https://hipl.example/voices</loc></url>
-  <url><loc>https://hipl.example/voices/sample-essay</loc></url>
+  <url><loc>https://hipl.example/voices/the-prayer-i-kept</loc></url>
   <url><loc>https://hipl.example/write</loc></url>
 </urlset>

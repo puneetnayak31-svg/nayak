@@ -127,23 +127,33 @@
   paintAll();
   var rz; window.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(function () { artQueue.forEach(function (f) { f(); }); drawMaps(); }, 150); });
 
-  /* ---------- Live Sabha: bars lean toward the pointer ---------- */
+  /* ---------- Live Sabha: bars lean toward the pointer ----------
+     Breathing runs on each <rect>; leaning runs on its wrapper <g class="lean">,
+     so the two never cancel out and the motion stays smooth. */
   $$(".sabha.live.interactive").forEach(function (svg) {
-    var rects = $$("rect", svg);
-    function onMove(ev) {
-      var r = svg.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      var dx = ev.clientX - cx, dy = ev.clientY - cy, dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > r.width * 0.9) { leave(); return; }
-      svg.classList.add("engaged");
+    var leans = $$(".lean", svg), px = null, py = null, raf = 0, engaged = false;
+    function frame() {
+      raf = 0;
+      var r = svg.getBoundingClientRect();
+      if (!r.width) return;
+      var cx = r.left + r.width / 2, cy = r.top + r.height / 2, dx = px - cx, dy = py - cy;
+      var near = Math.sqrt(dx * dx + dy * dy) < r.width * 1.1;
+      if (!near) {
+        if (engaged) { engaged = false; leans.forEach(function (g) { g.style.transform = ""; }); }
+        return;
+      }
+      engaged = true;
       var ang = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
-      rects.forEach(function (rc) {
-        var a = +rc.getAttribute("data-i") * 15, d = Math.abs(((ang - a) + 540) % 360 - 180);
-        var k = d < 50 ? 1 + (1 - d / 50) * 0.32 : 0.9;
-        rc.style.transform = "scaleY(" + k.toFixed(3) + ")";
+      leans.forEach(function (g) {
+        var a = +g.getAttribute("data-i") * 15, d = Math.abs(((ang - a) + 540) % 360 - 180);
+        var k = d < 60 ? 1 + Math.cos(d / 60 * Math.PI / 2) * 0.35 : 0.92;
+        g.style.transform = "scaleY(" + k.toFixed(3) + ")";
       });
     }
-    function leave() { svg.classList.remove("engaged"); rects.forEach(function (rc) { rc.style.transform = ""; }); }
-    if (!reduce) { window.addEventListener("pointermove", onMove, { passive: true }); }
+    if (!reduce) window.addEventListener("pointermove", function (ev) {
+      px = ev.clientX; py = ev.clientY;
+      if (!raf) raf = requestAnimationFrame(frame);
+    }, { passive: true });
   });
 
   /* ---------- Count-up numbers ---------- */
@@ -163,6 +173,24 @@
   });
 
   /* ---------- Forms ---------- */
+  function collect(form) {
+    var data = {}, files = [];
+    $$("input, select, textarea", form).forEach(function (f) {
+      if (!f.name || f.name === "website" || f.closest("[hidden]")) return;
+      if (f.type === "checkbox") data[f.name] = f.checked;
+      else if (f.type === "radio") { if (f.checked) data[f.name] = f.value; }
+      else if (f.type === "file") { if (f.files && f.files[0]) files.push(f); }
+      else data[f.name] = f.value;
+    });
+    return Promise.all(files.map(function (f) {
+      return new Promise(function (resolve) {
+        var r = new FileReader(), file = f.files[0];
+        r.onload = function () { data[f.name] = { name: file.name, type: file.type, data: String(r.result).split(",")[1] }; resolve(); };
+        r.onerror = function () { resolve(); };
+        r.readAsDataURL(file);
+      });
+    })).then(function () { return data; });
+  }
   var MSG = {
     dispatch: "You're on the list. Check your inbox to confirm your subscription.",
     question: "Thank you. Your question has been received. The team reviews every question before it appears on the list; hard and uncomfortable questions stay.",
@@ -172,6 +200,7 @@
     pitch: "Pitch received. The editor replies to every pitch within 10 working days. A confirmation email is on its way.",
     guest: "Thank you for the suggestion. The interviews team reads every one.",
     comment: "Thank you. Your comment has been received and will appear once a moderator has reviewed it.",
+    interest: "Thank you. We'll be in touch within a week.",
     correction: "Thank you. An editor will check this against the source and log any correction on the corrections page."
   };
   $$(".js-form").forEach(function (form) {
@@ -214,12 +243,31 @@
         }
       });
       if (bad) { bad.focus(); return; }
-      // Production: POST to /api/forms/<kind> (Turnstile token + consent flags), then confirmation email via Resend.
-      var ok = document.createElement("div"); ok.className = "form-msg"; ok.setAttribute("role", "status");
-      ok.textContent = MSG[kind] || "Thank you. We've received this.";
-      form.appendChild(ok);
-      track("Form submitted", { kind: kind });
-      form.querySelectorAll("button[type=submit]").forEach(function (b) { b.disabled = true; b.textContent = "Sent"; });
+      var btns = $$("button[type=submit]", form);
+      function done(text, isErr) {
+        var box = document.createElement("div"); box.className = "form-msg" + (isErr ? " err" : ""); box.setAttribute("role", isErr ? "alert" : "status");
+        box.textContent = text; form.appendChild(box);
+        if (!isErr) { btns.forEach(function (b) { b.disabled = true; b.textContent = "Sent"; }); track("Form submitted", { kind: kind }); }
+        else btns.forEach(function (b) { b.disabled = false; });
+      }
+      var endpoint = (document.body.getAttribute("data-forms") || "").trim();
+      if (!/^https?:$/.test(location.protocol) || !endpoint) {
+        // Opened from disk (or no form service configured): show the confirmation, send nothing.
+        done((MSG[kind] || "Thank you. We've received this.") + " (Preview: nothing was sent.)");
+        return;
+      }
+      btns.forEach(function (b) { b.disabled = true; });
+      collect(form).then(function (payload) {
+        payload.kind = kind; payload.page = location.pathname;
+        return fetch(endpoint.replace(/\/?$/, "/") + encodeURIComponent(kind), {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+        });
+      }).then(function (res) {
+        if (res.ok) done(MSG[kind] || "Thank you. We've received this.");
+        else if (res.status === 404) done("This site isn't connected to the HIPL form service yet, so nothing was sent. Please try again later.", true);
+        else if (res.status === 429) done("Too many attempts. Please wait a minute and try again.", true);
+        else done("Something went wrong and your form wasn't sent. Please try again.", true);
+      }).catch(function () { done("We couldn't reach the server. Check your connection and try again.", true); });
     });
   });
 
@@ -386,6 +434,16 @@
       box.classList.add(isPoll ? "voted" : "revealed");
       $$(".persp", box).forEach(function (p) { p.hidden = false; p.classList.toggle("picked", +p.getAttribute("data-opt") === i); });
       var after = $(".after-choice", box); if (after) after.hidden = false;
+      if (!$(".choice-share", box)) {
+        var sb = document.createElement("button"); sb.type = "button"; sb.className = "btn small ghost choice-share";
+        sb.textContent = isPoll ? "Share this poll" : "Share my choice";
+        sb.addEventListener("click", function () {
+          var q = ($(isPoll ? "h4" : ".scenario", box) || {}).textContent || document.title;
+          var chosen = (($("[aria-pressed=true] span:not(.fill):not(.pct):not(.share-bar)", box) || {}).textContent || "").trim();
+          openShare({ kicker: isPoll ? "HIPL asks" : "What would you do?", title: q, body: chosen ? "I chose: " + chosen + ". What would you choose?" : "", theme: isPoll ? "marigold" : "midnight", url: location.href.split("#")[0] });
+        });
+        box.appendChild(sb);
+      }
       if (fresh) {
         var picked = $(".persp.picked", box); if (picked && !isPoll) picked.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
         track(isPoll ? "Poll vote" : "Dilemma choice", { id: id, option: i });
@@ -424,27 +482,182 @@
       shareCard(cards[i]);
     });
   });
-  function wrapText(g, text, x, y, maxW, lh) {
-    var words = text.split(" "), line = "", lines = [];
+  /* ---------- Share engine ----------
+     Any element with data-share-card (kicker, title, body, theme) can be shared as
+     a brand image (1080x1350 post, 1080x1920 story), through the phone's own share
+     sheet, to WhatsApp / X / LinkedIn / Facebook / Telegram, or as a link. */
+  var THEMES = {
+    midnight: { bg: C.midnight, fg: C.chalk, accent: C.marigold, logo: "dark" },
+    saffron: { bg: C.saffron, fg: C.midnight, accent: C.midnight, logo: "mono" },
+    marigold: { bg: C.marigold, fg: C.midnight, accent: C.midnight, logo: "mono" },
+    lotus: { bg: C.lotus, fg: C.midnight, accent: C.midnight, logo: "mono" },
+    chalk: { bg: C.chalk, fg: C.midnight, accent: "#B4530A", logo: "light" }
+  };
+  function wrapLines(g, text, maxW) {
+    var words = String(text || "").split(/\s+/), line = "", lines = [];
     words.forEach(function (w) { var t = line ? line + " " + w : w; if (g.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
     if (line) lines.push(line);
-    lines.forEach(function (l, i) { g.fillText(l, x, y + i * lh); });
-    return y + lines.length * lh;
+    return lines;
   }
+  function logoImage(kind) {
+    // The master lockup already sits in the header as outlined SVG; recolour it per theme.
+    var svg = $(".brand svg");
+    if (!svg) return Promise.resolve(null);
+    var src = svg.outerHTML.replace(/class="lockup"/, 'xmlns="http://www.w3.org/2000/svg"');
+    if (kind === "light") src = src.replace(/#F7F3EC/gi, "#14123A");
+    if (kind === "mono") src = src.replace(/#F7F3EC|#FF8A1F|#FFC93C|#FF6FA3/gi, "#14123A");
+    if (kind === "mono") src = src.replace(/(<circle[^>]*fill=")#14123A/i, "$1#F7F3EC");
+    return new Promise(function (res) {
+      var img = new Image();
+      img.onload = function () { res(img); }; img.onerror = function () { res(null); };
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src);
+    });
+  }
+  function fontsReady() {
+    try { return Promise.all(["800 80px Unbounded", "600 30px Unbounded", "400 30px 'Instrument Sans'", "700 30px Mukta"].map(function (f) { return document.fonts.load(f); })); }
+    catch (e) { return Promise.resolve(); }
+  }
+  function drawShare(d, w, h) {
+    var t = THEMES[d.theme] || THEMES.midnight;
+    return Promise.all([fontsReady(), logoImage(t.logo)]).then(function (r) {
+      var logo = r[1], cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      var g = cv.getContext("2d"), pad = 84, maxW = w - pad * 2, rand = rng(7);
+      g.fillStyle = t.bg; g.fillRect(0, 0, w, h);
+      // the sabha, rising from a corner
+      bars(g, w - 40, h * 0.18, 120, h > 1500 ? 520 : 420, 30, rand, t.logo === "dark" ? [C.saffron, C.marigold, C.lotus] : [t.fg, C.chalk], 16);
+      circle(g, w - 40, h * 0.18, 110, t.logo === "dark" ? C.chalk : t.fg);
+      g.fillStyle = t.accent; g.font = "600 30px Unbounded, sans-serif";
+      wrapLines(g, (d.kicker || "HIPL").toUpperCase(), maxW - 240).slice(0, 2).forEach(function (l, i) { g.fillText(l, pad, pad + 40 + i * 42); });
+      // title: shrink until it fits
+      var size = 96, lines, top = h > 1500 ? 620 : 420, room = h - top - 360;
+      do { g.font = "800 " + size + "px Unbounded, 'Mukta', sans-serif"; lines = wrapLines(g, d.title, maxW); size -= 4; }
+      while ((lines.length * size * 1.1 > room * 0.7) && size > 44);
+      size += 4; g.fillStyle = t.fg;
+      lines.forEach(function (l, i) { g.fillText(l, pad, top + i * size * 1.1); });
+      var y = top + lines.length * size * 1.1 + 30;
+      if (d.body) {
+        g.font = "400 38px 'Instrument Sans', 'Mukta', sans-serif"; g.globalAlpha = .88;
+        wrapLines(g, d.body, maxW).slice(0, h > 1500 ? 7 : 4).forEach(function (l, i) { g.fillText(l, pad, y + 20 + i * 54); });
+        g.globalAlpha = 1;
+      }
+      // footer: master lockup + address
+      g.fillStyle = t.fg; g.fillRect(pad, h - 210, maxW, 3);
+      if (logo) g.drawImage(logo, pad, h - 170, 380, 380 * 232 / 860);
+      else { g.font = "800 64px Unbounded, sans-serif"; g.fillText("HIPL", pad, h - 100); }
+      g.font = "600 28px 'Instrument Sans', sans-serif"; g.textAlign = "right";
+      g.fillText((location.host || "HIPL") + "", w - pad, h - 110);
+      g.textAlign = "left";
+      return cv;
+    });
+  }
+  function shareData(el) {
+    var meta = $("meta[name=description]");
+    return {
+      kicker: el && el.getAttribute("data-share-kicker") || "HIPL — Hinduism in Public Life",
+      title: el && el.getAttribute("data-share-title") || ($("h1") || {}).textContent || document.title,
+      body: el && el.getAttribute("data-share-body") || (meta ? meta.content : ""),
+      theme: el && el.getAttribute("data-share-theme") || "midnight",
+      url: location.href.split("#")[0] + (el && el.id ? "#" + el.id : "")
+    };
+  }
+  var sheet = null;
+  function closeSheet() { if (sheet) { sheet.remove(); sheet = null; document.removeEventListener("keydown", escSheet); if (lastFocus) lastFocus.focus(); } }
+  function escSheet(e) { if (e.key === "Escape") closeSheet(); }
+  function toast(msg) { var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2200); }
+  function copyText(text, okMsg) {
+    try { navigator.clipboard.writeText(text).then(function () { toast(okMsg || "Copied"); }, function () { toast("Copy not available here"); }); }
+    catch (e) { toast("Copy not available here"); }
+  }
+  function openShare(d) {
+    closeSheet(); lastFocus = document.activeElement;
+    var caption = d.title + (d.body ? " — " + d.body : "") + "\n" + d.url;
+    var enc = encodeURIComponent, links = {
+      WhatsApp: "https://wa.me/?text=" + enc(d.title + " " + d.url),
+      X: "https://twitter.com/intent/tweet?text=" + enc(d.title) + "&url=" + enc(d.url),
+      LinkedIn: "https://www.linkedin.com/sharing/share-offsite/?url=" + enc(d.url),
+      Facebook: "https://www.facebook.com/sharer/sharer.php?u=" + enc(d.url),
+      Telegram: "https://t.me/share/url?url=" + enc(d.url) + "&text=" + enc(d.title)
+    };
+    sheet = document.createElement("div"); sheet.className = "share-sheet"; sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-label", "Share");
+    sheet.innerHTML = '<div class="share-box"><div class="row" style="justify-content:space-between"><h3>Share</h3><button class="icon-btn" type="button" data-close aria-label="Close">×</button></div>' +
+      '<div class="share-preview"><figure><img alt="Post image preview" data-img="post"><figcaption>Post · 1080×1350</figcaption></figure><figure><img alt="Story image preview" data-img="story"><figcaption>Story · 1080×1920</figcaption></figure></div>' +
+      '<div class="share-actions" data-row="img"><button type="button" class="primary" data-native hidden>Share image…</button><a data-dl="post" download="hipl-post.png" href="#">Save post image</a><a data-dl="story" download="hipl-story.png" href="#">Save story image</a></div>' +
+      '<div class="share-actions">' + Object.keys(links).map(function (k) { return '<a href="' + links[k] + '" target="_blank" rel="noopener">' + k + "</a>"; }).join("") +
+      '<button type="button" data-copy-link>Copy link</button></div>' +
+      '<label class="small" for="share-cap"><b>Caption</b></label><textarea class="share-caption" id="share-cap"></textarea><div class="share-actions"><button type="button" data-copy-cap>Copy caption</button></div></div>';
+    $("#share-cap", sheet).value = caption;
+    sheet.addEventListener("click", function (e) { if (e.target === sheet || e.target.closest("[data-close]")) closeSheet(); });
+    document.addEventListener("keydown", escSheet);
+    document.body.appendChild(sheet); $("[data-close]", sheet).focus();
+    $("[data-copy-link]", sheet).addEventListener("click", function () { copyText(d.url, "Link copied"); });
+    $("[data-copy-cap]", sheet).addEventListener("click", function () { copyText($("#share-cap", sheet).value, "Caption copied"); });
+    Promise.all([drawShare(d, 1080, 1350), drawShare(d, 1080, 1920)]).then(function (cvs) {
+      if (!sheet) return;
+      var urls = cvs.map(function (cv) { try { return cv.toDataURL("image/png"); } catch (e) { return ""; } });
+      $("[data-img=post]", sheet).src = urls[0]; $("[data-img=story]", sheet).src = urls[1];
+      $("[data-dl=post]", sheet).href = urls[0]; $("[data-dl=story]", sheet).href = urls[1];
+      var nat = $("[data-native]", sheet);
+      cvs[0].toBlob(function (blob) {
+        if (!blob || !navigator.canShare) return;
+        var file = new File([blob], "hipl.png", { type: "image/png" });
+        if (!navigator.canShare({ files: [file] })) return;
+        nat.hidden = false;
+        nat.addEventListener("click", function () {
+          navigator.share({ files: [file], title: d.title, text: caption }).catch(function () {});
+          track("Share", { to: "native-image" });
+        });
+      });
+    });
+    track("Share sheet", { title: d.title });
+  }
+  window.HIPLShare = openShare;
+
+  // A small share button on every shareable card
+  var SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>';
+  $$("[data-share-card]").forEach(function (el) {
+    if ($("[data-share-this]", el)) return;
+    var b = document.createElement("button"); b.type = "button"; b.className = "share-fab"; b.innerHTML = SHARE_ICON;
+    b.setAttribute("aria-label", "Share " + (el.getAttribute("data-share-title") || "this"));
+    b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openShare(shareData(el)); });
+    el.appendChild(b);
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-share-this]");
+    if (t) { e.preventDefault(); openShare(shareData(t.closest("[data-share-card]"))); }
+  });
+
+  // Highlight text, share it as a quote card
+  var qpop = null;
+  function hideQ() { if (qpop) { qpop.remove(); qpop = null; } }
+  document.addEventListener("mouseup", function (e) {
+    if (e.target.closest(".quote-pop")) return;
+    setTimeout(function () {
+      var sel = window.getSelection(), text = sel ? String(sel).trim() : "";
+      hideQ();
+      if (text.length < 20 || text.length > 320 || !sel.rangeCount) return;
+      var node = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode);
+      if (!node || !node.closest("main") || node.closest("form, .share-sheet, input, textarea")) return;
+      var r = sel.getRangeAt(0).getBoundingClientRect();
+      qpop = document.createElement("div"); qpop.className = "quote-pop";
+      qpop.innerHTML = '<button type="button" data-q="share">Share quote</button><button type="button" data-q="copy">Copy</button>';
+      qpop.style.left = Math.max(8, r.left + window.scrollX + r.width / 2 - 80) + "px";
+      qpop.style.top = (r.top + window.scrollY - 46) + "px";
+      document.body.appendChild(qpop);
+      qpop.addEventListener("click", function (ev) {
+        var k = ev.target.getAttribute("data-q");
+        if (k === "share") openShare({ kicker: ($("h1") || {}).textContent || "HIPL", title: "“" + text + "”", body: "", theme: "saffron", url: location.href.split("#")[0] });
+        if (k === "copy") copyText("“" + text + "” — " + location.href.split("#")[0], "Quote copied");
+        hideQ();
+      });
+    }, 10);
+  });
+  document.addEventListener("mousedown", function (e) { if (!e.target.closest(".quote-pop")) hideQ(); });
+
   function shareCard(card) {
-    // 1080 x 1350 image for Instagram (spec 3.3).
-    var cv = document.createElement("canvas"); cv.width = 1080; cv.height = 1350;
-    var g = cv.getContext("2d"), bg = getComputedStyle(card).backgroundColor, fg = getComputedStyle(card).color;
-    g.fillStyle = bg; g.fillRect(0, 0, 1080, 1350);
-    g.fillStyle = fg;
-    g.font = "600 30px Unbounded, sans-serif"; g.fillText(($(".k-n span", card) || {}).textContent || "HIPL Explorations", 80, 120);
-    g.font = "800 92px Unbounded, sans-serif";
-    var y = wrapText(g, $("h4", card).textContent, 80, 520, 920, 100);
-    g.font = "400 40px 'Instrument Sans', sans-serif";
-    wrapText(g, $("p", card).textContent, 80, y + 40, 920, 58);
-    var rand = rng(5); bars(g, 980, 1250, 26, 70, 24, rand, [C.saffron, C.marigold, C.lotus], 9); circle(g, 980, 1250, 22, C.chalk);
-    g.fillStyle = fg; g.font = "800 44px Unbounded, sans-serif"; g.fillText("HIPL", 80, 1265);
-    openModal('<h3 style="font-family:var(--f-display)">Card image ready</h3><img alt="Knowledge card image" src="' + cv.toDataURL("image/png") + '"><p class="small">Long-press or right-click the image to save it, then share it on Instagram (1080 × 1350).</p><button class="btn dark" type="button" data-close>Close</button>');
+    // Knowledge cards keep their own colours.
+    var bg = getComputedStyle(card).backgroundColor, theme = "midnight";
+    if (/255, 138, 31/.test(bg)) theme = "saffron"; else if (/255, 201, 60/.test(bg)) theme = "marigold"; else if (/247, 243, 236/.test(bg)) theme = "chalk";
+    openShare({ kicker: ($(".k-n span", card) || {}).textContent || "HIPL Explorations", title: ($("h4", card) || {}).textContent, body: ($("p", card) || {}).textContent, theme: theme, url: location.href.split("#")[0] });
     track("Share card image", {});
   }
   var modal = null, lastFocus = null;
@@ -484,9 +697,21 @@
     var map = {
       whatsapp: "https://wa.me/?text=" + encodeURIComponent(title + " " + url),
       x: "https://twitter.com/intent/tweet?text=" + encodeURIComponent(title) + "&url=" + encodeURIComponent(url),
-      linkedin: "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url)
+      linkedin: "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url),
+      facebook: "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url),
+      telegram: "https://t.me/share/url?url=" + encodeURIComponent(url) + "&text=" + encodeURIComponent(title)
     };
-    $$("a[data-share]", s).forEach(function (a) { a.href = map[a.getAttribute("data-share")]; a.target = "_blank"; a.rel = "noopener"; a.addEventListener("click", function () { track("Share", { to: a.getAttribute("data-share") }); }); });
+    $$("a[data-share]", s).forEach(function (a) { if (!map[a.getAttribute("data-share")]) return; a.href = map[a.getAttribute("data-share")]; a.target = "_blank"; a.rel = "noopener"; a.addEventListener("click", function () { track("Share", { to: a.getAttribute("data-share") }); }); });
+    if (!$("[data-share=image]", s)) {
+      var ib = document.createElement("button"); ib.type = "button"; ib.setAttribute("data-share", "image"); ib.textContent = "Share as image";
+      ib.addEventListener("click", function () { openShare(shareData(null)); }); s.appendChild(ib);
+    }
+    var nat = $("[data-share=native]", s);
+    if (navigator.share) {
+      if (!nat) { nat = document.createElement("button"); nat.type = "button"; nat.setAttribute("data-share", "native"); nat.textContent = "Share…"; s.insertBefore(nat, s.firstChild); }
+      nat.hidden = false;
+      nat.addEventListener("click", function () { navigator.share({ title: title, url: url }).catch(function () {}); track("Share", { to: "native" }); });
+    }
     var copy = $("[data-share=copy]", s);
     if (copy) copy.addEventListener("click", function () {
       var done = function () { copy.textContent = "Link copied"; setTimeout(function () { copy.textContent = "Copy link"; }, 2000); };
@@ -551,6 +776,55 @@
     pts.forEach(function (p) { p.addEventListener("click", function () { pick(p); }); });
   });
   drawMaps();
+
+  /* ---------- Event countdowns ---------- */
+  function updateCountdowns() {
+    $$("[data-countdown]").forEach(function (el) {
+      var t = Date.parse(el.getAttribute("data-countdown")); if (!t) return;
+      var now = Date.now(), diff = t - now, day = 864e5;
+      var startDay = new Date(t); startDay.setHours(0, 0, 0, 0);
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var days = Math.round((startDay - today) / day);
+      var text = "";
+      if (diff > 0 && days > 1) text = days + " days to go";
+      else if (diff > 0 && days === 1) text = "Tomorrow";
+      else if (diff > 0) { var h = Math.floor(diff / 36e5), m = Math.floor(diff % 36e5 / 6e4); text = "Today · starts in " + (h ? h + "h " : "") + m + "m"; }
+      else if (diff > -4 * 36e5) text = "Happening now";
+      el.textContent = text;
+    });
+  }
+  updateCountdowns(); setInterval(updateCountdowns, 30000);
+
+  /* ---------- Add to calendar (.ics) ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ics]"); if (!b) return;
+    var start = new Date(b.getAttribute("data-start")), end = new Date(start.getTime() + 3 * 36e5);
+    var f = function (d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); };
+    var esc = function (t) { return String(t || "").replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n"); };
+    var ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//HIPL//Events//EN", "BEGIN:VEVENT",
+      "UID:" + b.getAttribute("data-slug") + "@hipl", "DTSTAMP:" + f(new Date()), "DTSTART:" + f(start), "DTEND:" + f(end),
+      "SUMMARY:" + esc(b.getAttribute("data-title")), "LOCATION:" + esc(b.getAttribute("data-location")),
+      "DESCRIPTION:" + esc(b.getAttribute("data-details") + " " + location.href), "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+    a.download = (b.getAttribute("data-slug") || "hipl-event") + ".ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    track("Add to calendar", { slug: b.getAttribute("data-slug") });
+  });
+
+  /* ---------- Announcement bar ---------- */
+  var ann = $(".announce");
+  if (ann) {
+    var key = "announce:" + ann.getAttribute("data-announce");
+    if (store.get(key, false)) ann.hidden = true;
+    $(".announce-x", ann).addEventListener("click", function () { ann.hidden = true; store.set(key, true); });
+  }
+
+  /* ---------- In Person: programme buttons preselect the form ---------- */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-programme]"); if (!a) return;
+    var sel = $("#in-prog"); if (sel) sel.value = a.getAttribute("data-programme");
+  });
 
   /* ---------- Small screens: let wide hero copy breathe ---------- */
   var y = $("[data-year]"); if (y) y.textContent = new Date().getFullYear();

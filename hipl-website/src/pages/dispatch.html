@@ -13,7 +13,7 @@
         <label class="check"><input type="checkbox" name="consent" required><span>Send me the Weekly Dispatch. One email a week, unsubscribe any time. <a href="{{root}}privacy.html">Privacy</a></span></label>
         <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
         <button class="btn dark" type="submit">Subscribe</button>
-        <p class="tiny muted">Arrives every [DAY] at [TIME]. For example, Sunday 8 am.</p>
+        <p class="tiny muted">Arrives {{dispatch_schedule}}.</p>
       </form>
     </div>
   </div>
@@ -36,9 +36,7 @@
 <section class="section band-sand">
   <div class="wrap">
     <div class="sec-head"><div><span class="eyebrow">Archive</span><h2>Past issues</h2></div><span class="small muted">Every issue is also posted here.</span></div>
-    <div class="q-list">
-      <a class="q-item" href="{{root}}dispatch/issue-00.html" style="text-decoration:none;grid-template-columns:96px minmax(0,1fr) auto"><span class="qn">Issue 00</span><div><h3>One idea worth thinking about: can a tradition question itself?</h3><div class="meta"><span>[DATE]</span><span class="sample-flag">Sample</span></div></div><span class="arrow-link" aria-hidden="true">Read</span></a>
-    </div>
+    <div class="q-list">{{dispatch_archive}}</div>
     <p class="small muted" style="margin-top:14px">Issue 01 goes out on launch week.</p>
   </div>
 </section>

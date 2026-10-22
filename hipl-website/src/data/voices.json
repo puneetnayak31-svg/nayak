@@ -1,0 +1,30 @@
+{
+  "formats": [
+    {"slug": "essay", "name": "Essay", "color": "outline"},
+    {"slug": "my-hinduism", "name": "My Hinduism", "color": "lotus"},
+    {"slug": "response", "name": "Response", "color": "midnight"},
+    {"slug": "review", "name": "Review", "color": "marigold"},
+    {"slug": "local", "name": "Local story", "color": "marigold"}
+  ],
+  "articles": [
+    {
+      "slug": "the-prayer-i-kept",
+      "status": "sample",
+      "featured": true,
+      "title": "The prayer I stopped saying, and the one I kept",
+      "dek": "On growing up with a grandmother's morning ritual, leaving it behind, and finding one small piece of it again.",
+      "format": "my-hinduism",
+      "topics": ["family", "practice"],
+      "writer": {"name": "[WRITER NAME]", "slug": "sample-writer", "city": "[City]", "bio": "[Two-line bio supplied by the writer.]"},
+      "date": "[DATE]",
+      "read": 7,
+      "body": "Every morning of my childhood began with the same sound: my grandmother in the next room, saying a prayer I never learned the meaning of. It was as regular as the pressure cooker's whistle, and for years I thought of it the same way, as a noise the house made.\n\nWhen I left home for college, I left that sound behind without noticing. Nobody asked me to keep it. I wasn't sure what it was for, and I didn't miss it.\n\n## What I lost\n\nIt was only years later, alone in a rented flat in a city where I knew nobody, that I realised what had gone. Not the words, which I had never understood, but the shape of the day: a few minutes at the start of it when someone stopped, faced something larger than herself, and only then began.\n\n> I hadn't lost a belief. I had lost a pause.\n\n## What I kept\n\nI didn't go back to her prayer. I asked my mother what it meant, and she wasn't entirely sure either. But I kept the pause. Five minutes, before my phone, facing the window. Some days I say a line I've since looked up and understood. Some days I say nothing.\n\nI don't know whether my grandmother would call that prayer. I've decided not to need her answer. What I know is that the house of my childhood had a rhythm, and that I've built a small piece of it into a life she never imagined.",
+      "sources": [],
+      "related": [30, 28]
+    },
+    {"slug": "temple-committee-democracy", "status": "planned", "title": "What a temple committee taught me about democracy", "dek": "", "format": "essay", "topics": ["society"], "writer": {"name": "[WRITER NAME]", "slug": "", "city": "", "bio": ""}, "date": "", "read": 9, "body": "", "sources": [], "related": []},
+    {"slug": "last-lamp-maker", "status": "planned", "title": "The last lamp-maker on our street", "dek": "", "format": "local", "topics": ["arts", "practice"], "writer": {"name": "[WRITER NAME]", "slug": "", "city": "", "bio": ""}, "date": "", "read": 6, "body": "", "sources": [], "related": []},
+    {"slug": "reply-to-dialogue-01", "status": "planned", "title": "A reply to Dialogue 01: who should run a temple?", "dek": "", "format": "response", "topics": ["ideas", "society"], "writer": {"name": "[WRITER NAME]", "slug": "", "city": "", "bio": ""}, "date": "", "read": 5, "body": "", "sources": [], "related": []},
+    {"slug": "why-my-generation-argues", "status": "planned", "title": "Why my generation argues about dharma online", "dek": "", "format": "essay", "topics": ["ideas", "society"], "writer": {"name": "[WRITER NAME]", "slug": "", "city": "", "bio": ""}, "date": "", "read": 8, "body": "", "sources": [], "related": []}
+  ]
+}

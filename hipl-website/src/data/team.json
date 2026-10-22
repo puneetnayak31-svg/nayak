@@ -1,0 +1,23 @@
+{
+  "team": [
+    {
+      "name": "Prannv Dhawan",
+      "role": "Co-founder",
+      "founder": true,
+      "bio": "Prannv Dhawan is an Advocate at the Supreme Court of India. A graduate of the National Law School of India University, Bangalore, he has written on constitutional law, caste and politics for the Indian Express, The Hindu, Economic and Political Weekly, ThePrint, The India Forum and Frontline, among other publications.",
+      "photo": "",
+      "links": []
+    },
+    {
+      "name": "Shivom Singh Lovell",
+      "role": "Co-founder",
+      "founder": true,
+      "bio": "Shivom Singh Lovell runs the Delhi Union, HIPL's debating partner, and is a student at King's College London.",
+      "photo": "",
+      "links": []
+    },
+    {"name": "[NAME]", "role": "Editor, Explorations", "founder": false, "bio": "", "photo": "", "links": []},
+    {"name": "[NAME]", "role": "Producer, Dialogues & Interviews", "founder": false, "bio": "", "photo": "", "links": []},
+    {"name": "[NAME]", "role": "Voices coordinator", "founder": false, "bio": "", "photo": "", "links": []}
+  ]
+}

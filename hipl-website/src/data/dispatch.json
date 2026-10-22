@@ -1,0 +1,18 @@
+{
+  "schedule": "Every Sunday at 8 am",
+  "issues": [
+    {
+      "number": 0,
+      "status": "sample",
+      "date": "[DATE]",
+      "subject": "Can a tradition question itself?",
+      "idea_title": "Can a tradition question itself?",
+      "idea": "Some people think a tradition stays strong by never changing. Others think it stays alive only by arguing with itself. The classical schools of Indian philosophy spent centuries asking each other \"how do you know that?\" Maybe questioning isn't a threat to tradition. Maybe it is one of its oldest habits.\n\n[About 300 words in the final issue.]",
+      "this_week": "- [Development 1, explained calmly in two or three sentences, with a link to a reliable source.]\n- [Development 2.]\n- [Development 3, optional.]",
+      "positive_story": "[A person or community doing something good, in about 100 words, with a photo credit.]",
+      "from_hipl": "We launch on Saturday 31 October at the Constitution Club of India, New Delhi, with our first debate, hosted by the Delhi Union: *This House believes that the Constitution should not regulate Hindu temples.* [RSVP](events/launch-2026.html)\n\nNew in Explorations: [Dharma: One Word, Many Meanings](explorations/hindu-universe/dharma.html).",
+      "three_things": "1. [Link 1, one line on why it's worth your time.]\n2. [Link 2.]\n3. [Link 3.]",
+      "question": "What is one thing from your grandparents' practice you'd keep, and one you'd rethink?"
+    }
+  ]
+}

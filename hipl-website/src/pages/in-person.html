@@ -1,0 +1,58 @@
+<!--meta {"title": "In Person: Seva & Gatherings", "description": "HIPL in person: Salons, Heritage Walks, Culture Nights, Seva Saturdays and Campus Circles. Starting with the launch of HIPL on 31 October in New Delhi.", "nav": "in-person"} -->
+<section class="section inperson-hero">
+  <div class="wrap inperson-grid">
+    <div class="stack" style="--gap:22px">
+      <span class="eyebrow">HIPL in person · Seva &amp; sabha</span>
+      <h1 style="max-width:12ch">Ideas need a room.</h1>
+      <p class="lede">{{programmes_intro}}</p>
+      <div class="row"><a class="btn dark" href="#whats-on">What's on</a><a class="btn ghost" href="#join">Get involved</a></div>
+      <div class="inperson-mark">
+        <!--sabha:live style="width:120px;height:120px"-->
+        <div><b>HIPL</b><span>A circle of voices, in person</span></div>
+      </div>
+    </div>
+    {{programmes_orbit}}
+  </div>
+</section>
+
+{{launch_feature}}
+
+<section class="section" id="whats-on">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="eyebrow">What's on</span><h2>Upcoming gatherings</h2></div><p class="small muted" style="max-width:40ch">Dates marked "to be announced" are confirmed in the Weekly Dispatch first. Subscribe at the bottom of this page.</p></div>
+    <div class="grid" style="--cols:3">{{events_upcoming}}</div>
+  </div>
+</section>
+
+{{programmes_sections}}
+
+<section class="section band-dark on-dark" id="join">
+  <div class="wrap split">
+    <div class="stack" style="--gap:18px">
+      <span class="eyebrow">Get involved</span>
+      <h2>Host, partner, start a Circle, or just come along.</h2>
+      <p class="muted">Tell us what you'd like to do and where you are. We reply to everyone within a week.</p>
+      <ul class="prose" style="font-size:1rem;color:var(--on-dark-soft)">
+        <li>Host a Salon in your city or living room.</li>
+        <li>Partner with us for a Seva Saturday.</li>
+        <li>Start a Campus Circle at your college.</li>
+        <li>Suggest an artist, a walk or a place.</li>
+      </ul>
+    </div>
+    <form class="form js-form" data-kind="interest" novalidate>
+      <div class="field"><label for="in-prog">I'd like to</label><select id="in-prog" name="programme" required><option value="">Choose one</option>{{interest_options}}<option value="other">Something else</option></select></div>
+      <div class="form-row">
+        <div class="field"><label for="in-name">Name</label><input id="in-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="in-email">Email</label><input id="in-email" name="email" type="email" autocomplete="email" required></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="in-city">City</label><input id="in-city" name="city" type="text" autocomplete="address-level2" required></div>
+        <div class="field"><label for="in-org">College or organisation <span class="hint">(optional)</span></label><input id="in-org" name="organisation" type="text"></div>
+      </div>
+      <div class="field"><label for="in-msg">Tell us a little more</label><textarea id="in-msg" name="message" rows="4"></textarea></div>
+      <label class="check"><input type="checkbox" name="consent" required><span>HIPL may contact me about this. <a href="{{root}}privacy.html">Privacy</a></span></label>
+      <div class="hp" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <button class="btn" type="submit" style="justify-self:start">Send</button>
+    </form>
+  </div>
+</section>

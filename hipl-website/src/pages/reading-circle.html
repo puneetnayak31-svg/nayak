@@ -10,18 +10,17 @@
 
 <section class="section">
   <div class="wrap split rev">
-    <div class="card" style="background:var(--marigold);padding:clamp(24px,4vw,48px);gap:22px">
-      <div class="row" style="justify-content:space-between"><span class="tag">This month</span><span class="sample-flag">Sample month</span></div>
-      <h2>Katha Upanishad: the Nachiketa dialogue</h2>
-      <div class="stack" style="--gap:6px"><span class="eyebrow" style="color:var(--midnight)">Guiding question</span><p class="big-quote" style="font-size:clamp(1.3rem,2.6vw,2rem)">When should you refuse what is pleasant for what is good?</p></div>
-      <p class="small">Short enough to finish in a month. Freely available in Sanskrit with translations on the Gita Supersite; we name the translation we use in the guide.</p>
-      <div class="row"><a class="btn dark" href="{{root}}reading-circle/guide.html">Open the 2-page reading guide</a><a class="arrow-link" href="{{root}}explorations/stories-that-stay/nachiketa.html">The story, illustrated</a></div>
+    <div class="card" style="background:var(--marigold);padding:clamp(24px,4vw,48px);gap:22px" data-share-card data-share-kicker="HIPL Reading Circle · {{circle_month}}" data-share-title="{{circle_question}}" data-share-body="{{circle_text}}" data-share-theme="marigold">
+      <div class="row" style="justify-content:space-between"><span class="tag">This month</span><span class="sample-flag">{{circle_month}}</span></div>
+      <h2>{{circle_text}}</h2>
+      <div class="stack" style="--gap:6px"><span class="eyebrow" style="color:var(--midnight)">Guiding question</span><p class="big-quote" style="font-size:clamp(1.3rem,2.6vw,2rem)">{{circle_question}}</p></div>
+      <p class="small">{{circle_why}}</p>
+      <div class="row"><a class="btn dark" href="{{root}}reading-circle/guide.html">Open the reading guide</a><a class="arrow-link" href="{{circle_related}}">The story, illustrated</a><button class="btn small ghost" type="button" data-share-this>Share</button></div>
     </div>
     <div class="stack" style="--gap:20px">
       <span class="eyebrow">Sessions</span>
-      <div class="card" style="gap:8px"><span class="tag saffron" style="justify-self:start">Online</span><b style="font-family:var(--f-display);font-size:1.2rem">[DATE] · [TIME]</b><span class="small muted">60 minutes · video call · link sent on sign-up</span></div>
-      <div class="card" style="gap:8px"><span class="tag" style="justify-self:start">In person</span><b style="font-family:var(--f-display);font-size:1.2rem">[DATE] · [TIME]</b><span class="small muted">[VENUE], [CITY] · 60 minutes · 12–20 seats</span></div>
-      <div class="speaker"><span class="avatar-ph">F</span><div><b>Facilitator: [FACILITATOR NAME]</b><p class="small muted">[Role]</p></div></div>
+      {{circle_sessions}}
+      <div class="speaker"><span class="avatar-ph">F</span><div><b>Facilitator: {{circle_facilitator}}</b></div></div>
     </div>
   </div>
 </section>

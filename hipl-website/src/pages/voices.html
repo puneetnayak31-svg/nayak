@@ -14,13 +14,13 @@
 
 <section class="section">
   <div class="wrap">
-    <a class="card linked feature-card" href="{{root}}voices/sample-essay.html">
+    <a class="card linked feature-card" href="{{voices_featured_url}}">
       <div style="background:var(--lotus);min-height:260px;position:relative;overflow:hidden"><canvas data-art="41" data-accent="#FF6FA3" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%"></canvas></div>
       <div class="stack" style="--gap:14px;padding:clamp(24px,4vw,48px)">
-        <div class="row"><span class="tag lotus">Featured · My Hinduism</span><span class="sample-flag">Sample</span></div>
-        <h2>The prayer I stopped saying, and the one I kept</h2>
-        <p class="muted">On growing up with a grandmother's morning ritual, leaving it behind, and finding one small piece of it again.</p>
-        <p class="small" style="color:var(--marigold)">[WRITER NAME] for HIPL · 7 min read</p>
+        <div class="row"><span class="tag lotus">Featured</span></div>
+        <h2>{{voices_featured_title}}</h2>
+        <p class="muted">{{voices_featured_dek}}</p>
+        <p class="small" style="color:var(--marigold)">{{voices_featured_byline}}</p>
       </div>
     </a>
   </div>
@@ -33,22 +33,11 @@
       <div class="field"><span class="label" id="vf-l">Format</span>
         <div class="filter-chips" data-filter="format" role="group" aria-labelledby="vf-l">
           <button type="button" data-value="" aria-pressed="true">All</button>
-          <button type="button" data-value="essay" aria-pressed="false">Essay</button>
-          <button type="button" data-value="my-hinduism" aria-pressed="false">My Hinduism</button>
-          <button type="button" data-value="response" aria-pressed="false">Response</button>
-          <button type="button" data-value="review" aria-pressed="false">Review</button>
-          <button type="button" data-value="local" aria-pressed="false">Local story</button>
+          {{voices_format_chips}}
         </div></div>
       <div class="field" style="flex:0 1 220px"><label for="vf-topic">Topic</label><select id="vf-topic" data-filter="topic"><option value="">All topics</option><option value="family">Family</option><option value="practice">Practice</option><option value="society">Society</option><option value="arts">Arts</option><option value="ideas">Ideas</option></select></div>
     </div>
-    <div class="grid" style="--cols:3">
-      <a class="card linked v-card" data-format="my-hinduism" data-topic="family|practice" href="{{root}}voices/sample-essay.html"><div class="meta"><span class="tag lotus">My Hinduism</span><span class="sample-flag">Sample</span></div><h3>The prayer I stopped saying, and the one I kept</h3><p class="small muted">[WRITER NAME] for HIPL · 7 min</p></a>
-      <article class="card v-card" data-format="essay" data-topic="society"><div class="meta"><span class="tag outline">Essay</span><span class="sample-flag">Sample</span></div><h3>What a temple committee taught me about democracy</h3><p class="small muted">[WRITER NAME] for HIPL · 9 min</p></article>
-      <article class="card v-card" data-format="local" data-topic="arts|practice"><div class="meta"><span class="tag marigold">Local story</span><span class="sample-flag">Sample</span></div><h3>The last lamp-maker on our street</h3><p class="small muted">[WRITER NAME] for HIPL · 6 min</p></article>
-      <article class="card v-card" data-format="response" data-topic="ideas"><div class="meta"><span class="tag">Response</span><span class="sample-flag">Sample</span></div><h3>A reply to Dialogue 01: tradition is a verb</h3><p class="small muted">[WRITER NAME] for HIPL · 5 min</p></article>
-      <article class="card v-card" data-format="review" data-topic="arts"><div class="meta"><span class="tag marigold">Review</span><span class="sample-flag">Sample</span></div><h3>[BOOK TITLE], reviewed: a new way into the epics</h3><p class="small muted">[WRITER NAME] for HIPL · 6 min</p></article>
-      <article class="card v-card" data-format="essay" data-topic="ideas|society"><div class="meta"><span class="tag outline">Essay</span><span class="sample-flag">Sample</span></div><h3>Why my generation argues about dharma online</h3><p class="small muted">[WRITER NAME] for HIPL · 8 min</p></article>
-    </div>
+    <div class="grid" style="--cols:3">{{voices_grid}}</div>
     <div class="empty filter-empty" hidden><h3>No pieces in this format yet.</h3><p class="small muted">Maybe yours is the first.</p><a class="btn small dark" href="{{root}}write.html">Pitch one</a></div>
   </div>
 </section>

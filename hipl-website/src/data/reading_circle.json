@@ -1,0 +1,26 @@
+{
+  "months": [
+    {
+      "slug": "katha-upanishad",
+      "status": "current",
+      "month": "Sample month",
+      "text": "Katha Upanishad: the Nachiketa dialogue",
+      "question": "When should you refuse what is pleasant for what is good?",
+      "why": "Short enough to finish in a month. Freely available in Sanskrit with translations on the Gita Supersite; we name the translation we use in the guide.",
+      "translation": "[NAMED TRANSLATION, edition]",
+      "sessions": [
+        {"type": "Online", "when": "[DATE] · [TIME]", "where": "Video call · link sent on sign-up"},
+        {"type": "In person", "when": "[DATE] · [TIME]", "where": "[VENUE], New Delhi · 12–20 seats"}
+      ],
+      "facilitator": "[FACILITATOR NAME]",
+      "guide": [
+        {"title": "What to read", "text": "The Katha Upanishad, the Nachiketa story and Yama's teaching. Translation: [NAMED TRANSLATION, edition]. Sanskrit text: Gita Supersite."},
+        {"title": "Before you start", "text": "The Upanishads are among the oldest philosophical texts in India. This one is told as a story: a boy, his father, and Death. Read the story first, then the teaching."},
+        {"title": "Words to know", "text": "śreyas (the good) · preyas (the pleasant) · ātman (the self) · brahman (ultimate reality)"},
+        {"title": "Questions to bring", "text": "1. Was Nachiketa right to keep questioning his father?\n2. Why does Yama test him before answering?\n3. Name one \"pleasant\" thing you'd find hard to give up for something \"good\"."}
+      ],
+      "related_entry": 14,
+      "summary": ""
+    }
+  ]
+}

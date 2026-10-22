@@ -1,0 +1,100 @@
+{
+  "events": [
+    {
+      "slug": "launch-2026",
+      "status": "upcoming",
+      "featured": true,
+      "kind": "launch",
+      "dialogue_number": 1,
+      "title": "The launch of Hinduism in Public Life",
+      "kicker": "You are invited · A new platform · A new conversation",
+      "date": "2026-10-31",
+      "start": "17:00",
+      "time_label": "5 PM onwards",
+      "venue": "Constitution Club of India",
+      "address": "Rafi Marg, New Delhi",
+      "city": "New Delhi",
+      "company": ["Scholars", "Jurists", "Writers", "Thinkers", "Young voices"],
+      "programme": [
+        {"label": "The launch of HIPL", "detail": "Why HIPL, and what it will do."},
+        {"label": "A short discussion", "detail": "Hindu thought in public life today."},
+        {"label": "The debate", "detail": "An Oxford-style debate hosted by the Delhi Union. The room votes on the motion before and after."}
+      ],
+      "motion": "This House believes that the Constitution should not regulate Hindu temples",
+      "hosted_by": "Delhi Union",
+      "description": "HIPL launches with an evening in the company of scholars, jurists, writers, thinkers and young voices, and with its first Dialogue: a formal debate on who should run Hindu temples.\n\nThe room votes on the motion before the debate and again after it. We announce the shift, not a winner.",
+      "brief": "Many major Hindu temples in India are managed under state laws, through boards and departments that oversee their administration and finances. Supporters say this protects devotees, prevents mismanagement and keeps temples open to all. Critics say it singles out Hindu institutions, takes decisions about worship away from communities, and diverts temple funds.\n\nThe motion asks whether the Constitution should allow the state to regulate Hindu temples at all. Speakers will argue both sides; the full background reading list will be posted here before the evening.",
+      "speakers": [
+        {"name": "[SPEAKER NAME]", "role": "[Role]", "side": "proposition"},
+        {"name": "[SPEAKER NAME]", "role": "[Role]", "side": "proposition"},
+        {"name": "[SPEAKER NAME]", "role": "[Role]", "side": "opposition"},
+        {"name": "[SPEAKER NAME]", "role": "[Role]", "side": "opposition"}
+      ],
+      "moderator": "[MODERATOR NAME]",
+      "rsvp": true,
+      "video_id": "",
+      "key_moments": [],
+      "vote_before": {"for": 0, "against": 0, "undecided": 0},
+      "vote_after": {"for": 0, "against": 0, "undecided": 0},
+      "summary": ""
+    },
+    {
+      "slug": "salon-01",
+      "status": "planned",
+      "kind": "salon",
+      "title": "HIPL Salon: What do we owe our grandparents' faith?",
+      "date": "",
+      "date_label": "November · date to be announced",
+      "start": "",
+      "time_label": "Evening",
+      "venue": "[VENUE]",
+      "city": "New Delhi",
+      "description": "Our first small evening: 20 people, one big question, chai. A host opens the question and the room takes it from there.",
+      "rsvp": true
+    },
+    {
+      "slug": "heritage-walk-01",
+      "status": "planned",
+      "kind": "heritage-walk",
+      "title": "Heritage Walk: [ROUTE]",
+      "date": "",
+      "date_label": "November · date to be announced",
+      "start": "",
+      "time_label": "Sunday morning",
+      "venue": "[MEETING POINT]",
+      "city": "New Delhi",
+      "description": "A two-hour walk through living temples and old neighbourhoods with a guide who knows the history, the stories and the people who keep these places going.",
+      "rsvp": true
+    },
+    {
+      "slug": "seva-saturday-01",
+      "status": "planned",
+      "kind": "seva",
+      "title": "Seva Saturday with [PARTNER]",
+      "date": "",
+      "date_label": "December · date to be announced",
+      "start": "",
+      "time_label": "Saturday morning",
+      "venue": "[PARTNER]",
+      "city": "New Delhi",
+      "description": "Three hours of hands-on service with a local partner, followed by a short conversation on what seva asks of us today.",
+      "rsvp": true
+    },
+    {
+      "slug": "dialogue-02",
+      "status": "planned",
+      "kind": "dialogue",
+      "dialogue_number": 2,
+      "title": "HIPL Dialogues 02: the topic you vote for",
+      "date": "",
+      "date_label": "Date to be announced",
+      "start": "",
+      "time_label": "",
+      "venue": "[VENUE]",
+      "city": "[CITY]",
+      "motion": "",
+      "description": "The next Dialogue's question is chosen by your votes on the Dialogues page.",
+      "rsvp": false
+    }
+  ]
+}

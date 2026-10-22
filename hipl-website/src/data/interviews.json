@@ -1,0 +1,40 @@
+{
+  "themes": [
+    {"slug": "texts", "name": "Texts & ideas"},
+    {"slug": "arts", "name": "Arts"},
+    {"slug": "practice", "name": "Practice"},
+    {"slug": "generations", "name": "Generations"},
+    {"slug": "work", "name": "Work & public life"}
+  ],
+  "episodes": [
+    {
+      "slug": "72-vs-22-dharma",
+      "status": "sample",
+      "title": "72 vs 22: What does dharma mean to you?",
+      "series": "Old Roots, New Forms",
+      "theme": "generations",
+      "guests": [
+        {"name": "[ELDER GUEST NAME]", "bio": "[Two-line bio supplied by the guest.]", "tag": "72"},
+        {"name": "[GEN Z GUEST NAME]", "bio": "[Two-line bio supplied by the guest.]", "tag": "22"}
+      ],
+      "host": "[HOST NAME]",
+      "runtime": "[RUNTIME]",
+      "video_id": "",
+      "summary": "An elder and a Gen Z guest answer the same five questions side by side. The monthly special: two generations, one table.",
+      "key_moments": [
+        {"time": "[00:00]", "label": "The first question", "text": "[One line on what is said.]"},
+        {"time": "[00:00]", "label": "Where they agree", "text": "[One line.]"},
+        {"time": "[00:00]", "label": "Where they don't", "text": "[One line.]"},
+        {"time": "[00:00]", "label": "What should not change", "text": "[One line.]"}
+      ],
+      "transcript": "",
+      "related": [2, 30],
+      "color": "marigold"
+    },
+    {"slug": "texts-on-dharma", "status": "planned", "title": "What do the texts actually say about dharma?", "series": "", "theme": "texts", "guests": [{"name": "[GUEST NAME]", "bio": "Scholar or writer", "tag": ""}], "host": "", "runtime": "", "video_id": "", "summary": "", "key_moments": [], "transcript": "", "related": [], "color": "midnight"},
+    {"slug": "reinventing-tradition", "status": "planned", "title": "How do you reinvent a tradition without losing it?", "series": "", "theme": "arts", "guests": [{"name": "[GUEST NAME]", "bio": "Artist or musician", "tag": ""}], "host": "", "runtime": "", "video_id": "", "summary": "", "key_moments": [], "transcript": "", "related": [], "color": "lotus"},
+    {"slug": "faith-at-work", "status": "planned", "title": "What does faith look like in daily work?", "series": "", "theme": "practice", "guests": [{"name": "[GUEST NAME]", "bio": "Priest, teacher or seva worker", "tag": ""}], "host": "", "runtime": "", "video_id": "", "summary": "", "key_moments": [], "transcript": "", "related": [], "color": "saffron"},
+    {"slug": "what-my-generation-believes", "status": "planned", "title": "What do people my age actually believe?", "series": "", "theme": "generations", "guests": [{"name": "[GUEST NAME]", "bio": "Young creator or professional", "tag": ""}], "host": "", "runtime": "", "video_id": "", "summary": "", "key_moments": [], "transcript": "", "related": [], "color": "chalk"},
+    {"slug": "sixty-years", "status": "planned", "title": "What has changed in 60 years, and what should not?", "series": "", "theme": "work", "guests": [{"name": "[GUEST NAME]", "bio": "Elder", "tag": ""}], "host": "", "runtime": "", "video_id": "", "summary": "", "key_moments": [], "transcript": "", "related": [], "color": "midnight-2"}
+  ]
+}

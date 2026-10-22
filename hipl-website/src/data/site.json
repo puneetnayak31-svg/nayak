@@ -1,0 +1,47 @@
+{
+  "name": "HIPL — Hinduism in Public Life",
+  "tagline": "Heritage that thinks forward.",
+  "site_url": "https://hipl.example",
+  "description": "HIPL is a modern ideas platform for Hindu thought: public debates, long conversations, a sourced library, seva and gatherings, and the questions people have always wanted to ask.",
+  "announcement": {
+    "active": true,
+    "text": "Saturday 31 October · The launch of HIPL and our first debate, with the Delhi Union · Constitution Club of India, New Delhi",
+    "link_label": "RSVP",
+    "link": "events/launch-2026.html"
+  },
+  "hero": {
+    "verse": "एकं सद्विप्रा बहुधा वदन्ति",
+    "verse_translation": "Truth is one; the wise call it by many names.",
+    "verse_ref": "Rig Veda 1.164.46",
+    "line1": "One truth.",
+    "line2": "Many voices.",
+    "line3": "Keep the circle open.",
+    "lede": "HIPL is a modern ideas platform for Hindu thought. Ask anything, argue well: in public debates, long conversations, a sourced library and seva on the ground, because questioning has always been part of the tradition.",
+    "cta_primary_label": "Ask a question",
+    "cta_primary_link": "questions.html#ask",
+    "cta_secondary_label": "Start exploring",
+    "cta_secondary_link": "explorations.html",
+    "floating_questions": ["Can the state run a temple?", "Is dharma relevant at work?", "Who gets to interpret?"]
+  },
+  "ticker": [
+    "Should the Constitution regulate Hindu temples?",
+    "Can tradition evolve without losing its essence?",
+    "Is Hinduism a religion, a philosophy or a way of life?",
+    "Can Hindu society confront caste honestly?",
+    "Is dharma relevant at work?",
+    "What do people my age actually believe?"
+  ],
+  "working_test": "Does it strengthen the language, deepen the faith, build the country?",
+  "contact_email": "[CONTACT EMAIL]",
+  "social": {
+    "instagram": "",
+    "x": "",
+    "youtube": "",
+    "linkedin": "",
+    "whatsapp_channel": ""
+  },
+  "forms_endpoint": "/api/forms/",
+  "partners": [
+    {"name": "Delhi Union", "role": "Debate partner", "url": "", "logo": ""}
+  ]
+}

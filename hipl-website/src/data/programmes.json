@@ -1,0 +1,101 @@
+{
+  "intro": "HIPL meets in person: small evenings, walks through living history, hands-on service and student debates. Seva and sabha, side by side.",
+  "programmes": [
+    {
+      "slug": "salons",
+      "name": "HIPL Salons",
+      "group": "live",
+      "line": "Small evenings, one big question",
+      "event_kind": "salon",
+      "cadence": "Monthly · 15–25 people",
+      "status": "starting",
+      "description": "A host, a living room or a café, chai, and one question worth an evening. No speeches, no panels: everyone talks. Salons are the easiest way to bring HIPL to your city.",
+      "how": [
+        "A host picks one question from the 100 Questions or the news.",
+        "15–25 people, by invitation and open sign-up.",
+        "Two hours, one conversation, a short note afterwards in the Dispatch."
+      ],
+      "cta": "Host a salon"
+    },
+    {
+      "slug": "heritage-walks",
+      "name": "Heritage Walks",
+      "group": "live",
+      "line": "Temples, ghats and living history",
+      "event_kind": "heritage-walk",
+      "cadence": "Monthly · Sunday mornings",
+      "status": "starting",
+      "description": "Walk through living temples, ghats and old neighbourhoods with a guide who knows the history and the people who keep these places alive. History told on the spot, with sources.",
+      "how": [
+        "A guide (historian, local or priest) plans a two-hour route.",
+        "Groups of up to 25, early morning.",
+        "Every walk ends with a stop for breakfast and questions."
+      ],
+      "cta": "Join the next walk"
+    },
+    {
+      "slug": "culture-nights",
+      "name": "Culture Nights",
+      "group": "live",
+      "line": "Music, dance, film and art",
+      "event_kind": "culture-night",
+      "cadence": "Quarterly",
+      "status": "coming",
+      "description": "An evening of performance and conversation: a raga and the story behind it, a film screening and a discussion, a dancer on how a tradition is reinvented.",
+      "how": [
+        "One artist or performance, one conversation.",
+        "Partnered with cultural venues and collectives."
+      ],
+      "cta": "Suggest an artist"
+    },
+    {
+      "slug": "seva-saturdays",
+      "name": "Seva Saturdays",
+      "group": "seva",
+      "line": "Service with local partners",
+      "event_kind": "seva",
+      "cadence": "Monthly · Saturday mornings",
+      "status": "starting",
+      "description": "Seva is an idea best understood with your hands. Once a month we volunteer with a local partner, from temple kitchens and ghat clean-ups to reading with children, then talk about what service asks of us.",
+      "how": [
+        "A partner organisation sets the task.",
+        "Three hours of work, thirty minutes of conversation.",
+        "Open to everyone, of any belief or none."
+      ],
+      "cta": "Partner with us"
+    },
+    {
+      "slug": "campus-circles",
+      "name": "Campus Circles",
+      "group": "seva",
+      "line": "Student chapters and debates",
+      "event_kind": "campus",
+      "cadence": "Through the academic year",
+      "status": "starting",
+      "description": "Student-run HIPL chapters that host debates, reading circles and Salons on campus, with the Delhi Union as our first debating partner. A starter kit, speakers and a network of other Circles.",
+      "how": [
+        "Three students and a faculty friend can start a Circle.",
+        "We send a starter kit, debate formats and speaker contacts.",
+        "Circles meet monthly and join an inter-campus debate each term."
+      ],
+      "cta": "Start a Circle"
+    },
+    {
+      "slug": "voices",
+      "name": "Voices",
+      "group": "seva",
+      "line": "Write for HIPL",
+      "event_kind": "",
+      "cadence": "Always open",
+      "status": "active",
+      "description": "Not everything happens in a room. Pitch an essay, a personal story, a review or a story from your town, and we'll edit it with you and publish it under your name.",
+      "how": [
+        "Pitch online.",
+        "We reply within 10 working days.",
+        "You approve the final version."
+      ],
+      "cta": "Pitch an idea",
+      "link": "write.html"
+    }
+  ]
+}

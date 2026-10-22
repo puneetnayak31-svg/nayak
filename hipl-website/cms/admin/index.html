@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HIPL CMS</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/brand/hipl-favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<div id="app" class="app" hidden>
+  <aside class="side">
+    <a class="side-brand" href="#/"><img src="/assets/brand/hipl-lockup-horizontal-on-dark.svg" alt="HIPL — Hinduism in Public Life"><span>CMS</span></a>
+    <nav id="nav" aria-label="CMS"></nav>
+    <div class="side-foot">
+      <a href="/" target="_blank" rel="noopener">View website ↗</a>
+      <button type="button" id="logout">Sign out</button>
+    </div>
+  </aside>
+  <main id="view" class="view" tabindex="-1"></main>
+</div>
+
+<div id="login" class="login" hidden>
+  <form id="login-form" class="login-box">
+    <img src="/assets/brand/hipl-lockup-horizontal-on-dark.svg" alt="HIPL — Hinduism in Public Life">
+    <h1>Content manager</h1>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required autofocus>
+    <button class="btn" type="submit">Sign in</button>
+    <p class="hint" id="login-msg">First time here? The password is shown in the window where the CMS is running.</p>
+  </form>
+</div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/admin/admin.js"></script>
+</body>
+</html>

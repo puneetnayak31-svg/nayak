@@ -1,6 +1,6 @@
 # HIPL editor guide
 
-A short guide to updating the site in its current static form. Every change is: edit a file → run `python3 build.py` → push (Vercel redeploys).
+**Most editing now happens in the CMS: see `CMS-GUIDE.md`.** This guide covers editing the files directly. Every change is: edit a file → run `python3 build.py` → push (Vercel redeploys).
 
 ## Where things live
 

@@ -28,6 +28,7 @@ for _i, _a in enumerate(sys.argv):
     if _a == "--out" and _i + 1 < len(sys.argv):
         DIST = os.path.abspath(sys.argv[_i + 1])
 SHOW_DRAFTS = "--drafts" in sys.argv  # CMS preview: render entries that aren't published yet
+DEMO_FORMS = "--demo-forms" in sys.argv  # static previews with no form service: forms confirm without sending
 
 
 def load(name):
@@ -510,7 +511,7 @@ def layout(meta, body, root, path):
 <link rel="stylesheet" href="{root}assets/fonts/fonts.css">
 <link rel="stylesheet" href="{root}assets/css/site.css">
 </head>
-<body class="{body_class}" data-root="{root}" data-forms="{esc(SITE.get('forms_endpoint', ''))}">
+<body class="{body_class}" data-root="{root}" data-forms="{'' if DEMO_FORMS else esc(SITE.get('forms_endpoint', ''))}">
 <a class="skip" href="#main">Skip to content</a>
 {announcement(root)}
 <header class="site-header">

@@ -1,10 +1,11 @@
 # HIPL website
 
-The website for HIPL — Hinduism in Public Life, on the Sabha identity (Direction A). Static and mobile-first; 40 pages generated from `src/` by `build.py` (Python standard library only).
+The website for HIPL — Hinduism in Public Life, on the Sabha identity (Direction A). Static and mobile-first; about 50 pages generated from `src/` by `build.py` (Python standard library only), with a built-in CMS (`cms/`) for editing everything and drafting Explorations with AI. See `CMS-GUIDE.md`.
 
 ```bash
 python3 build.py                  # build into dist/
 python3 -m http.server -d dist    # preview at http://localhost:8000
+python3 cms/server.py             # the CMS at http://localhost:8800/admin
 python3 build.py --offline        # self-contained pages for opening from disk (CSS/JS inside each page)
 ```
 
@@ -15,6 +16,9 @@ python3 build.py --offline        # self-contained pages for opening from disk (
 | `src/pages/` | One HTML fragment per page; folders mirror the URLs |
 | `src/data/explorations.json` | The 3 series, 36 planned entries and the concept glossary |
 | `src/data/questions.json` | The 100 Questions: answers, who answers, comments |
+| `src/data/*.json` | Site settings, events, programmes, team, interviews, Voices, Dispatch, Reading Circle |
+| `sitekit/` | Renderers: Markdown, Explorations blocks, events, In Person, Voices and more |
+| `cms/` | The CMS server, admin app and AI Composer |
 | `assets/css/site.css` | Design tokens and every component |
 | `assets/js/site.js` | Interactives, filters, forms, generative cover art, analytics hooks |
 | `assets/brand/` | Logo family, outlined from the master artwork (`tools/make_logos.py`) |

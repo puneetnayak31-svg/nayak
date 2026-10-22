@@ -86,7 +86,7 @@ Voice check: curious, confident, warm, witty, evidence-led, open to disagreement
 | 1 | Launch post + carousel + stories | `instagram-01-launch`, `instagram-carousel-*`, `story-*` |
 | 2 | Question 001/100 | `instagram-question-001` |
 | 3 | Explorations: Dharma, one word, many meanings | `instagram-exploration-dharma` |
-| 4 | Dialogue 01 announcement (only once date, venue and speakers are confirmed) | `instagram-dialogue-01-poster` |
+| 4 | The launch debate: the motion, with the Delhi Union | `instagram-launch-motion`, `story-launch-invite` |
 | 5 | Write for HIPL call for pitches | `instagram-write-for-hipl` |
 | 6 | Interview trailer: 72 vs 22 (only once filmed) | `youtube-thumbnail-72-vs-22` |
 | 7 | Weekly Dispatch Issue 01 goes out | `newsletter-header` |
@@ -112,6 +112,27 @@ Voice check: curious, confident, warm, witty, evidence-led, open to disagreement
 > Pitch: [WEBSITE URL]/write
 
 ---
+
+## The launch: Saturday 31 October, Constitution Club of India
+
+### Invite post (image: `social/instagram-launch-motion.png`)
+> You are invited: the launch of HIPL — Hinduism in Public Life.
+>
+> Saturday 31 October, 5 PM onwards, Constitution Club of India, New Delhi. In the company of scholars, jurists, writers, thinkers and young voices.
+>
+> The evening: the launch of HIPL, a short discussion, and our first debate, hosted by the Delhi Union:
+> "This House believes that the Constitution should not regulate Hindu temples."
+>
+> The room votes before and after. RSVP: [WEBSITE URL]/events/launch-2026
+
+### WhatsApp invite
+> You're invited to the launch of HIPL — Hinduism in Public Life.
+> Saturday 31 October, 5 PM onwards, Constitution Club of India, New Delhi.
+> With a debate hosted by the Delhi Union: "This House believes that the Constitution should not regulate Hindu temples."
+> RSVP: [WEBSITE URL]/events/launch-2026
+
+### Day-of story
+`social/story-launch-invite.png` with a link sticker to the RSVP page, then live stories from the evening, ending with the before-and-after vote.
 
 ## Weekly Dispatch, Issue 01 (draft)
 

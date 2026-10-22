@@ -1,2 +1,4 @@
 dist/_preview.html
 __pycache__/
+.preview/
+cms/state/

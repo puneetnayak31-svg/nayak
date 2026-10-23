@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:SpecialElite;src:url(assets/fonts/special-elite-latin-400-normal.woff2)}
+@font-face{font-family:Stencil;font-weight:900;src:url(assets/fonts/big-shoulders-stencil-display-latin-900-normal.woff2)}
+@font-face{font-family:Kalam;font-weight:700;src:url(assets/fonts/kalam-latin-700-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Kalam;font-weight:700;src:url(assets/fonts/kalam-devanagari-700-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:Amita;font-weight:700;src:url(assets/fonts/amita-latin-700-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Amita;font-weight:700;src:url(assets/fonts/amita-devanagari-700-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:Yatra;src:url(assets/fonts/yatra-one-latin-400-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Yatra;src:url(assets/fonts/yatra-one-devanagari-400-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:Bungee;src:url(assets/fonts/bungee-latin-400-normal.woff2)}
+@font-face{font-family:AlfaSlab;src:url(assets/fonts/alfa-slab-one-latin-400-normal.woff2)}
+@font-face{font-family:Eczar;font-weight:600;src:url(assets/fonts/eczar-latin-600-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Eczar;font-weight:600;src:url(assets/fonts/eczar-devanagari-600-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:Eczar;font-weight:800;src:url(assets/fonts/eczar-latin-800-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Eczar;font-weight:800;src:url(assets/fonts/eczar-devanagari-800-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:Anton;src:url(assets/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:SpaceMono;font-weight:400;src:url(assets/fonts/space-mono-latin-400-normal.woff2)}
+@font-face{font-family:SpaceMono;font-weight:700;src:url(assets/fonts/space-mono-latin-700-normal.woff2)}
+@font-face{font-family:PatrickHand;src:url(assets/fonts/patrick-hand-latin-400-normal.woff2)}
+@font-face{font-family:Bowlby;src:url(assets/fonts/bowlby-one-latin-400-normal.woff2)}
+@font-face{font-family:Rozha;src:url(assets/fonts/rozha-one-latin-400-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Rozha;src:url(assets/fonts/rozha-one-devanagari-400-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+@font-face{font-family:VT323;src:url(assets/fonts/vt323-latin-400-normal.woff2)}
+@font-face{font-family:Khand;font-weight:600;src:url(assets/fonts/khand-latin-600-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:Khand;font-weight:600;src:url(assets/fonts/khand-devanagari-600-normal.woff2);unicode-range:U+0900-097F,U+200C-200D,U+25CC,U+A8E0-A8FF}
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script src="common.js"></script>
+<script>
+const style = new URLSearchParams(location.search).get('style');
+const s = document.createElement('script');
+s.src = 'styles/' + style + '.js';
+document.body.appendChild(s);
+</script>
+</body></html>

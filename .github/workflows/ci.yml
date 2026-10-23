@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    defaults:
+      run:
+        working-directory: hipl-website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Checks (compile, build, links, content, CMS API)
+        run: python tools/check.py --dist
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the CMS image
+        run: docker build -t hipl-cms hipl-website
+      - name: Smoke test the image
+        run: |
+          docker run -d --name hipl -p 8800:8800 -e HIPL_CMS_PASSWORD=ci-password-123 hipl-cms
+          for i in $(seq 1 30); do curl -fsS http://localhost:8800/api/health && break; sleep 1; done
+          curl -fsS http://localhost:8800/ | grep -q "Hinduism in Public Life"
+          docker logs hipl

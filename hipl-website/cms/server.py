@@ -5,6 +5,17 @@ Explorations with AI, and publish.
     python cms/server.py                 # http://localhost:8800/admin
     python cms/server.py --host 0.0.0.0  # when hosting on a server (set a strong password!)
 
+Environment (all optional; see docs/DEPLOYMENT.md):
+    HIPL_CMS_PASSWORD   first password, used only when cms/state/config.json doesn't exist yet
+    HIPL_CMS_HOST, PORT bind address and port (default 127.0.0.1:8800)
+    HIPL_TRUST_PROXY=1  behind a reverse proxy: take the client IP from X-Forwarded-For
+                        and treat X-Forwarded-Proto: https as HTTPS
+    HIPL_SECURE_COOKIE=1  always mark the session cookie Secure
+    HIPL_FORMS_ORIGINS  comma-separated site origins allowed to post forms from another
+                        domain, e.g. https://hipl.in,https://www.hipl.in (static site on
+                        Vercel, CMS elsewhere). Not needed when the CMS serves the site.
+    ANTHROPIC_API_KEY   used by the AI Composer when no key is saved in Settings
+
 Standard library only, except the AI Composer, which needs `pip install anthropic`
 and an Anthropic API key (set it under Settings, or ANTHROPIC_API_KEY).
 
@@ -55,6 +66,25 @@ WRITE_LOCK = threading.Lock()
 SESSIONS = {}
 JOBS = {}
 RATE = {}
+TRUST_PROXY = os.environ.get("HIPL_TRUST_PROXY") == "1"
+SECURE_COOKIE = os.environ.get("HIPL_SECURE_COOKIE") == "1"
+SESSION_SECONDS = 12 * 3600
+FORMS_ORIGINS = {o.strip().rstrip("/") for o in os.environ.get("HIPL_FORMS_ORIGINS", "").split(",") if o.strip()}
+
+
+def rate_ok(bucket, ip, limit, window):
+    """Sliding-window limit per client IP. Returns False when over the limit."""
+    now = time.time()
+    if len(RATE) > 5000:  # forget idle clients
+        for k in [k for k, v in RATE.items() if not v or now - v[-1] > 3600]:
+            RATE.pop(k, None)
+    key = (bucket, ip)
+    hits = [t for t in RATE.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        RATE[key] = hits
+        return False
+    RATE[key] = hits + [now]
+    return True
 
 
 # ---------------------------------------------------------------- config & auth
@@ -64,8 +94,11 @@ def load_config():
     if os.path.exists(CONFIG):
         with open(CONFIG, encoding="utf-8") as fh:
             return json.load(fh)
-    pw = os.environ.get("HIPL_CMS_PASSWORD") or secrets.token_urlsafe(9)
-    cfg = {"password": hash_pw(pw), "model": "claude-opus-5-5", "api_key": "", "deploy_hook": "", "first_password": pw}
+    env_pw = os.environ.get("HIPL_CMS_PASSWORD")
+    pw = env_pw or secrets.token_urlsafe(9)
+    cfg = {"password": hash_pw(pw), "model": "claude-opus-5-5", "api_key": "", "deploy_hook": ""}
+    if not env_pw:  # a generated password is shown once so the owner can sign in
+        cfg["first_password"] = pw
     save_config(cfg)
     return cfg
 
@@ -285,11 +318,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "same-origin")
-        for k, v in (headers or {}).items():
+        for k, v in {**self.cors(), **(headers or {})}.items():
             self.send_header(k, v)
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(body)
+
+    def cors(self):
+        """CORS headers for public forms posted from an allowed site origin."""
+        origin = self.headers.get("Origin", "").rstrip("/")
+        if origin and origin in FORMS_ORIGINS and self.path.startswith("/api/forms/"):
+            return {"Access-Control-Allow-Origin": origin, "Vary": "Origin",
+                    "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Max-Age": "86400"}
+        return {}
 
     def err(self, code, msg):
         self.send(code, {"error": msg})
@@ -300,6 +342,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
             raise ValueError("too large")
         raw = self.rfile.read(n) if n else b"{}"
         return json.loads(raw or b"{}")
+
+    def client_ip(self):
+        if TRUST_PROXY:
+            xff = self.headers.get("X-Forwarded-For", "")
+            if xff.strip():
+                return xff.split(",")[-1].strip()  # the address our own proxy saw
+        return self.client_address[0]
+
+    def https(self):
+        return SECURE_COOKIE or (TRUST_PROXY and self.headers.get("X-Forwarded-Proto", "").lower() == "https")
 
     def session(self):
         c = self.headers.get("Cookie", "")
@@ -325,7 +377,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if rel == "" or rel.endswith("/"):
             rel += "index.html"
         path = os.path.normpath(os.path.join(root, rel))
-        if not path.startswith(os.path.normpath(root)):
+        base = os.path.normpath(root)
+        if path != base and not path.startswith(base + os.sep):
             return self.err(403, "Forbidden")
         if not os.path.isfile(path) and os.path.isfile(path + ".html"):
             path += ".html"
@@ -338,6 +391,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
     # -- routes
     def do_HEAD(self):
         self.do_GET()
+
+    def do_OPTIONS(self):
+        if self.cors():
+            return self.send(204, b"", "text/plain")
+        return self.err(405, "Method not allowed")
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
@@ -390,12 +448,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def public_form(self, kind, data):
         if kind not in CM.FORM_KINDS:
             return self.err(404, "Unknown form")
-        ip = self.client_address[0]
-        now = time.time()
-        hits = [t for t in RATE.get(ip, []) if now - t < 60]
-        if len(hits) >= 8:
+        ip = self.client_ip()
+        if not rate_ok("form", ip, 8, 60):
             return self.err(429, "Too many submissions")
-        RATE[ip] = hits + [now]
         if data.get("website"):
             return self.send(200, {"ok": True})  # honeypot: pretend success
         data.pop("kind", None)
@@ -412,15 +467,23 @@ class Handler(http.server.BaseHTTPRequestHandler):
         return self.send(200, {"ok": True})
 
     def login(self, data):
+        if not rate_ok("login", self.client_ip(), 10, 300):
+            return self.err(429, "Too many attempts. Wait a few minutes.")
         if check_pw(data.get("password", ""), CFG["password"]):
+            now = time.time()
+            for k in [k for k, v in SESSIONS.items() if v["exp"] < now]:
+                SESSIONS.pop(k, None)
             tok = secrets.token_urlsafe(24)
-            SESSIONS[tok] = {"exp": time.time() + 12 * 3600}
-            return self.send(200, {"ok": True}, headers={"Set-Cookie": f"hipl_cms={tok}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200"})
+            SESSIONS[tok] = {"exp": now + SESSION_SECONDS}
+            secure = "; Secure" if self.https() else ""
+            return self.send(200, {"ok": True}, headers={"Set-Cookie": f"hipl_cms={tok}; HttpOnly; SameSite=Strict; Path=/; Max-Age={SESSION_SECONDS}{secure}"})
         time.sleep(0.8)
         return self.err(401, "Wrong password.")
 
     # -- API
     def api_get(self, p, q):
+        if p == "/api/health":
+            return self.send(200, {"ok": True, "built": os.path.isdir(DIST)})
         if p == "/api/status":
             return self.send(200, {"signed_in": bool(self.session()), "first_run": bool(CFG.get("first_password"))})
         if not self.session():
@@ -705,6 +768,8 @@ def main():
     ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8800")))
     ap.add_argument("--no-browser", action="store_true")
     args = ap.parse_args()
+    if args.host not in ("127.0.0.1", "localhost"):
+        args.no_browser = True  # hosted: no desktop to open
     CFG = load_config()
     if not os.path.isdir(DIST):
         print("Building the site for the first time…")

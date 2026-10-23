@@ -319,7 +319,7 @@ def render_tokens(body, root):
         out = []
         for c in DATA["concepts"]:
             if c.get("page"):
-                out.append(f'<a href="{root}explorations/concepts/{c["term"]}.html"><b>{esc(c["iast"])}</b><span lang="sa">{c["deva"]}</span></a>')
+                out.append(f'<a href="{root}explorations/concepts/{c["term"]}.html"><b>{esc(c["iast"])}</b><span lang="sa">{esc(c["deva"])}</span></a>')
             else:
                 out.append(f'<button type="button" class="concept-btn" data-concept="{c["term"]}"><b>{esc(c["iast"])}</b><span lang="sa">{c["deva"]}</span></button>')
         return "".join(out)
@@ -602,7 +602,7 @@ def series_page(s):
     start = sum(1 for e in entries if e["priority"] == "start")
     concepts = "".join(
         f'<button type="button" class="concept-btn" data-concept="{c}"><b>{esc(next(x["iast"] for x in DATA["concepts"] if x["term"] == c))}</b>'
-        f'<span lang="sa">{next(x["deva"] for x in DATA["concepts"] if x["term"] == c)}</span></button>'
+        f'<span lang="sa">{esc(next(x["deva"] for x in DATA["concepts"] if x["term"] == c))}</span></button>'
         for c in s["concepts"]
     )
     meta = {"title": s["name"], "description": f'{s["name"]}: {s["line"]} Part of HIPL Explorations.', "nav": "explorations"}

@@ -61,7 +61,7 @@ def kcards(cards, ctx, label):
         src = f'<p class="tiny" style="opacity:.75">{ESC(c.get("source"))}</p>' if c.get("source") else ""
         items.append(
             f'<article class="kcard"><div class="k-n"><span>{ESC(c.get("kicker") or label)} · {i + 1}/{n}</span>{deva}</div>'
-            f'<h4>{ESC(c.get("title"))}</h4><div><p>{md.plain(c.get("text"))}</p>{src}</div></article>'
+            f'<h4>{ESC(c.get("title"))}</h4><div><p>{ESC(md.plain(c.get("text")))}</p>{src}</div></article>'
         )
     return (
         f'<div class="kcards"><div class="kcards-track" tabindex="0" aria-label="{ESC(label)}">{"".join(items)}</div>'

@@ -373,8 +373,9 @@
     if (!c) return;
     closePop();
     pop = document.createElement("div"); pop.className = "popover"; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", c.iast);
-    pop.innerHTML = "<b>" + c.iast + ' <span lang="sa">' + c.deva + "</span></b><p></p>" +
+    pop.innerHTML = '<b><span></span> <span lang="sa"></span></b><p></p>' +
       (c.page ? '<a href="' + ROOT + "explorations/concepts/" + c.term + '.html">Read the full concept page →</a>' : '<span class="tiny" style="color:var(--on-dark-muted)">Full concept page coming soon</span>');
+    $("b span", pop).textContent = c.iast; $("b span[lang]", pop).textContent = c.deva;
     $("p", pop).textContent = c.short;
     document.body.appendChild(pop);
     var r = btn.getBoundingClientRect(), pw = pop.offsetWidth;

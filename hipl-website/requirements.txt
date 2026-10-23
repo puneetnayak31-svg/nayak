@@ -1,0 +1,3 @@
+# The website build and the CMS use only the Python standard library (3.9+).
+# This is needed only for the CMS AI Composer.
+anthropic>=2.1,<3

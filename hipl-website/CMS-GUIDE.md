@@ -64,8 +64,8 @@ The Composer uses Claude Opus 5.5 by default (change it in Settings), and turns 
   ```bash
   HIPL_CMS_PASSWORD='a-long-password' python cms/server.py --host 0.0.0.0 --port 8800
   ```
-  Put it behind HTTPS (for example Caddy or the host's built-in TLS). Then Publish updates the live site directly, and every form submission lands in the Inbox.
-- **Vercel or Netlify for the public site:** paste the deploy hook URL under Settings, and **Publish & deploy** triggers a deploy. (Forms then need a backend; see DEPLOY.md.)
+  Put it behind HTTPS. `deploy/docker-compose.yml` does this with Caddy; see `docs/DEPLOYMENT.md`. Then Publish updates the live site directly, and every form submission lands in the Inbox.
+- **Vercel or Netlify for the public site:** paste the deploy hook URL under Settings, and **Publish & deploy** triggers a deploy. (Forms then post to the CMS on another address; see docs/DEPLOYMENT.md, option B.)
 
 ## Where data lives
 

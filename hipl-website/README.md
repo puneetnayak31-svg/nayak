@@ -7,7 +7,10 @@ python3 build.py                  # build into dist/
 python3 -m http.server -d dist    # preview at http://localhost:8000
 python3 cms/server.py             # the CMS at http://localhost:8800/admin
 python3 build.py --offline        # self-contained pages for opening from disk (CSS/JS inside each page)
+python3 tools/check.py            # every check: build, links, content, renderer, CMS API (run before committing)
 ```
+
+Developer documentation (architecture, deployment, API, security) is in [`../docs/`](../docs/HANDOFF.md). AI agents: see [`../AGENTS.md`](../AGENTS.md).
 
 ## What's here
 
@@ -24,6 +27,9 @@ python3 build.py --offline        # self-contained pages for opening from disk (
 | `assets/brand/` | Logo family, outlined from the master artwork (`tools/make_logos.py`) |
 | `build.py` | Layout, header and footer, card rendering, series pages, sitemap |
 | `vercel.json` | Clean URLs and headers for Vercel |
+| `tests/` | unittest suite (`python3 tools/check.py`) |
+| `tools/` | `check.py`, `check_links.py`, `find_placeholders.py`, `make_logos.py` |
+| `Dockerfile`, `requirements.txt` | Container image for the CMS; `anthropic` is the only (optional) dependency |
 | `EDITOR-GUIDE.md` | How to update content |
 
 ## Pages
@@ -32,4 +38,4 @@ Home · Dialogues + Dialogue 01 event page · Interviews + sample episode · The
 
 ## Content rules
 
-Sample content is labelled "Sample". People, dates and venues that aren't confirmed are `[PLACEHOLDERS]`. Quotations and verse numbers that need checking carry a `VERIFY` marker. Nothing is invented. See `../hipl-launch-kit/LAUNCH-CHECKLIST.md` before going live and `../hipl-launch-kit/DEPLOY.md` for hosting and forms.
+Sample content is labelled "Sample". People, dates and venues that aren't confirmed are `[PLACEHOLDERS]`. Quotations and verse numbers that need checking carry a `VERIFY` marker. Nothing is invented. See `../hipl-launch-kit/LAUNCH-CHECKLIST.md` before going live and `../docs/DEPLOYMENT.md` for hosting, the domain and forms.

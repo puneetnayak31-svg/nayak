@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 build.py:*)",
+      "Bash(python3 tools/check.py:*)",
+      "Bash(python3 tools/check_links.py:*)",
+      "Bash(python3 tools/find_placeholders.py:*)",
+      "Bash(python3 -m unittest:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ],
+    "deny": [
+      "Read(./hipl-website/cms/state/**)",
+      "Read(./deploy/.env)"
+    ]
+  }
+}

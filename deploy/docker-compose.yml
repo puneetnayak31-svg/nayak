@@ -1,0 +1,45 @@
+# Production: the HIPL CMS (which also serves the public website) behind Caddy,
+# which gets and renews HTTPS certificates for your domain automatically.
+#
+#   cp deploy/.env.example deploy/.env    # then edit it
+#   docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+#
+# The checkout is bind-mounted, so CMS edits land in hipl-website/src and
+# hipl-website/assets/uploads on the host (commit them with deploy/sync-content.sh).
+# CMS state (password hash, API key, inbox, history) lives in hipl-website/cms/state.
+
+services:
+  cms:
+    build: ../hipl-website
+    restart: unless-stopped
+    user: "${HIPL_UID:-1000}:${HIPL_GID:-1000}"
+    environment:
+      HIPL_CMS_PASSWORD: ${HIPL_CMS_PASSWORD:?set HIPL_CMS_PASSWORD in deploy/.env}
+      HIPL_TRUST_PROXY: "1"
+      HIPL_FORMS_ORIGINS: ${HIPL_FORMS_ORIGINS:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - ../hipl-website:/app
+    expose:
+      - "8800"
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    depends_on:
+      - cms
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      HIPL_DOMAIN: ${HIPL_DOMAIN:?set HIPL_DOMAIN in deploy/.env}
+      HIPL_UPSTREAM: cms:8800
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

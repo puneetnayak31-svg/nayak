@@ -1,0 +1,12 @@
+# Secrets and server state: never commit
+deploy/.env
+.env
+hipl-website/cms/state/
+
+# Local build output, virtualenvs and caches
+.venv/
+**/__pycache__/
+*.pyc
+hipl-website/.preview/
+hipl-website/dist/_preview.html
+.DS_Store

@@ -18,7 +18,7 @@ Tick these off in order. Nothing goes live with an unfilled `[PLACEHOLDER]` or a
 ## 2. Technical (1–2 weeks before)
 - [ ] Domain bought and connected; `SITE_URL` in `build.py` is set to the real domain; site rebuilt.
 - [ ] HTTPS works on the domain and on `www`.
-- [ ] Forms are connected to real endpoints (see `DEPLOY.md`): Dispatch, 100 Questions, RSVP, Dialogue questions, Reading Circle, Write for HIPL pitch, guest suggestions, corrections.
+- [ ] Forms are connected to real endpoints (see `docs/DEPLOYMENT.md`; with the CMS hosted they post to its Inbox): Dispatch, 100 Questions, RSVP, Dialogue questions, Reading Circle, Write for HIPL pitch, guest suggestions, corrections.
 - [ ] Spam protection (for example Cloudflare Turnstile) is on for every form; the honeypot field is kept.
 - [ ] Confirmation emails send (for example via Resend) for Dispatch, RSVP, Reading Circle and pitches, including guardian emails for under-18 pitches.
 - [ ] The newsletter provider (for example Beehiiv) has double opt-in and an unsubscribe link.

@@ -1,0 +1,1 @@
+Follow the repository instructions in `AGENTS.md` at the repo root (project map, commands, hard rules and editorial rules). Run `python3 tools/check.py` from `hipl-website/` after every change. Python 3.9-compatible standard library only; escape all content; never invent quotations, dates or people.

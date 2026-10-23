@@ -16,8 +16,8 @@
       "photo": "",
       "links": []
     },
-    {"name": "[NAME]", "role": "Editor, Explorations", "founder": false, "bio": "", "photo": "", "links": []},
-    {"name": "[NAME]", "role": "Producer, Dialogues & Interviews", "founder": false, "bio": "", "photo": "", "links": []},
-    {"name": "[NAME]", "role": "Voices coordinator", "founder": false, "bio": "", "photo": "", "links": []}
+    {"name": "[EDITOR NAME]", "role": "Editor, Explorations", "founder": false, "bio": "", "photo": "", "links": []},
+    {"name": "[PRODUCER NAME]", "role": "Producer, Dialogues & Interviews", "founder": false, "bio": "", "photo": "", "links": []},
+    {"name": "[COORDINATOR NAME]", "role": "Voices coordinator", "founder": false, "bio": "", "photo": "", "links": []}
   ]
 }

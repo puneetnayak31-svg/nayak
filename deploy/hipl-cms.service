@@ -1,0 +1,32 @@
+# systemd unit for running the HIPL CMS without Docker.
+#   sudo cp deploy/hipl-cms.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now hipl-cms
+# Assumes the repo is checked out at /srv/hipl as user "hipl". Put secrets in
+# /etc/hipl-cms.env (HIPL_CMS_PASSWORD=..., ANTHROPIC_API_KEY=...), mode 600.
+
+[Unit]
+Description=HIPL CMS and website
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=hipl
+Group=hipl
+WorkingDirectory=/srv/hipl/hipl-website
+Environment=HIPL_CMS_HOST=127.0.0.1
+Environment=PORT=8800
+Environment=HIPL_TRUST_PROXY=1
+EnvironmentFile=-/etc/hipl-cms.env
+# With the AI Composer installed in a virtualenv: /srv/hipl/.venv/bin/python
+ExecStart=/usr/bin/python3 cms/server.py --no-browser
+Restart=on-failure
+RestartSec=3
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/hipl
+
+[Install]
+WantedBy=multi-user.target

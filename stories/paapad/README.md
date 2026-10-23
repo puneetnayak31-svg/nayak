@@ -14,6 +14,8 @@ Every style tells the whole story, from the title card to the end card, with the
 | `output/06-riso-comic.mp4` | Two-Ink Riso Comic | Pink and blue overprint with halftones; each line becomes a panel and the speech bubbles are the captions |
 | `output/07-doordarshan.mp4` | Doordarshan '89 | A VHS tape pass inside a TV cabinet, a "vichaar" card, serial reaction zooms and "rukawat ke liye khed hai" |
 
+`output/style-board.jpg` shows every style at the same four moments: the opening shout, the argument, the expiry reveal and the final yell.
+
 ## Placeholder voices
 The dialogue is synthesised with Kokoro, an offline TTS model with Hindi voices: Karun `hm_omega`, Jyotsna `hf_alpha`
 and the narrator `hm_psi`. It is flat and only stands in for the timing. To use the studio recordings, drop one WAV per

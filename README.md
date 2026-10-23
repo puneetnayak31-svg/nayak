@@ -26,6 +26,8 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
 | For | Read |
 |---|---|
 | **Developer taking over** | [docs/HANDOFF.md](docs/HANDOFF.md): state, launch to-dos, first day |
+| **What the owner wants (binding)** | [docs/BRIEF.md](docs/BRIEF.md): every instruction and decision; [docs/reference/](docs/reference/README.md): original specs and brand guidelines |
+| **Look, feel and voice** | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md): Sabha brand rules and the checklist for any new UI |
 | How it works | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Stack and versions | [docs/TECH-STACK.md](docs/TECH-STACK.md) |
 | Going live on a domain | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |

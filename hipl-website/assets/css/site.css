@@ -15,6 +15,9 @@
   --muted: #5B577A;
   --on-dark-muted: #C9C3E8;
   --on-dark-soft: #DCD7F2;
+  --error: #A0153E;
+  --lotus-ink: #B0124F;
+  --saffron-tint: #FFF4E5;
 
   --f-display: "Unbounded", "Arial Black", "Helvetica Neue", Arial, sans-serif;
   --f-text: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
@@ -206,7 +209,7 @@ fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width
 .form-msg { padding: 16px 18px; border-left: 4px solid var(--saffron); background: var(--paper); color: var(--midnight); font-weight: 600; }
 .form-msg.err { border-left-color: var(--lotus); }
 .counter-hint { font-size: .8125rem; color: var(--muted); text-align: right; }
-.err-text { color: #A0153E; font-size: .875rem; font-weight: 600; }
+.err-text { color: var(--error); font-size: .875rem; font-weight: 600; }
 .on-dark .err-text { color: var(--lotus); }
 
 /* ---------- Cards ---------- */
@@ -466,7 +469,7 @@ sup.fn a { text-decoration: none; font-weight: 700; color: var(--saffron-ink); f
 .compare thead th { background: var(--midnight); color: var(--chalk); font: 600 1rem var(--f-display); border-color: var(--midnight-line); }
 .compare thead th span { display: block; font-family: var(--f-hindi); font-weight: 400; color: var(--marigold); font-size: 1rem; }
 .compare tbody th { font: 700 .8125rem var(--f-text); letter-spacing: .14em; text-transform: uppercase; color: var(--saffron-ink); width: 140px; background: var(--chalk); }
-.compare td.hi { background: #FFF4E5; }
+.compare td.hi { background: var(--saffron-tint); }
 .compare-cards { display: none; }
 @media (max-width: 760px) {
   .compare-wrap { display: none; }
@@ -773,7 +776,7 @@ a.feature-card:hover { color: var(--chalk); }
 .orbit-col.bottom .orbit-node:nth-child(3) { margin-left: auto; }
 .orbit-label { position: absolute; font-size: .75rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 .orbit-label.top { top: 45%; right: 4%; color: var(--midnight); }
-.orbit-label.bottom { top: 53%; right: 4%; color: #B0124F; }
+.orbit-label.bottom { top: 53%; right: 4%; color: var(--lotus-ink); }
 @media (max-width: 960px) {
   .inperson-grid { grid-template-columns: minmax(0, 1fr); }
   .orbit { min-height: 0; display: grid; gap: 12px; }

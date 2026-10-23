@@ -33,6 +33,9 @@ The CMS writes to `src/data/` in your checkout. Commit content changes like code
 
 **Always commit `dist/`** after changing sources (the CMS serves it, static hosts can deploy it as is, and CI checks it's fresh).
 
+## Before you build anything
+Read [BRIEF.md](BRIEF.md) (the owner's binding decisions) and [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) (brand rules and the checklist for new UI).
+
 ## Code conventions
 
 - **Python 3.9 compatible, standard library only** (except `anthropic`, imported lazily in `cms/ai.py`).
@@ -87,6 +90,7 @@ Add a JSON file in `src/data/`, a collection in `COLLECTIONS` (with `file`, `pat
 |---|---|
 | `tests/test_build.py` | Full build: core pages exist, no unrendered tokens, title and one h1 per page, every internal link resolves, offline build inlines assets |
 | `tests/test_data.py` | All JSON parses; unique keys per collection; URL-safe slugs; published entries pass `validate()`; related entries exist; event dates are valid; page templates have meta lines |
+| `tests/test_design.py` | Sabha brand rules: palette-only colours (CSS, JS, templates), tokens instead of raw hex, brand fonts only, square corners, no text shadows or glows |
 | `tests/test_sitekit.py` | Markdown escaping and link schemes; every block type renders, including empty blocks and XSS payloads; validation rules; schema consistency |
 | `tests/test_cms.py` | The real HTTP server against temp copies of the data: health, static serving, path traversal, forms (inbox, honeypot, rate limit, proxy IP, CORS), auth (cookie flags, Secure behind HTTPS, login limit, CSRF header), CRUD with history, approving questions, page-editor guards, upload filter, schema/validate, and the AI helpers (offline) |
 
@@ -99,6 +103,7 @@ There are no browser tests yet. For UI changes, check by hand at 375 px and 1280
 - `/verify`: run all checks and summarise the failures
 - `/new-exploration`: draft an Explorations entry as blocks JSON, following the editorial rules
 - `/release-check`: go through the go-live checklist
-- Subagents: `content-reviewer` (editorial rules and placeholders), `security-reviewer` (escaping, auth, paths) and `deploy-helper`
+- `/new-page`: build a page or feature that matches the brief and the design system
+- Subagents: `content-reviewer` (editorial rules and placeholders), `security-reviewer` (escaping, auth, paths), `design-reviewer` (brand and owner decisions) and `deploy-helper`
 
 Ask an agent to run `python3 tools/check.py` after every change. That is the definition of done.

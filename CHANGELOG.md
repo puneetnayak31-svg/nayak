@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-23: Owner's brief and design system in the repo
+- `docs/BRIEF.md`: every instruction from the owner, in order, plus the decisions log (D1–D16) and the spec items not yet done.
+- `docs/DESIGN-SYSTEM.md`: Sabha brand rules as implemented, with a checklist for any new UI.
+- `docs/reference/`: the owner's original specs and brand guidelines (originals + readable Markdown).
+- `tests/test_design.py`: palette, fonts, square corners and no glows are now enforced. Three stray colours became tokens.
+- AI agent files point to the brief and the design system; added the `design-reviewer` agent and the `/new-page` skill.
+
 ## 2026-10-23: Developer hand-off
 - Developer docs in `docs/`: hand-off, architecture, tech stack, deployment, content model, CMS API, development, security.
 - AI agent instructions: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, Claude Code subagents and skills in `.claude/`.

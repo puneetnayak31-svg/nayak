@@ -5,7 +5,7 @@ description: Draft a new HIPL Explorations entry (interactive explainer page) as
 
 Goal: a draft entry that renders as an immersive, interactive page and is honest about what still needs checking.
 
-1. Read `docs/CONTENT-MODEL.md` (block types and fields), `hipl-website/sitekit/schema.py` (exact fields) and `EDITORIAL_RULES` in `hipl-website/cms/ai.py`. Look at entry `n: 28` (`slug: "seva"`) in `src/data/explorations.json` as a model of a block-built entry.
+1. Read `docs/BRIEF.md` (owner decisions), the Explorations spec `docs/reference/explorations-and-write-spec.md` (series, entry list, templates, sample entries, sources, claim labels, review rules), `docs/CONTENT-MODEL.md` (block types and fields), `hipl-website/sitekit/schema.py` (exact fields) and `EDITORIAL_RULES` in `hipl-website/cms/ai.py`. Look at entry `n: 28` (`slug: "seva"`) in `src/data/explorations.json` as a model of a block-built entry.
 2. Find the entry: if the topic matches a planned entry (`status: "planned"`), fill that one (keep its `n`, `series`, `slug`). Otherwise add a new entry with the next free `n` and the right `series`.
 3. Build 8–16 blocks in reading order:
    - Start with `hook` and `context`, then 3–6 `chapter`s with claim labels.

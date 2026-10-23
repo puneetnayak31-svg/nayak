@@ -1,6 +1,6 @@
 # Developer hand-off
 
-**Start here.** This page gives you the current state of the project, what is left before launch, and what to check first. It should take an hour to read and set up.
+**Start here.** Then read [BRIEF.md](BRIEF.md) (what the owner asked for and decided: binding) and [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) (how everything must look and sound) before building anything. This page gives you the current state of the project, what is left before launch, and what to check first. It should take an hour to read and set up.
 
 ## 1. What HIPL is
 
@@ -18,7 +18,7 @@ The first public event is the **launch on Saturday 31 October 2026**, 5 PM, at t
 | Public forms → Inbox | Working when the site is served by the CMS (tested end to end) |
 | AI Composer | Implemented. **Not yet run against the live Anthropic API** (no key during development) |
 | Sharing (image cards, quotes, socials) | Working in modern browsers |
-| Tests and CI | 46 tests (build, links, content, renderer XSS, CMS API); GitHub Actions on Python 3.9 and 3.12, plus a Docker smoke test |
+| Tests and CI | 54 tests (build, links, content, brand rules, renderer XSS, CMS API); GitHub Actions on Python 3.9 and 3.12, plus a Docker smoke test |
 | Deployment | Docker Compose + Caddy (auto-HTTPS) tested locally; systemd alternative documented |
 | Domain | **Not set**. `site_url` is still `https://hipl.example` |
 
@@ -90,6 +90,8 @@ These are documented and accepted for v1. Details are in [SECURITY.md](SECURITY.
 
 | Question | Doc |
 |---|---|
+| What did the owner ask for and decide? | [BRIEF.md](BRIEF.md) (binding), [reference/](reference/README.md) (original specs and brand guidelines) |
+| How must it look and sound? | [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) |
 | How does it fit together? | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | What is it built with? | [TECH-STACK.md](TECH-STACK.md) |
 | How do I make it live? | [DEPLOYMENT.md](DEPLOYMENT.md) |

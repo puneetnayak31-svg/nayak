@@ -9,7 +9,9 @@ sourced visuals and new compositions built around his narrative. The plan, beat 
 |---|---|
 | `sample1_cold_open.mp4` | 0:00–0:50 rendered: date slam behind Vikrant, venue, rebuilt name super, the four questions, title card |
 | `sample2_first_night.mp4` | 7:16–10:00 rendered: the boycott called off, match-up, batting order, McCullum, the 158/222 run share, RCB squad, scoreboard, SRK, "super hit", Rajasthan Royals |
-| `storyboard.jpg` | Key frames from both samples |
+| `sample3_first_night_animated.mp4` | 7:51–8:46 retold as **character animation** (see [animated/README.md](animated/README.md)): the floodlights come on, the toss, the spotlight on Ganguly while McCullum walks in the dark, his sixes bursting into fireworks, sparks forming 222, run columns of 10, 20 and 158 |
+| `storyboard.jpg` | Key frames from samples 1 and 2 |
+| `storyboard_animated.jpg` | Key frames from sample 3 |
 
 Programme timing and audio are untouched, so pre-rolls, sponsor L-bands and the app end card stay exactly where they were sold.
 

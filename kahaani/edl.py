@@ -60,7 +60,7 @@ def beats():
     # 0:00–0:11 Pizza Hut pre-roll: untouched.
 
     # "अठारह अप्रैल दो हज़ार आठ" — the date lands behind him, word by word.
-    B.append(DepthTitle(11.96, 15.30, align="left", x=80, y=110, gap=6, tracking=4,
+    B.append(DepthTitle(11.96, 15.80, fout=0.05, align="left", x=80, y=110, gap=6, tracking=4,
                         lines=[("18", "display", 250, WHITE, 0.12),
                                ("APRIL", "display", 160, WHITE, 0.94),
                                ("2008", "display", 250, LIME, 1.52)],
@@ -74,20 +74,20 @@ def beats():
                        title_font="display", title_size=150, title_at=2.4))
 
     # back on Vikrant: his name super, rebuilt in the new style over the original one
-    B.append(NameSuper(20.30, 24.20, role="KAHAANI  ·  SPORTS TAK", animate_in=False))
+    B.append(NameSuper(19.85, 24.20, role="KAHAANI  ·  SPORTS TAK", animate_in=True))
 
     # 24.24–30.28 Kahaani promo L-band: untouched.
 
     # The questions he asks become the film's chapters (first two land over the owners' photo
     # that the original edit already cut to; the dolly continues when the picture returns to him).
-    B.append(QuestionStack(30.30, 41.10, y=250, size=70,
+    B.append(QuestionStack(30.30, 41.55, fout=0.05, y=250, size=70,
                            questions=[("IPL लाना इतना आसान था?", 0.10),
                                       ("इसके पीछे की कहानी क्या थी?", 1.12),
                                       ("क्या डर थे, क्या वहम थे?", 7.10),
                                       ("और वो पहली रात…", 9.98)]))
 
     # "…जिसने IPL को IPL बना दिया। आज वो आपसे शेयर करता हूँ।"
-    B.append(TitleCard(41.05, 46.45, image="from_source/kkr_batter.png", focus=(0.62, 0.42),
+    B.append(TitleCard(41.05, 46.45, fout=0.3, image="from_source/kkr_batter.png", focus=(0.62, 0.42),
                        kick="KAHAANI · VIKRANT GUPTA", title="IPL की पहली रात",
                        sub="THE NIGHT THAT MADE THE IPL"))
 
@@ -110,7 +110,7 @@ def beats():
                             ("KOLKATA\nKNIGHT\nRIDERS", "SOURAV GANGULY", 2.1, 6.3)]))
 
     # "सौरव गांगुली और ब्रेंडन मैकलम ओपन करने जाते हैं… नंबर तीन रिकी पोंटिंग… ध्यान सौरव और रिकी पर"
-    B.append(SideList(483.90, 504.60, kick="KKR · BATTING ORDER", y=400, size=66, gap=34,
+    B.append(SideList(483.90, 505.05, fout=0.05, kick="KKR · BATTING ORDER", y=400, size=66, gap=34,
                       font="cond", numbered=True,
                       items=[("SOURAV GANGULY", 0.1), ("BRENDON McCULLUM", 0.8), ("RICKY PONTING", 8.9)],
                       highlight=[(12.2, {0, 2})], notes=[(19.3, 0, "10")]))

@@ -146,7 +146,7 @@ class DepthTitle(Treatment):
     layer = 1
 
     def apply(self, arr, t, ctx):
-        env = inout(t, self.dur, 0.35, 0.45)
+        env = inout(t, self.dur, 0.35, getattr(self, "fout", 0.45))
         m = ctx.mask().copy()
         # the original edit's burned-in name super (bottom-left) must not read as 'presenter'
         r = arr[740:910, 0:760].astype(int)
@@ -241,7 +241,7 @@ class QuestionStack(Treatment):
     needs_mask = True
 
     def apply(self, arr, t, ctx):
-        env = inout(t, self.dur, 0.6, 0.5)
+        env = inout(t, self.dur, 0.6, getattr(self, "fout", 0.5))
         sc, cx, cy = lerp(1.0, 1.12, env), lerp(0.5, 0.40, env), lerp(0.5, 0.47, env)
         pres = reframe(arr, sc, cx, cy)
         soft = portrait_mode(pres, reframe_mask(ctx.mask(), sc, cx, cy))
@@ -282,7 +282,7 @@ class TitleCard(Treatment):
     layer = 3
 
     def apply(self, arr, t, ctx):
-        env = inout(t, self.dur, 0.35, 0.5)
+        env = inout(t, self.dur, getattr(self, "fin", 0.35), getattr(self, "fout", 0.5))
         if not hasattr(self, "_img"):
             self._img = load_image(self.image)
         a = to_np(kenburns(self._img, t, self.dur, 1.12, 1.02, self.focus, self.focus))
@@ -491,15 +491,15 @@ class NameSuper(Treatment):
         canvas = from_np(arr).convert("RGBA")
         name = text_img("VIKRANT GUPTA", "display", 64, WHITE, tracking=3)
         role = text_img(self.role, "mono", 22, LIME, tracking=3)
-        bw, bh = max(name.width, role.width, 600) + 90, name.height + role.height + 64
-        box = Image.new("RGBA", (bw, bh), INK + (235,))
+        bw, bh = max(name.width, role.width, 600) + 90, max(name.height + role.height + 64, 180)
+        box = Image.new("RGBA", (bw, bh), INK + (255,))
         ImageDraw.Draw(box).rectangle((0, 0, 7, bh), fill=LIME)
         box.alpha_composite(name, (40, 24))
         box.alpha_composite(role, (42, 24 + name.height + 16))
         wp = ease_out_expo(prog(t, 0, 0.5)) if self.animate_in else 1
         r = wipe(box, min(wp, 1), "right")
         if r is not None:
-            paste(canvas, r, (36, 760), env)
+            paste(canvas, r, (36, 752), env)
         return to_np(canvas)
 
 
@@ -586,7 +586,7 @@ class SideList(Treatment):
     needs_mask = True
 
     def apply(self, arr, t, ctx):
-        env = inout(t, self.dur, 0.6, 0.5)
+        env = inout(t, self.dur, 0.6, getattr(self, "fout", 0.5))
         sc, cx, cy = lerp(1.0, 1.1, env), lerp(0.5, 0.62, env), lerp(0.5, 0.47, env)
         pres = reframe(arr, sc, cx, cy)
         soft = portrait_mode(pres, reframe_mask(ctx.mask(), sc, cx, cy))

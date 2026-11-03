@@ -1,0 +1,4 @@
+__pycache__/
+# the 110 MB master stays out of git (GitHub's 100 MB limit); see README for where it lives
+source/
+*.wav

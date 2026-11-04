@@ -26,7 +26,7 @@ def finish(a, i, bug=True, archive=True):
     if archive:
         a = C.grain(a, i, 4.5)
     a = C.vignette(a, 0.3)
-    return C.apply_bug(a) if bug else a
+    return a
 
 
 def bokeh_bg(t, seed_img="audi_lap_colour"):
@@ -117,17 +117,26 @@ def name_card(t, i):
     C.paste(c, C.reveal(nm, C.ease_out(C.prog(t, 1296.5, 1297.6))), ((W - nm.width) // 2, cy - 20))
     rw = int(560 * C.ease(C.prog(t, 1296.9, 1298.0)))
     C.paste(c, C.hairline(rw, C.SAND, 160), ((W - rw) // 2, cy + nm.height + 10))
-    return C.apply_bug(from_canvas(c))
+    return from_canvas(c)
+
+
+_c9_last = {}
 
 
 def channel9(t, src, i):
-    """The master's own Channel 9 footage, re-finished and captioned (it is the real moment)."""
+    """The master's own Channel 9 footage, re-finished and captioned (it is the real moment).
+    The master cuts back to the studio at 1306.39, so the last footage frame is held for the fold back."""
     lt = t - 1297.5
-    a = C.grain(src, i, 3.5)
+    if t < 1306.35:
+        _c9_last["f"] = src.copy()
+        frame = src
+    else:
+        frame = _c9_last.get("f", src)
+    a = C.grain(C.remove_bug_fast(frame), i, 3.5)
     a = C.vignette(a, 0.32)
     c = to_canvas(a)
     caption(c, lt, "Channel 9 · MCG, 10 March 1985", "Ian Chappell with Ravi Shastri", None, t_in=2.6, dur=8.9, size=46)
-    return C.apply_bug(from_canvas(c))
+    return from_canvas(c)
 
 
 # ------------------------------------------------------------------ cutaway 2: the car, then the lap
@@ -258,7 +267,7 @@ def lap(t, i):
     C.paste(c, k, ((W - k.width) // 2, 70), C.ease(C.prog(lt, 0.6, 1.4)))
     q = C.text("“आउडी की इससे बड़ी advertisement दुनिया में कहीं नहीं थी”", "hindi", 40, (230, 226, 214))
     C.paste(c, q, ((W - q.width) // 2, H - 130), C.ease(C.prog(t, 1338.6, 1339.6)))
-    return C.apply_bug(from_canvas(c))
+    return from_canvas(c)
 
 
 # ------------------------------------------------------------------ archive inserts already in the master (hard cuts)
@@ -274,7 +283,7 @@ def results(t, src, i):
     lt = t - 1375.0
     c = to_canvas(C.vignette(C.grain(bokeh_bg(t, "audi_bw_2"), i, 3), 0.4))
     k = C.kicker("India v Pakistan · Benson & Hedges World Championship of Cricket", C.SAND, 20)
-    C.paste(c, k, ((W - k.width) // 2, 200), C.ease(C.prog(lt, 0.8, 1.6)))
+    C.paste(c, k, ((W - k.width) // 2, 200), C.ease(C.prog(lt, 0.1, 0.8)))
     cards = [(1380.1, "20 February 1985", "League match · MCG", "Pakistan 183", "India 184/4", "India won by 6 wickets"),
              (1381.0, "10 March 1985", "Final · MCG", "Pakistan 176/9", "India 177/2", "India won by 8 wickets")]
     for j, (ta, date, stage, p, ind, res) in enumerate(cards):
@@ -293,7 +302,7 @@ def results(t, src, i):
         card.alpha_composite(C.text(ind, "sans_b", 40, IVORY), (40, 236))
         card.alpha_composite(C.text(res, "serif_i", 34, (236, 224, 196)), (40, 320))
         C.paste(c, card, (x0, y0), a)
-    return C.apply_bug(from_canvas(c))
+    return from_canvas(c)
 
 
 # ------------------------------------------------------------------ cutaway 4: victory week
@@ -303,7 +312,7 @@ def dates(t, src, i):
     items = [(1413.9, "8 मार्च 2026", "T20 वर्ल्ड कप"), (1416.0, "9 मार्च 2025", "चैंपियंस ट्रॉफ़ी"),
              (1418.4, "10 मार्च 1985", "वर्ल्ड चैंपियनशिप ऑफ़ क्रिकेट")]
     k = C.kicker("India's victory week", C.SAND, 22)
-    C.paste(c, k, ((W - k.width) // 2, 250), C.ease(C.prog(lt, 0.6, 1.4)))
+    C.paste(c, k, ((W - k.width) // 2, 250), C.ease(C.prog(lt, 0.1, 0.8)))
     for j, (ta, d, what) in enumerate(items):
         a = C.ease(C.prog(t, ta, ta + 0.9))
         if a <= 0:
@@ -314,7 +323,7 @@ def dates(t, src, i):
         C.paste(c, dt, (cx - dt.width // 2, 470 + (1 - a) * 16), a)
         C.paste(c, C.hairline(int(200 * a), C.SAND, 140), (cx - 100, 470 + dt.height + 14), a)
         C.paste(c, wt, (cx - wt.width // 2, 470 + dt.height + 34), a)
-    return C.apply_bug(from_canvas(c))
+    return from_canvas(c)
 
 
 # ------------------------------------------------------------------ overlays on the studio picture

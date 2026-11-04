@@ -208,6 +208,20 @@ def remove_bug(arr):
     return cv2.inpaint(np.ascontiguousarray(arr), m, 7, cv2.INPAINT_TELEA)
 
 
+def remove_bug_fast(arr):
+    """Per-frame version of remove_bug: inpaints only the bug's bounding box."""
+    rgb, a, x, y = bug()
+    h, w = a.shape[:2]
+    pad = 10
+    box = np.ascontiguousarray(arr[y - pad:y + h + pad, x - pad:x + w + pad])
+    m = np.zeros(box.shape[:2], np.uint8)
+    m[pad:pad + h, pad:pad + w] = (a[..., 0] > 0.05).astype(np.uint8) * 255
+    m = cv2.dilate(m, np.ones((7, 7), np.uint8))
+    out = arr.copy()
+    out[y - pad:y + h + pad, x - pad:x + w + pad] = cv2.inpaint(box, m, 5, cv2.INPAINT_TELEA)
+    return out
+
+
 def grabcut_mask(arr, rect):
     """Foreground (e.g. the car and the players on it) from a hand-placed box, refined by GrabCut."""
     small = cv2.resize(arr, (arr.shape[1] // 2, arr.shape[0] // 2))
@@ -262,6 +276,7 @@ def portal(studio, visual, k):
     s = lerp(1.0, 1.08, e)
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     M = np.float32([[s, 0, cx - cx * s], [0, s, cy - cy * s]])
+    studio = remove_bug_fast(studio) if e > 0 else studio   # the clean bug goes back on top of the final frame
     st = cv2.warpAffine(studio, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
     if e > 0:
         st = cv2.GaussianBlur(st, (0, 0), 0.1 + 6 * e)

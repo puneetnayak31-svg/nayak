@@ -21,7 +21,7 @@ lerp, prog, ease = I.lerp, I.prog, I.ease
 
 def finish(a, i):
     a = C.grain(a, i, 3.0)
-    return C.apply_bug(C.vignette(a, 0.32))
+    return C.vignette(a, 0.32)
 
 
 def with_cam(ctx, cam, cx=960, cy=600):

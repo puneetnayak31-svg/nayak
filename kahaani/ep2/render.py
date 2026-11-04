@@ -55,7 +55,7 @@ def render_frame(src, t, i, cuts, ovs):
     out = src
     for c in cuts:
         if c.t0 <= t < c.t1:
-            out = c.frame(t, src, i)
+            out = C.apply_bug(c.frame(t, src, i))
             break
     for o in ovs:
         if o.t0 <= t < o.t1:

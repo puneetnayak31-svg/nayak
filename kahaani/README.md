@@ -13,6 +13,9 @@ sourced visuals and new compositions built around his narrative. The plan, beat 
 | `storyboard.jpg` | Key frames from samples 1 and 2 |
 | `storyboard_animated.jpg` | Key frames from sample 3 |
 
+**Episode 2** (the 1985 World Championship of Cricket) is in [`ep2/`](ep2/README.md). It has two formal re-edits of the same
+2:18 segment: `ep2/output/version_a_graphics.mp4` and `ep2/output/version_b_animation.mp4`.
+
 Programme timing and audio are untouched, so pre-rolls, sponsor L-bands and the app end card stay exactly where they were sold.
 
 ## How it works

@@ -1,0 +1,575 @@
+<title>ITG AI Showcase Compact</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@600&family=Noto+Sans+Bengali:wght@600&family=Noto+Sans+Gurmukhi:wght@600&family=Noto+Sans+Oriya:wght@600&display=swap">
+<style>
+/* Layout: a broadcast-red opening (logo-wedge frame + ticker), then alternating light editorial bands and dark "screening room" spotlights. */
+:root{
+  --bg:#F6F4F4; --surface:#FFFFFF; --sunk:#EFEBEB; --ink:#1B1517; --muted:#6B6064; --line:#E4DDDE;
+  --red:#E31B23; --red-ink:#B00E17; --red-tint:#FBE9EA; --on-red:#FFFFFF;
+  --bun:#F4B63F; --bun-ink:#3A2405;
+  --deep:#170A0D; --deep-2:#22121A; --on-deep:#F7EEF0; --deep-muted:#B7A0A7; --deep-line:#3B242B;
+  --need:#9A5B00; --need-bg:#FFF3DC;
+  --shadow:0 1px 2px rgba(27,21,23,.06),0 14px 36px -18px rgba(27,21,23,.35);
+  --display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --indic:"Noto Sans Devanagari","Noto Sans Bengali","Noto Sans Gurmukhi","Noto Sans Oriya",var(--body);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141012; --surface:#1D181A; --sunk:#262023; --ink:#F4EEF0; --muted:#B3A6AB; --line:#342C2F;
+  --red:#F2262F; --red-ink:#FF6B72; --red-tint:#3A1518; --bun:#F4B63F; --bun-ink:#3A2405;
+  --deep:#0D0608; --deep-2:#1A0E13;
+  --need:#FFCB73; --need-bg:#3A2A0C; --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -18px rgba(0,0,0,.85); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141012; --surface:#1D181A; --sunk:#262023; --ink:#F4EEF0; --muted:#B3A6AB; --line:#342C2F;
+  --red:#F2262F; --red-ink:#FF6B72; --red-tint:#3A1518; --bun:#F4B63F; --bun-ink:#3A2405;
+  --deep:#0D0608; --deep-2:#1A0E13;
+  --need:#FFCB73; --need-bg:#3A2A0C; --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -18px rgba(0,0,0,.85); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.025em}
+p{margin:0}
+a{color:inherit}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:18px;height:2px;background:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* top bar */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:12px}
+.logo{display:flex;align-items:center;gap:14px;text-decoration:none}
+.logo img{height:46px;width:auto;display:block}
+.logo span{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-left:1px solid var(--line);padding-left:14px}
+.toggle{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--line);color:var(--muted);padding:7px 12px;border-radius:999px;cursor:pointer}
+.toggle b{width:8px;height:8px;border-radius:50%;background:var(--red);display:block}
+.toggle[aria-pressed="false"] b{background:transparent;border:1.5px solid var(--muted)}
+
+/* hero */
+.hero{background:var(--red);color:var(--on-red);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(1200px 600px at 85% 30%,rgba(255,255,255,.14),transparent 60%),radial-gradient(800px 500px at 0% 100%,rgba(0,0,0,.18),transparent 60%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:center;padding-block:56px 48px}
+.hero-copy{display:flex;flex-direction:column;gap:24px;min-width:0}
+.hero .eyebrow{color:rgba(255,255,255,.85)}.hero .eyebrow::before{background:#fff}
+.hero h1{font-size:clamp(46px,7vw,100px);font-weight:900;line-height:.92;letter-spacing:-.04em}
+.hero h1 .strike{display:inline-block;position:relative}
+.hero h1 .strike::after{content:"";position:absolute;left:-1%;right:-1%;bottom:-.02em;height:.1em;background:var(--bun);border-radius:.05em;transform:rotate(-1.5deg)}
+.lede{font-size:clamp(17px,1.6vw,20px);max-width:50ch;color:rgba(255,255,255,.92)}
+.cta{display:flex;flex-wrap:wrap;gap:10px}
+.cta a{font-weight:600;font-size:15px;text-decoration:none;padding:11px 18px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7)}
+.cta a.solid{background:#fff;color:var(--red-ink);border-color:#fff}
+.cta a:hover{background:#fff;color:var(--red-ink)}
+.mv{background:#0E0A0C;border-radius:14px;padding:10px;box-shadow:0 30px 60px -28px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px;min-width:0;width:100%;max-width:560px;justify-self:end}
+.mv-bar{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#A89BA0;padding:2px 4px}
+.mv-bar .tc{color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.mv-bar .rec{display:flex;align-items:center;gap:6px;color:#fff}
+.mv-bar .rec i{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite}
+.mv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.mon{position:relative;aspect-ratio:16/9;background:#1C1418;border-radius:4px;overflow:hidden;outline:2px solid transparent;outline-offset:-2px}
+.mon img{width:100%;height:100%;object-fit:cover;display:block}
+.mon b{position:absolute;left:5px;bottom:5px;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(0,0,0,.72);color:#fff;padding:2px 5px;border-radius:2px;max-width:calc(100% - 10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mon.pgm{grid-column:1/3;grid-row:1/3;outline-color:var(--red);aspect-ratio:auto}
+.mon.pgm b{font-size:11px;padding:4px 8px;bottom:8px;left:8px}
+.mon.pgm::before{content:"\25CF  On air";position:absolute;top:8px;left:8px;z-index:1;background:var(--red);color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:2px}
+.mon.next{outline-color:#3BB273}
+.mon.next::before{content:"Next";position:absolute;top:5px;left:5px;z-index:1;background:#3BB273;color:#06210F;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 5px;border-radius:2px}
+.mon.pgm img{animation:fadein .6s ease}
+@keyframes fadein{from{opacity:.2}}
+@keyframes pulse{50%{opacity:.25}}
+.ticker{position:relative;display:flex;align-items:stretch;background:#fff;color:#1B1517;border-top:3px solid var(--bun)}
+.ticker b{flex:none;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:.04em;padding:12px 16px;display:flex;align-items:center;gap:8px;z-index:1}
+:root .ticker b{background:#1B1517}
+.ticker b i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite}
+.tk{overflow:hidden;flex:1;display:flex;align-items:center;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.tk-run{display:flex;gap:0;white-space:nowrap;animation:run 60s linear infinite;font-family:var(--display);font-weight:600;font-size:15px}
+.tk-run span{padding:0 22px;border-right:1px solid #E4DDDE}
+.tk-run span em{font-style:normal;color:#B00E17;margin-right:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+@keyframes run{to{transform:translateX(-50%)}}
+
+section{padding-block:88px 0}
+.head{display:flex;flex-direction:column;gap:14px;margin-bottom:34px;max-width:780px}
+.head h2{font-size:clamp(32px,4.4vw,56px);font-weight:900;line-height:1;letter-spacing:-.035em}
+.head p{color:var(--muted);font-size:17px}
+
+/* principles */
+.principles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:22px;min-width:0}
+.panel h3{font-size:clamp(26px,3vw,36px);font-weight:900;line-height:1.02;letter-spacing:-.03em}
+.burger{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.layer{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 28px;font-family:var(--display);font-weight:700;font-size:clamp(17px,1.9vw,21px);line-height:1.2}
+.layer small{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;opacity:.75;white-space:nowrap}
+.bun-top{background:var(--bun);color:var(--bun-ink);border-radius:120px 120px 16px 16px;padding-top:26px}
+.bun-bot{background:var(--bun);color:var(--bun-ink);border-radius:16px 16px 60px 60px;padding-bottom:22px}
+.fill{background:var(--red);color:var(--on-red);border-radius:999px;margin-inline:-10px;position:relative}
+.fill::before,.fill::after{content:"";position:absolute;left:18px;right:18px;height:7px;border-radius:7px;background:repeating-linear-gradient(90deg,var(--red) 0 14px,transparent 14px 22px);opacity:.55}
+.fill::before{top:-7px}.fill::after{bottom:-7px}
+.burger-cap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:13.5px;color:var(--muted);text-align:center}
+.quote{border-left:2px solid var(--red);padding-left:16px;font-size:16px;font-style:italic}
+.quote cite{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:6px}
+.charter-top{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:20px;align-items:start}
+.charter-top img{width:140px;aspect-ratio:1;object-fit:cover;object-position:30% 30%;border-radius:10px;display:block}
+.points{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;counter-reset:pt}
+.points li{background:var(--surface);padding:16px 14px;display:flex;flex-direction:column;gap:8px;counter-increment:pt;min-width:0;font-size:14px;line-height:1.38;transition:background .2s}
+.points li:hover{background:var(--red-tint)}
+.points li::before{content:counter(pt);font-family:var(--display);font-weight:900;font-size:26px;line-height:1;color:var(--red)}
+.src{font-size:13.5px;color:var(--muted)}
+.src a{color:var(--red-ink);font-weight:500}
+
+/* dark spotlight bands */
+.band{background:var(--deep);color:var(--on-deep);margin-top:88px;padding-block:80px;position:relative;overflow:hidden}
+.band + .band{margin-top:0;border-top:1px solid var(--deep-line)}
+.band .eyebrow{color:var(--deep-muted)}
+.band .head p{color:var(--deep-muted)}
+.band::before{content:"";position:absolute;width:700px;height:700px;right:-260px;top:-260px;background:radial-gradient(circle,rgba(227,27,35,.28),transparent 65%);pointer-events:none}
+
+/* cover compare */
+.covers{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:center;position:relative}
+.compare{position:relative;aspect-ratio:620/855;width:100%;max-width:470px;justify-self:center;border-radius:6px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.9);user-select:none;touch-action:pan-y;background:#000}
+.compare img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.compare .ai{clip-path:inset(0 0 0 var(--x,50%))}
+.compare .bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;background:#fff;transform:translateX(-1px);pointer-events:none}
+.compare .knob{position:absolute;top:50%;left:var(--x,50%);width:46px;height:46px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.4);pointer-events:none;color:#1B1517;font-weight:700;font-size:15px}
+.compare .tagL,.compare .tagR{position:absolute;top:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border-radius:3px;pointer-events:none}
+.compare .tagL{left:12px;background:rgba(0,0,0,.72);color:#fff}
+.compare .tagR{right:12px;background:var(--red);color:#fff}
+.compare input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cv-info{display:flex;flex-direction:column;gap:22px;min-width:0}
+.cv-title{display:flex;flex-direction:column;gap:6px}
+.cv-title b{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bun);text-transform:uppercase;font-weight:500}
+.cv-title h3{font-size:clamp(30px,4vw,52px);font-weight:900;line-height:.98;letter-spacing:-.035em}
+.cv-strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.cv-strip button{padding:0;border:2px solid transparent;border-radius:4px;overflow:hidden;cursor:pointer;background:none;aspect-ratio:620/855;opacity:.55;transition:opacity .2s,border-color .2s}
+.cv-strip button:hover{opacity:.9}
+.cv-strip button[aria-pressed="true"]{opacity:1;border-color:var(--bun)}
+.cv-strip img{width:100%;height:100%;object-fit:cover;display:block}
+.cv-note{color:var(--deep-muted);font-size:15.5px;max-width:56ch}
+.cv-note strong{color:var(--on-deep);font-weight:600}
+.newsstand{display:flex;gap:16px;align-items:center;border-top:1px solid var(--deep-line);padding-top:20px;flex-wrap:wrap}
+.newsstand img{height:110px;width:auto;border-radius:3px;display:block;box-shadow:0 10px 24px -12px rgba(0,0,0,.8)}
+.newsstand .ct{height:110px;aspect-ratio:303/404;object-fit:cover;object-position:50% 50%}
+.newsstand p{font-size:14px;color:var(--deep-muted);flex:1;min-width:200px}
+.newsstand p b{color:var(--on-deep);display:block;font-family:var(--display);font-size:17px;margin-bottom:4px}
+
+/* languages */
+.langs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.lang{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:1px solid var(--deep-line);color:var(--on-deep);padding:10px 16px;border-radius:10px;cursor:pointer;min-width:118px;text-align:left}
+.lang .nat{font-family:var(--indic);font-size:20px;font-weight:600;line-height:1.3}
+.lang .en{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep-muted)}
+.lang:hover{border-color:var(--deep-muted)}
+.lang[aria-pressed="true"]{background:var(--red);border-color:var(--red)}
+.lang[aria-pressed="true"] .en{color:rgba(255,255,255,.85)}
+.lang-panel{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:32px;align-items:start}
+.lang-shot{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:16/9;background:#000}
+.lang-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.lang-info{display:flex;flex-direction:column;gap:18px;min-width:0}
+.lang-info h3{font-size:clamp(24px,3vw,34px);font-weight:800}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--deep-line);border-bottom:1px solid var(--deep-line)}
+.metrics div{padding:14px 0;display:flex;flex-direction:column;gap:2px}
+.metrics div+div{padding-left:14px;border-left:1px solid var(--deep-line)}
+.metrics strong{font-family:var(--display);font-size:30px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.metrics span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep-muted)}
+.lang-info ul{margin:0;padding-left:18px;color:var(--deep-muted);display:flex;flex-direction:column;gap:6px;font-size:15px}
+.btn{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;text-decoration:none;background:var(--red);color:#fff;padding:10px 16px;border-radius:999px}
+.btn.ghost{background:transparent;border:1px solid var(--deep-line);color:var(--on-deep)}
+.tamil{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:32px;margin-top:44px;padding-top:36px;border-top:1px solid var(--deep-line);align-items:center}
+.tamil img{width:100%;border-radius:8px;display:block;background:#fff;aspect-ratio:16/9;object-fit:contain}
+.tm-copy{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tm-copy h3{font-size:clamp(24px,3vw,34px);font-weight:800}
+.tm-copy p{color:var(--deep-muted);font-size:15.5px}
+.tm-copy strong{color:var(--on-deep)}
+.cta2{display:flex;flex-wrap:wrap;gap:8px}
+
+/* timeline */
+.tl-scroll{overflow-x:auto;padding-bottom:14px;scrollbar-width:thin}
+.tl{display:grid;grid-auto-flow:column;grid-auto-columns:200px;margin:0;padding:0;min-width:max-content}
+.tl li{list-style:none;padding:22px 20px 0 0;border-top:1px solid var(--ink);position:relative;display:flex;flex-direction:column;gap:6px}
+.tl li::before{content:"";position:absolute;top:-5px;left:0;width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.tl li.big::before{background:var(--red);width:13px;height:13px;top:-7px;box-shadow:0 0 0 4px var(--red-tint)}
+.tl time{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tl b{font-family:var(--display);font-size:18px;line-height:1.15;font-weight:700}
+.tl span{font-size:14px;color:var(--muted);line-height:1.4}
+
+/* specials */
+.shows{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.show{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 16px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px;font:inherit}
+.show b{font-family:var(--display);font-size:17px;font-weight:700;line-height:1.15}
+.show span{font-size:13px;color:var(--muted)}
+.show:hover{border-color:var(--ink)}
+.show[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.show[aria-pressed="true"] span{color:rgba(255,255,255,.85)}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,290px);gap:16px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.ep{scroll-snap-align:start;text-decoration:none;display:flex;flex-direction:column;gap:10px}
+.ep small{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red-ink)}
+.ep h4{margin:0;font-family:var(--display);font-size:17px;font-weight:700;line-height:1.2}
+.ep:hover .thumb img{transform:scale(1.05)}
+.thumb.fit img,.dthumb.fit img{object-fit:contain;background:#fff}
+
+/* gallery */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px;border-bottom:1px solid var(--line);padding-bottom:16px}
+.chip{font:500 14px var(--body);padding:8px 14px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer}
+.chip:hover{color:var(--ink);background:var(--sunk)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chip sup{font-family:var(--mono);font-size:10px;margin-left:5px;opacity:.65}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:30px 22px}
+.card{background:transparent;border:0;display:flex;flex-direction:column;gap:14px;text-align:left;padding:0;cursor:pointer;color:inherit;font:inherit}
+.thumb{aspect-ratio:16/9;width:100%;max-width:100%;border-radius:10px;overflow:hidden;position:relative;background:var(--sunk)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.card:hover .thumb img{transform:scale(1.05)}
+.card:hover .thumb{box-shadow:var(--shadow)}
+.thumb .play{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;background:var(--red);display:grid;place-items:center}
+.thumb .play::after{content:"";border-left:10px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px}
+.thumb .count{position:absolute;right:10px;top:10px;font-family:var(--mono);font-size:10.5px;background:rgba(0,0,0,.7);color:#fff;padding:3px 7px;border-radius:3px}
+.glyph{display:grid;place-items:center;height:100%;color:var(--red);background:radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 1.2px) 0 0/14px 14px,var(--sunk)}
+.glyph svg{width:40%;height:auto;max-height:70%}
+.glyph .tag{position:absolute;left:12px;top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cmeta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cmeta .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.kind{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--red-ink)}
+.yr{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cmeta h3{font-size:20px;font-weight:700;line-height:1.18;letter-spacing:-.015em}
+.cmeta p{font-size:14.5px;color:var(--muted);line-height:1.45}
+.status{align-self:flex-start;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:var(--need-bg);color:var(--need)}
+.notes-off .status,.notes-off .note,.notes-off .curator-sec{display:none}
+
+/* dialog */
+dialog{border:0;padding:0;border-radius:14px;background:var(--surface);color:var(--ink);width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(20,10,14,.75);backdrop-filter:blur(3px)}
+.dthumb{aspect-ratio:16/9;max-width:100%;background:var(--sunk);position:relative}
+.dthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.dthumb .glyph svg{width:28%}
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px;background:var(--sunk)}
+.gal img{width:100%;height:100%;max-height:420px;object-fit:cover;display:block}
+.dbody{padding:28px;display:flex;flex-direction:column;gap:16px}
+.dbody h3{font-size:clamp(24px,3.6vw,34px);font-weight:800;line-height:1.05}
+.dbody > p{color:var(--muted);font-size:17px}
+.dbody ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:16px}
+.dbody li{display:grid;grid-template-columns:14px 1fr;gap:10px}
+.dbody li::before{content:"";width:6px;height:6px;background:var(--red);border-radius:50%;margin-top:9px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{font-size:14px;font-weight:500;text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:999px}
+.links a:hover{border-color:var(--ink)}
+.links a.primary{background:var(--red);border-color:var(--red);color:var(--on-red)}
+.note{background:var(--need-bg);color:var(--need);padding:12px 14px;border-radius:8px;font-size:14px}
+.note b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.x{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;border:0;background:rgba(20,16,18,.65);color:#fff;font-size:18px;cursor:pointer}
+
+.curator{border:1px dashed var(--bun);border-radius:14px;padding:28px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;background:var(--surface)}
+.curator h3{font-size:20px;margin-bottom:12px}
+.curator ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.curator .eyebrow{margin-bottom:6px}
+footer{padding-block:56px 64px;color:var(--muted);font-size:13.5px}
+footer .wrap{border-top:1px solid var(--line);padding-top:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+footer img{height:30px;width:auto}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr;gap:28px;padding-block:40px 36px}
+  .mv{justify-self:center}
+  .principles,.curator,.covers,.lang-panel{grid-template-columns:1fr}
+  .tamil{grid-template-columns:1fr}
+  .cv-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .points{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .charter-top{grid-template-columns:1fr}
+  .charter-top img{width:100%;aspect-ratio:16/9}
+  .panel{padding:22px}
+  .layer{padding-inline:18px}
+  .layer small{display:none}
+  .logo span{display:none}
+  .lang{min-width:0;flex:1 1 30%}
+}
+@media (prefers-reduced-motion:reduce){
+  .tk-run{animation:none}.mon.pgm img{animation:none}.thumb img{transition:none}.card:hover .thumb img{transform:none}
+  .mv-bar .rec i,.ticker b i{animation:none}
+}
+</style>
+
+
+
+<div class="top"><div class="wrap">
+  <a class="logo" href="#top" id="top"><img src="img/itg-logo.png" alt="India Today Group"><span>AI Showcase</span></a>
+  <button class="toggle" id="notesToggle" aria-pressed="true"><b></b>Curator notes</button>
+</div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow">AI at the India Today Group</span>
+      <h1>Stories <span class="strike">no camera</span> could capture.</h1>
+      <p class="lede">An operation rebuilt frame by frame. Freedom fighters singing the anthem. A Prime Minister heard in six languages. India's first AI news anchor. This is the group's AI work for audiences, and the rules it follows.</p>
+      <div class="cta"><a class="solid" href="#work">Explore the work</a><a href="#specials">Watch the specials</a></div>
+    </div>
+    <div class="mv" aria-label="A control-room wall of frames from the group's AI work">
+      <div class="mv-bar"><span class="rec"><i></i>AI Desk &middot; Multiview</span><span class="tc" id="tc">00:00:00:00</span></div>
+      <div class="mv-grid" id="mv"></div>
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true"><b><i></i>AI DESK</b><div class="tk"><div class="tk-run" id="tk"></div></div></div>
+</header>
+
+<main>
+<section><div class="wrap">
+  <div class="head"><span class="eyebrow">How we work</span><h2>One method. Nine principles.</h2><p>Every project on this page is made the same way, and the group argues publicly for the same standards across the industry.</p></div>
+  <div class="principles">
+    <div class="panel">
+      <span class="eyebrow">The method</span>
+      <h3>The AI Sandwich</h3>
+      <div class="burger" role="img" aria-label="Three layers: a human sets the intent, AI does the heavy lifting, a human makes the final call">
+        <div class="layer bun-top">A human sets the intent <small>Top bun</small></div>
+        <div class="layer fill">AI does the heavy lifting <small>Filling</small></div>
+        <div class="layer bun-bot">A human makes the final call <small>Base</small></div>
+      </div>
+      <div class="burger-cap"><span>Editor decides the story</span><span>Voices, visuals, translation, drafts</span><span>Editorial sign-off, always</span></div>
+      <p class="quote">"You start with a human, you have AI in between to increase efficiency, but then it again ends with a human touch."<cite>Kalli Purie, Vice Chairperson and Executive Editor-in-Chief, SPIEF 2026</cite></p>
+    </div>
+    <div class="panel">
+      <div class="charter-top">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <span class="eyebrow">The standard</span>
+          <h3>A nine-point charter for AI and news</h3>
+          <p style="color:var(--muted)">Presented by Kalli Purie at the India AI Impact Summit, New Delhi, February 2026.</p>
+        </div>
+        <img src="img/charter.jpg" alt="Kalli Purie at the India AI Impact Summit">
+      </div>
+      <ol class="points">
+        <li>Fair value for journalism, and transparency on how AI uses news</li>
+        <li>Traceability and attribution as a democratic principle</li>
+        <li>Journalism recognised as a public good</li>
+        <li>Rewards for stories that deliver social impact</li>
+        <li>Real value for verified content from credible institutions</li>
+        <li>Severe penalties for AI hallucinations</li>
+        <li>No more asymmetry between legacy media and social platforms</li>
+        <li>Citizens' attention treated as a rare, finite resource</li>
+        <li>Reciprocity from the biggest tech companies</li>
+      </ol>
+      <p class="src"><a href="https://www.businesstoday.in/technology/news/story/kalli-purie-pitches-9-point-charter-for-fair-ai-use-in-media-at-ai-impact-summit-516526-2026-02-17" target="_blank" rel="noopener">Read the charter coverage</a></p>
+    </div>
+  </div>
+</div></section>
+
+
+
+<section id="specials"><div class="wrap">
+  <div class="head"><span class="eyebrow">Special shows</span><h2>Specials, made with AI</h2><p>Aaj Tak's informative specials use AI to show what cameras can't reach: lost cities, temple legends and political history. Pick a show, then an episode.</p></div>
+  <div class="shows" id="shows"></div>
+  <div class="rail" id="rail"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head"><span class="eyebrow">2023 – 2026</span><h2>Four years of firsts</h2><p>Red markers are the launches that made news beyond India.</p></div>
+  <div class="tl-scroll"><ol class="tl" id="tl"></ol></div>
+</div></section>
+
+<section id="work"><div class="wrap">
+  <div class="head"><span class="eyebrow">The work</span><h2>Explore every initiative</h2><p>Filter by area. Open any tile for the story, the facts and where to watch.</p></div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div></section>
+
+<section class="curator-sec"><div class="wrap">
+  <div class="curator">
+    <div><span class="eyebrow">Draft only</span><h3>Still needed from the team</h3><ul id="needList"></ul></div>
+    <div><span class="eyebrow">Draft only</span><h3>To confirm</h3><ul>
+      <li>Full YouTube links for the Marathi, Bengali, Odia and English versions of the PM interview (the report shows them cut off)</li>
+      <li>The year the "AI reimagines iconic India moments" covers were published</li>
+      <li>Issue dates for "Who Moved My Job?" and "Who Is a Citizen?"</li>
+      <li>Names and events for the two stage-visual photos</li>
+      <li>A clip of the live Tamil feed, if one was archived</li>
+      <li>One line each on how AI was used in the specials, Chakmak Chacha and Tauism</li>
+    </ul></div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap"><img src="img/itg-logo.png" alt="India Today Group"><span>Built from the group's published work and public reporting. Turn off curator notes for the presentation view.</span></div></footer>
+
+<dialog id="dlg" aria-labelledby="dTitle"></dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const yt=id=>"https://www.youtube.com/watch?v="+id;
+
+/* hero multiviewer */
+const FR=[["lifetak","RRRR · Life Tak"],["sindoor","Op Sindoor"],["sutra","Sutra"],["cv-emergency-ai","AI cover"],["anthem2","Jana Gana Mana"],["ev-woman","Stage visuals"],["apop","A-POP"],["sp-konark","AAA · Konark"],["tamil-launch","India Today Tamil"],["mo-At683cY066E","Mo AI TV"],["anchors5","AI anchors"],["promo2","AI promo"]];
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let pg=0;
+function drawMV(){const order=[0,1,2,3,4,5].map(k=>FR[(pg+k)%FR.length]);
+  $("#mv").innerHTML=order.map((f,k)=>`<div class="mon ${k===0?'pgm':k===1?'next':''}"><img src="img/${f[0]}.jpg" alt="" style="object-position:${f[0].startsWith('cv-')?'50% 25%':'50% 50%'}"><b>${k===0?'PGM · ':'CAM '+(k+1)+' · '}${f[1]}</b></div>`).join("")}
+drawMV();
+if(!reduce) setInterval(()=>{pg=(pg+1)%FR.length;drawMV()},3200);
+(function tick(){const d=new Date(),z=n=>String(n).padStart(2,"0");$("#tc").textContent=`${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}:${z(Math.floor(d.getMilliseconds()/40))}`;if(!reduce)requestAnimationFrame(tick)})();
+
+/* ticker */
+const TK=[["ANCHORS","Sana, India's first AI news anchor"],["FILM","Operation Sindoor rebuilt with AI"],["LANGUAGE","PM interview in six languages"],["MUSIC","Aishan and Ruh launch A-POP"],["DRAMA","RRRR premieres on Life Tak"],["MAGAZINE","Eight iconic covers reimagined by AI"],["ANCHORS","Sutra runs on India's own AI models"],["SPECIAL","Freedom fighters sing the anthem"],["NEWSROOM","Pragya: 30% faster publishing"],["CHANNEL","Mo AI TV"],["LIVE","English news, dubbed live into Tamil"],["SPECIALS","Adbhut Avishvasniya Akalpniya"]];
+const tkh=TK.map(t=>`<span><em>${t[0]}</em>${t[1]}</span>`).join("");$("#tk").innerHTML=tkh+tkh;
+
+/* covers */
+const CV=[["emergency","The Emergency","15 December 1975"],["space","India's Space Heroes","30 April 1984"],["licence","Ending the Licence Raj","15 August 1991"],["bombay","Terror in Bombay","31 March 1993"],["beauty","The Beauty Craze","15 November 1996"],["cup","The Cup Will Be Ours","21 February 2011"],["young","Young & Dangerous","21 January 2013"],["conqueror","The Conqueror","26 May 2014"]];
+let cvi=0;
+function drawStrip(){$("#cvStrip").innerHTML=CV.map((c,i)=>`<button id="cv-${c[0]}" data-i="${i}" aria-pressed="${i===cvi}" aria-label="${c[1]}"><img src="img/cv-${c[0]}-ai.jpg" alt=""></button>`).join("")}
+function setCover(i){cvi=i;const c=CV[i];$("#cvOrig").src=`img/cv-${c[0]}-orig.jpg`;$("#cvAi").src=`img/cv-${c[0]}-ai.jpg`;$("#cvName").textContent=c[1];$("#cvDate").textContent="Original: "+c[2];drawStrip()}
+if($("#compare")){$("#cvStrip").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setCover(+b.dataset.i)});
+$("#cvRange").addEventListener("input",e=>$("#compare").style.setProperty("--x",e.target.value+"%"));
+drawStrip();}
+
+/* languages */
+const LG=[
+ {k:"bhojpuri",nat:"भोजपुरी",en:"Bhojpuri",ch:"Aaj Tak 2",n:["Published on Aaj Tak 2 for Bhojpuri-speaking viewers","Labelled as an AI-enabled Bhojpuri translation"],u:"https://youtu.be/T3xHBihKpGg"},
+ {k:"marathi",nat:"मराठी",en:"Marathi",ch:"Mumbai Tak",n:["Released on Mumbai Tak on 18 May 2024","Promoted by Aaj Tak with a clear AI disclaimer"]},
+ {k:"bengali",nat:"বাংলা",en:"Bengali",ch:"Aaj Tak Bangla",n:["Streamed on Aaj Tak Bangla on 18 May 2024","Billed as the PM's first Bengali AI interview"]},
+ {k:"punjabi",nat:"ਪੰਜਾਬੀ",en:"Punjabi",ch:"Punjab Tak",n:["Released on Punjab Tak on 22 May 2024","Labelled \"Enabled by AI\""],u:"https://youtu.be/B8e1Y6HwPxA"},
+ {k:"odia",nat:"ଓଡ଼ିଆ",en:"Odia",ch:"Aaj Tak 2",n:["Published as an Odia translation on Aaj Tak 2"]},
+ {k:"english",nat:"English",en:"English",ch:"India Today",n:["The English version for India Today's audience"]}
+];
+let li=0;
+function drawLangs(){$("#langs").innerHTML=LG.map((g,i)=>`<button class="lang" id="lang-${g.k}" data-i="${i}" aria-pressed="${i===li}"><span class="nat">${g.nat}</span><span class="en">${g.en}</span></button>`).join("")}
+function setLang(i){li=i;const g=LG[i];$("#lgImg").src=`img/pm-${g.k}.jpg`;$("#lgImg").alt=`${g.en} version thumbnail`;$("#lgCh").textContent=g.ch;$("#lgTitle").textContent=g.en+(g.en==="English"?"":" version");$("#lgNotes").innerHTML=g.n.map(n=>`<li>${n}</li>`).join("");$("#lgLink").innerHTML=g.u?`<a class="btn" href="${g.u}" target="_blank" rel="noopener">▶ Watch the ${g.en} version</a>`:`<span class="btn ghost">Link to be added</span>`;drawLangs()}
+if($("#langs")){$("#langs").addEventListener("click",e=>{const b=e.target.closest(".lang");if(b)setLang(+b.dataset.i)});setLang(0);}
+
+/* specials */
+const SH=[
+ {k:"aaa",t:"Adbhut Avishvasniya Akalpniya",s:"With Sweta Singh · 8 episodes",e:[["sp-konark","Konark Sun Temple","YK9XotBDVX0"],["sp-jagannath","Jagannath Temple","Cju92z0McHs"],["sp-somnath","Somnath Mandir","31K8EaV969A"],["sp-mandar","Mandar Parvat","RU3jYjE70Jw"],["sp-hanuman","Hanuman Ji, Ujjain","TebcQevxvcs"],["sp-sanwaliya","Shri Sanwaliya Seth","1mHJ7oZVuPw"],["sp-valmiki","Valmiki Tiger Reserve","s9GJ1eLBpLY"],["sp-laksha","Mahabharat: Lakshagraha","ifRPV3MBUkI"]]},
+ {k:"patli",t:"Patliputra",s:"Bihar election special · 3 episodes",e:[["sp-patli1","Episode 1","bqVH0hCu59o"],["sp-patli2","Episode 2","8uLSS5dLHBs"],["sp-patli3","Episode 3","hDT0X7MR2Eo"]]},
+ {k:"sarkar",t:"Sarkar",s:"UP political history · 3 episodes",e:[["sp-sarkar1","Episode 1","VyW3UjW0frk"],["sp-sarkar2","Episode 2","iXrlnyXb9ik"],["sp-sarkar3","Episode 3","knK8-BKnYiA"]]},
+ {k:"modi",t:"Muqaddar Ka Sikandar",s:"PM Modi birthday special",e:[["sp-modi","Full episode","EmdQE41yzg0"]]}
+];
+let shi=0;
+function drawShows(){$("#shows").innerHTML=SH.map((h,i)=>`<button class="show" id="show-${h.k}" data-i="${i}" aria-pressed="${i===shi}"><b>${h.t}</b><span>${h.s}</span></button>`).join("");
+  const h=SH[shi];$("#rail").innerHTML=h.e.map(e=>`<a class="ep" href="${yt(e[2])}" target="_blank" rel="noopener"><div class="thumb"><img src="img/${e[0]}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span></div><small>${h.t}</small><h4>${e[1]}</h4></a>`).join("");}
+$("#shows").addEventListener("click",e=>{const b=e.target.closest(".show");if(b){shi=+b.dataset.i;drawShows()}});
+drawShows();
+
+/* gallery */
+const CATS=[["all","All work"],["air","Anchors"],["film","Film & drama"],["lang","Language"],["music","Music & characters"],["design","Print & visuals"],["brand","Brands & events"],["engine","Newsroom"]];
+const S='fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+const G={
+ anchor:`<svg viewBox="0 0 120 80" ${S}><rect x="8" y="6" width="104" height="62" rx="4"/><circle cx="60" cy="30" r="10"/><path d="M38 68c2-14 11-20 22-20s20 6 22 20"/><path d="M20 74h80"/></svg>`,
+ promo:`<svg viewBox="0 0 120 80" ${S}><rect x="10" y="20" width="100" height="54" rx="4"/><path d="M10 20l8-14h92l-8 14M34 6l-8 14M58 6l-8 14M82 6l-8 14"/><path d="M52 36v22l18-11z"/></svg>`,
+ shoot:`<svg viewBox="0 0 120 80" ${S}><circle cx="60" cy="40" r="30"/><path d="M60 10l12 22M90 40l-24 4M75 66l-14-18M45 66l12-20M30 40l24-4M45 14l10 22"/></svg>`,
+ stories:`<svg viewBox="0 0 120 80" ${S}><rect x="22" y="12" width="40" height="62" rx="4"/><rect x="44" y="8" width="40" height="62" rx="4"/><rect x="66" y="4" width="40" height="62" rx="4"/><circle cx="86" cy="50" r="7"/></svg>`,
+ remix:`<svg viewBox="0 0 120 80" ${S}><rect x="6" y="26" width="28" height="28" rx="3"/><path d="M40 40h12M48 36l4 4-4 4"/><rect x="60" y="8" width="16" height="28" rx="2"/><rect x="82" y="10" width="30" height="18" rx="2"/><rect x="62" y="46" width="22" height="22" rx="2"/><path d="M92 46v22M88 52h8M88 60h8"/></svg>`,
+ tools:`<svg viewBox="0 0 120 80" ${S}><path d="M20 20h80M20 40h80M20 60h80"/><circle cx="44" cy="20" r="6"/><circle cx="78" cy="40" r="6"/><circle cx="34" cy="60" r="6"/></svg>`
+};
+const ITEMS=[
+{c:"film",img:"sindoor",v:1,y:"May 2025",k:"AI documentary",t:"Operation Sindoor, rebuilt with AI",
+ b:"The 100 hours no camera could capture, reconstructed as a seven-minute film.",
+ f:["First broadcast on 13 May 2025, days after the operation ended.","Made by AI artists, graphics teams and military and strategic experts working together.","Screened in public at Lal Chowk, Srinagar, on 13 and 14 May 2025."],
+ l:[["Watch the film",yt("3GV7TJ2s8Yc"),1],["Business Today version","https://www.businesstoday.in/bt-tv/video/full-story-of-pahalgam-attack-to-operation-sindoor-indo-pak-conflict-visualised-by-ai-476228-2025-05-14"],["Lal Chowk screening","https://www.tribuneindia.com/news/business/ai-video-recreates-pahalgam-terror-attack-operation-sindoor-screened-in-srinagars-lal-chowk/"]]},
+{c:"air",img:"sana",v:1,y:"Mar 2023",k:"AI anchor",t:"Sana, India's first AI news anchor",
+ b:"Launched at India Today Conclave 2023 and on prime time within weeks.",
+ f:["Unveiled by Kalli Purie in March 2023; joined Black & White on Aaj Tak on 30 March 2023.","Delivered 200+ hours of programming across genres, languages and platforms in her first months.","Spoke with Prime Minister Narendra Modi on air.","First place, Best Use of AI in Customer-Facing Products, INMA Global Media Awards 2024."],
+ l:[["Watch the launch",yt("K5wb2FT4lZk"),1],["INMA case study","https://www.inma.org/blogs/Generative-AI-Initiative/post.cfm/india-today-features-genai-powered-tv-anchor"],["Award coverage","https://www.afaqs.com/companies/india-today-groups-anchor-ai-sana-wins-her-first-set-of-accolades-at-inma-global-media-awards-2024"]]},
+{c:"air",img:"anchors5",y:"Oct 2023",k:"AI anchors",t:"Five regional anchors join Sana",
+ b:"SAIli, AIshwarya, NAIna, AIna and JAI. Each name carries an AI.",
+ f:["SAIli presents in Marathi on Mumbai Tak.","AIshwarya presents in Hindi on UP Tak, Bharat Tak and News Tak.","NAIna presents in Bhojpuri on Aaj Tak 2; AIna in Bengali on Aaj Tak Bangla.","JAI presents in English on India Today TV.","Introduced on 5 October 2023 at India Today Conclave Mumbai."],
+ l:[["afaqs report","https://www.afaqs.com/news/media/india-today-group-introduces-regional-ai-anchors-to-join-sana"],["Best Media Info","https://bestmediainfo.com/2023/10/kalli-purie-and-ai-anchor-sana-introduce-five-regional-ai-anchors-at-india-today-conclave"]]},
+{c:"air",img:"anjana",y:"2023 · 2025",k:"Digital twin",t:"An anchor and her AI twin share a show",
+ b:"Anjana Om Kashyap co-hosts Black & White with her own digital twin.",
+ f:["Anjana 2.0 was the group's first AI anchor modelled on a living presenter.","In April 2025 Aaj Tak relaunched Black & White with Anjana and her twin hosting together.","AI avatars also kept bulletins running while anchors reported from the field during elections."],
+ l:[["afaqs on Anjana 2.0","https://www.afaqs.com/companies/aaj-tak-introduces-anjana-20-ai-anchor-modelled-after-a-living-anchor"],["Black & White format","https://bestmediainfo.com/mediainfo/television/aaj-tak-fields-anjana-om-kashyap-her-ai-clone-to-host-black-white-8935003"]]},
+{c:"air",img:"sutra",v:1,y:"Feb 2026",k:"Sovereign AI anchor",t:"Sutra, built on India's own AI models",
+ b:"A real-time anchor made with BharatGen for the India AI Impact Summit.",
+ f:["Summarised summit sessions live and added context as they happened.","Runs on BharatGen's sovereign, multimodal models tuned for Indian languages.","Showcased by MeitY at Bharat Mandapam, New Delhi, 16 to 20 February 2026.","Built to the AI Sandwich model: human intent, AI assist, human sign-off."],
+ l:[["Watch the launch","https://www.businesstoday.in/bt-tv/whats-hot/video/india-today-launches-ai-anchor-sutra-at-ai-impact-summit-redefining-the-future-of-news-broadcasting-516710-2026-02-18",1],["Business Today","https://www.businesstoday.in/india/story/india-today-group-debuts-ai-news-anchor-sutra-at-ai-impact-summit-2026-516611-2026-02-17"]]},
+{c:"air",gl:"anchor",y:"",k:"AI anchors",t:"Suzan and the wider anchor family",
+ b:"More virtual presenters across the network.",
+ f:["The group has introduced AI presenters for several channels and formats beyond those listed here."],
+ n:"No public mention of Suzan found. Send her channel, launch date, a still and a clip, plus any other anchors to include."},
+{c:"lang",img:"pm-bengali",y:"May 2024",k:"AI dubbing",t:"One interview, six languages",
+ b:"The Prime Minister's interview, heard in Bhojpuri, Marathi, Bengali, Punjabi, Odia and English.",
+ gal:["pm-bhojpuri","pm-marathi","pm-punjabi","pm-odia","pm-english"],
+ f:["Translated with AI so the message reached viewers in their own language.","Published on Aaj Tak 2, Mumbai Tak, Aaj Tak Bangla, Punjab Tak and India Today.","Every version was clearly labelled as AI-enabled."],
+ l:[["See the language spotlight","#languages",1],["Bhojpuri version","https://youtu.be/T3xHBihKpGg"],["Punjabi version","https://youtu.be/B8e1Y6HwPxA"]]},
+{c:"lang",img:"tamil-launch",y:"May 2026",k:"Live AI dubbing",t:"English news, live in Tamil",
+ b:"India Today's English broadcast, dubbed into Tamil in real time, in the anchors' own voices.",
+ gal:["tamil-feed"],
+ f:["Ran live on Tamil Nadu's election counting day in May 2026.","Real-time AI transcription and voice adaptation kept each anchor's tone and style.","Rajdeep Sardesai appeared live on Thanthi TV, his English converted to Tamil in his own voice.","Built with CAMB.AI, the group's live news translation partner since September 2025, and streamed by IBC Tamil.","In August 2026 the group launched India Today Tamil, opened by Tamil Nadu CM C Joseph Vijay in Chennai."],
+ l:[["India Today Tamil","https://www.youtube.com/@indiatodaytamil",1],["The live feed","https://www.indianbroadcastingworld.com/india-today-launches-ai-powered/"],["CAMB.AI partnership","https://www.camb.ai/blog-post/the-india-today-group-partners-with-camb-ai"],["Channel launch","https://www.afaqs.com/companies/india-today-launches-tamil-youtube-channel-12301521"]]},
+
+{c:"film",img:"anthem2",v:1,y:"Aug 2023",k:"Special initiative",t:"Freedom fighters sing the National Anthem",
+ b:"Gandhi, Bose, Naidu, Ambedkar and Tagore, brought back to sing together.",
+ f:["An Aaj Tak Independence Day film shown on TV, in cinemas and on social media.","Features Gandhi, Nehru, Bose, Sarojini Naidu, Ambedkar, Azad, Tagore and Patel.","Voices were modelled on recordings of the leaders' own speeches.","Conceptualised by HyperCollective, with AI work by Nihilent."],
+ l:[["Watch on Campaign India","https://www.campaignindia.in/video/aaj-tak-uses-ai-to-recreate-national-anthem-with-freedom-heroes/491149",1],["Adgully","https://www.adgully.com/late-freedom-fighters-sing-national-anthem-powered-by-ai-aaj-tak-135354.html"],["How it was made","https://www.nihilent.com/nihilent-resurrects-the-voices-and-images-of-freedom-fighters-using-cutting-edge-generative-ai-technology/"]]},
+{c:"film",img:"lifetak",v:1,y:"Oct 2026",k:"AI microdrama",t:"Raghupati Raghav Raja Ram",
+ b:"The Ramayan retold in fast vertical episodes on Life Tak.",
+ f:["Flagship series of Life Tak, the group's new mobile-first microdrama platform.","Teaser launched by Maharashtra CM Devendra Fadnavis and Aroon Purie at India Today Conclave Mumbai.","Premiered 18 October 2026 with AI actors Raghav and Siya.","Uses AI-driven visual engineering, script tools and world-building.","Streams on Life Tak's Instagram, YouTube and Facebook, and inside the Aaj Tak app."],
+ l:[["Watch the unveiling",yt("BAlJwFV6HzE"),1],["Debut",yt("OByDm9lhuCI")],["Raghav and Siya speak",yt("nptY1Pm8oyA")],["Episode playlist","https://www.youtube.com/playlist?list=PLIesmvc9G84k"]]},
+{c:"music",img:"apop",v:1,y:"Mar 2025",k:"AI pop stars",t:"Aishan and Ruh launch A-POP",
+ b:"Two AI pop stars and a new genre. Humans write, AI composes and sings, or the other way round.",
+ f:["Launched on 8 March 2025 through Stage Aaj Tak.","Aishan, 22, from Delhi: indie acoustic, pop and R&B. First single: Purana Pyar.","Ruh, 24: new-age pop. First single: Rehna Tere Saath.","Streaming on Spotify, YouTube Music, Apple Music, Amazon Music and JioSaavn."],
+ l:[["Watch the unveiling",yt("WLSUugM_sb0"),1],["Business Today","https://www.businesstoday.in/tech-today/news/story/breaking-new-ground-in-music-india-today-group-launches-ai-pop-stars-467279-2025-03-08"],["Music Ally","https://musically.com/2025/03/13/indian-news-media-firm-india-today-launches-two-ai-popstars/"]]},
+{c:"music",img:"mo-At683cY066E",v:1,y:"",k:"AI channel",t:"Mo AI TV",
+ b:"Cinematic AI-made shorts from MO, the group's Instagram-first platform.",
+ gal:["mo-At683cY066E","mo-7AmXDxHO-pQ","mo-cEul9DmQk_8"],
+ f:["A YouTube series of short films made with AI, from history to sport to travel.","Part of MO, the group's English platform for millennials and Gen Z."],
+ l:[["Watch the playlist","https://www.youtube.com/playlist?list=PLglVcKm-vgqZ3UqcDVzMllN78ahudExdB",1]],
+ n:"Send a one-line description of Mo AI TV and its launch date."},
+{c:"music",img:"chakmak",v:1,y:"",k:"AI cartoons & social IPs",t:"Chakmak Chacha, Tauism, Storybox with Jamshed",
+ b:"Characters with a point of view, built for the feed.",
+ gal:["tau","storybox"],
+ f:["Chakmak Chacha and Nanhen trade banter on the week's news, from festivals to politics.","Tauism: a wise Tau on Delhi winters, Diwali clutter and the fear of falling behind.","Storybox with Jamshed: Jamshed Qamar Siddiqui's story show from Aaj Tak Radio.","All three live in the Teen Taal and Aaj Tak Radio universe."],
+ l:[["Chakmak Chacha","https://www.youtube.com/playlist?list=PLTE5BFn7ps0Q",1],["Tauism","https://www.youtube.com/playlist?list=PLDZBVEP9yaqA",1],["Storybox","https://www.aajtak.in/literature/stories/story/kanpuriya-chachas-hilarious-lucknow-tales-storybox-with-jamshed-dskc-2684527-2026-10-31"]]},
+
+{c:"film",img:"promo2",v:1,y:"2026",k:"Show promos",t:"Promos made with AI",
+ b:"Launch films for shows, summits and big-night coverage, made with AI.",
+ gal:["promo1","promo3","promo4"],
+ f:["AI Summit 2026 promo for India Today.","Elections 2026 results-day promo for India Today and Aaj Tak.","US midterm elections analysis promo.","Aaj Tak Vertical launch promo with Anjana Om Kashyap."],
+ l:[["AI Summit 2026",yt("euHV7hdKw70"),1],["Results Day 2026",yt("XVdTXIQh4tc")],["US midterms",yt("dtTeXgdnNSQ")],["Aaj Tak Vertical",yt("BibzhCkuDbE")]]},
+{c:"film",img:"sp-konark",v:1,y:"2025 – 2026",k:"AI-assisted specials",t:"Specials, made with AI",
+ b:"Adbhut Avishvasniya Akalpniya, Patliputra, Sarkar and more: history and legend, visualised.",
+ gal:["sp-jagannath","sp-patli1","sp-sarkar1","sp-modi"],
+ f:["Adbhut Avishvasniya Akalpniya with Sweta Singh: eight episodes on temples, legends and lost places.","Patliputra: three episodes on Bihar's history ahead of the assembly election.","Sarkar: three episodes on how Uttar Pradesh's politics changed.","Muqaddar Ka Sikandar: a birthday special on PM Modi's political journey."],
+ l:[["Browse all episodes","#specials",1]]},
+
+{c:"design",img:"cover-citizen",y:"2023 – 2025",k:"Magazine",t:"Magazine covers made with AI",
+ b:"From eight reimagined classics to AI imagery on this year's newsstand.",
+ gal:["cover-job","cv-emergency-orig","cv-emergency-ai","cv-cup-orig","cv-cup-ai"],
+ f:["Eight iconic covers from 1975 to 2014 were redesigned by AI and shown side by side with the originals.","AI-made cover imagery now runs on India Today, including \"Who Moved My Job?\" and \"Who Is a Citizen?\" in 2025.","Concept by Vibhor Gandotra; designed by Group Creative Editor Nilanjan Das with AI."],
+ l:[["Compare original vs AI","#covers",1]],
+ n:"Send any AI-made infographics to add here."},
+
+{c:"design",img:"interactive",y:"",k:"Visual & interactive",t:"Visual and interactive stories",
+ b:"Stories you scroll, tap and explore, built with AI.",
+ f:["India Today's interactives turn big stories into explorable visual experiences.","AI helps generate visuals and speed up production."],
+ l:[["Explore India Today Interactives","https://www.indiatoday.in/interactive",1]]},
+
+{c:"brand",img:"yt-9i1uuaPqTYg",v:1,y:"",k:"Advertising",t:"Brands woven into content with AI",
+ b:"AI presenters carry brand stories inside the content itself.",
+ f:["The group integrates brands into content through its AI anchors.","For the 2024 EY-FICCI media report, QR codes in each chapter opened a summary read by Sana."],
+ l:[["Watch an example",yt("9i1uuaPqTYg"),1],["EY-FICCI report with Sana","https://bestmediainfo.com/2024/03/india-today-s-ai-anchor-sana-reads-segmentwise-insights-into-ey-report"]]},
+{c:"brand",img:"ev-navy",y:"2026",k:"Events",t:"AI-made stage worlds",
+ b:"Backdrops and visuals generated with AI for the group's conclaves and summits.",
+ gal:["ev-navy","ev-woman"],
+ f:["India Today Conclave: AI-generated naval and tricolour visuals behind a keynote by a senior Navy officer.","India Today Woman Summit 2026: a low-poly heroine in a red cape stands over the conversation on stage.","The group runs 75+ events a year, and most of its AI launches debut on these stages."]},
+{c:"engine",img:"pragya",y:"May 2026",k:"Automated content",t:"Pragya, the newsroom's AI platform",
+ b:"Built with Google. Drafts, keywords, highlights and kickers in seconds.",
+ f:["30% faster from creation to publishing.","10% more content produced.","2x user engagement.","Every AI output passes human editorial review.","A Journalist App lets reporters file text, audio, video and documents from the field."],
+ l:[["MediaNews4U report","https://www.medianews4u.com/india-today-group-and-google-partner-to-transform-newsroom-workflows-with-ai/"]]},
+{c:"engine",img:"remix",fit:1,y:"",k:"Repurposing",t:"One story, every format",
+ b:"An integrated AI video workflow turns one broadcast into chapters, moments, headlines and shorts.",
+ f:["Context-based chapters: AI splits a long report into topic chapters.","Virality-based key moments: AI picks the clips most likely to travel.","Tailored metadata: AI suggests headlines for each platform.","Re-purposed short-form videos: vertical news feeds built from the same source.","The result: faster conversion across templates and platforms."]}
+];
+const TL=[["Mar 2023","Sana debuts","India's first AI news anchor",1],["Aug 2023","Anthem film","Freedom fighters sing Jana Gana Mana"],["2023","Anjana 2.0","First AI twin of a living anchor"],["Oct 2023","Five more anchors","Marathi, Bhojpuri, Bengali, Hindi, English"],["May 2024","PM in six languages","AI translation of a landmark interview",1],["2024","INMA award","Sana wins Best Use of AI",1],["Mar 2025","A-POP","Aishan and Ruh release their first songs",1],["May 2025","Operation Sindoor","100 hours reconstructed with AI",1],["2025","AI on the cover","AI imagery on the newsstand"],["Feb 2026","Sutra + charter","Sovereign AI anchor and nine-point charter",1],["May 2026","Pragya","Newsroom platform built with Google"],["May 2026","Live Tamil feed","English news, dubbed live into Tamil",1],["Aug 2026","India Today Tamil","A new Tamil channel launches"],["Oct 2026","Life Tak + RRRR","AI-aided Ramayan in vertical video",1]];
+
+$("#tl").innerHTML=TL.map(e=>`<li class="${e[3]?'big':''}"><time>${e[0]}</time><b>${e[1]}</b><span>${e[2]}</span></li>`).join("");
+const media=(i,big)=>i.img?`<img src="img/${i.img}.jpg" alt="" loading="lazy">${i.v&&!big?'<span class="play" aria-hidden="true"></span>':''}${i.gal&&!big?`<span class="count">+${i.gal.length}</span>`:''}`:`<div class="glyph"><span class="tag">${i.k}</span>${G[i.gl]}</div>`;
+let cur="all";
+function drawFilters(){$("#filters").innerHTML=CATS.map(([id,n])=>{const ct=id==="all"?ITEMS.length:ITEMS.filter(i=>i.c===id).length;return `<button class="chip" id="chip-${id}" data-c="${id}" aria-pressed="${cur===id}">${n}<sup>${ct}</sup></button>`}).join("")}
+function drawGrid(){$("#grid").innerHTML=ITEMS.map((i,x)=>cur!=="all"&&i.c!==cur?"":`<button class="card" data-i="${x}" id="card-${x}"><div class="thumb${i.fit?' fit':''}">${media(i)}</div><div class="cmeta"><div class="row"><span class="kind">${i.k}</span><span class="yr">${i.y}</span></div><h3>${i.t}</h3><p>${i.b}</p>${i.n?`<span class="status">${(i.img||i.l)?'More media welcome':'Media needed'}</span>`:''}</div></button>`).join("")}
+$("#filters").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;cur=b.dataset.c;drawFilters();drawGrid()});
+const dlg=$("#dlg");
+$("#grid").addEventListener("click",e=>{const b=e.target.closest(".card");if(!b)return;const i=ITEMS[b.dataset.i];
+  const top=i.gal?`<div class="gal">${[i.img,...i.gal.filter(g=>g!==i.img)].map(g=>`<img src="img/${g}.jpg" alt="">`).join("")}</div>`:`<div class="dthumb${i.fit?' fit':''}">${media(i,1)}</div>`;
+  dlg.innerHTML=`<button class="x" id="dlgClose" aria-label="Close">×</button>${top}<div class="dbody"><div style="display:flex;justify-content:space-between;gap:10px"><span class="kind">${i.k}</span><span class="yr">${i.y}</span></div><h3 id="dTitle">${i.t}</h3><p>${i.b}</p><ul>${i.f.map(f=>`<li>${f}</li>`).join("")}</ul>${(L=>L.length?`<div class="links">${L.map(l=>`<a class="${l[2]?'primary':''}" href="${l[1]}" ${l[1].startsWith('#')?'data-jump="1"':'target="_blank" rel="noopener"'}>${l[2]&&!l[1].startsWith('#')?'▶ ':''}${l[0]}</a>`).join("")}</div>`:"")((i.l||[]).filter(l=>!l[1].startsWith("#")||document.querySelector(l[1])))}${i.n?`<div class="note"><b>Curator note</b>${i.n}</div>`:""}</div>`;
+  dlg.showModal()});
+dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.id==="dlgClose"||e.target.dataset.jump)dlg.close()});
+$("#needList").innerHTML=ITEMS.filter(i=>i.n).map(i=>`<li><b>${i.t}:</b> ${i.n}</li>`).join("");
+const tg=$("#notesToggle");
+function setNotes(on){tg.setAttribute("aria-pressed",on);document.body.classList.toggle("notes-off",!on);try{localStorage.setItem("itgNotes",on?"1":"0")}catch(e){}}
+let saved="1";try{saved=localStorage.getItem("itgNotes")||"1"}catch(e){}
+setNotes(saved==="1");
+tg.addEventListener("click",()=>setNotes(tg.getAttribute("aria-pressed")!=="true"));
+drawFilters();drawGrid();
+</script>

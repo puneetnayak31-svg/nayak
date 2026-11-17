@@ -251,6 +251,9 @@ dialog::backdrop{background:rgba(20,10,14,.75);backdrop-filter:blur(3px)}
 .links a{font-size:14px;font-weight:500;text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:999px}
 .links a:hover{border-color:var(--ink)}
 .links a.primary{background:var(--red);border-color:var(--red);color:var(--on-red)}
+.eplist{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:16px}
+.eplist b{display:block;font-family:var(--display);font-size:16px;margin-bottom:8px}
+.eplist .links a{font-size:13px;padding:6px 12px}
 .note{background:var(--need-bg);color:var(--need);padding:12px 14px;border-radius:8px;font-size:14px}
 .note b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
 .x{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;border:0;background:rgba(20,16,18,.65);color:#fff;font-size:18px;cursor:pointer}
@@ -438,7 +441,7 @@ const $=s=>document.querySelector(s);
 const yt=id=>"https://www.youtube.com/watch?v="+id;
 
 /* hero multiviewer */
-const FR=[["lifetak","RRRR · Life Tak"],["sindoor","Op Sindoor"],["sutra","Sutra"],["cv-emergency-ai","AI cover"],["anthem2","Jana Gana Mana"],["ev-woman","Stage visuals"],["apop","A-POP"],["sp-konark","AAA · Konark"],["tamil-launch","India Today Tamil"],["mo-At683cY066E","Mo AI TV"],["anchors5","AI anchors"],["promo2","AI promo"]];
+const FR=[["lifetak","RRRR · Life Tak"],["sindoor","Op Sindoor"],["sutra","Sutra"],["cv-emergency-ai","AI cover"],["anthem2","Jana Gana Mana"],["ev-woman","Stage visuals"],["apop","A-POP"],["sp-konark","AAA · Konark"],["tamil-launch","India Today Tamil"],["mo-At683cY066E","Mo AI TV"],["info-climate","AI infographic"],["suzan","Suzan"],["promo2","AI promo"]];
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 let pg=0;
 function drawMV(){const order=[0,1,2,3,4,5].map(k=>FR[(pg+k)%FR.length]);
@@ -484,8 +487,7 @@ const SH=[
 let shi=0;
 function drawShows(){$("#shows").innerHTML=SH.map((h,i)=>`<button class="show" id="show-${h.k}" data-i="${i}" aria-pressed="${i===shi}"><b>${h.t}</b><span>${h.s}</span></button>`).join("");
   const h=SH[shi];$("#rail").innerHTML=h.e.map(e=>`<a class="ep" href="${yt(e[2])}" target="_blank" rel="noopener"><div class="thumb"><img src="img/${e[0]}.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span></div><small>${h.t}</small><h4>${e[1]}</h4></a>`).join("");}
-$("#shows").addEventListener("click",e=>{const b=e.target.closest(".show");if(b){shi=+b.dataset.i;drawShows()}});
-drawShows();
+if($("#shows")){$("#shows").addEventListener("click",e=>{const b=e.target.closest(".show");if(b){shi=+b.dataset.i;drawShows()}});drawShows();}
 
 /* gallery */
 const CATS=[["all","All work"],["air","Anchors"],["film","Film & drama"],["lang","Language"],["music","Music & characters"],["design","Print & visuals"],["brand","Brands & events"],["engine","Newsroom"]];
@@ -519,10 +521,10 @@ const ITEMS=[
  b:"A real-time anchor made with BharatGen for the India AI Impact Summit.",
  f:["Summarised summit sessions live and added context as they happened.","Runs on BharatGen's sovereign, multimodal models tuned for Indian languages.","Showcased by MeitY at Bharat Mandapam, New Delhi, 16 to 20 February 2026.","Built to the AI Sandwich model: human intent, AI assist, human sign-off."],
  l:[["Watch the launch","https://www.businesstoday.in/bt-tv/whats-hot/video/india-today-launches-ai-anchor-sutra-at-ai-impact-summit-redefining-the-future-of-news-broadcasting-516710-2026-02-18",1],["Business Today","https://www.businesstoday.in/india/story/india-today-group-debuts-ai-news-anchor-sutra-at-ai-impact-summit-2026-516611-2026-02-17"]]},
-{c:"air",gl:"anchor",y:"",k:"AI anchors",t:"Suzan and the wider anchor family",
- b:"More virtual presenters across the network.",
- f:["The group has introduced AI presenters for several channels and formats beyond those listed here."],
- n:"No public mention of Suzan found. Send her channel, launch date, a still and a clip, plus any other anchors to include."},
+{c:"air",img:"suzan",y:"",k:"AI anchor",t:"Suzan, host of In Da Club",
+ b:"India Today's AI presenter for entertainment, on the In Da Club set.",
+ f:["Suzan presents In Da Club, India Today's entertainment segment, from a virtual studio.","She joins Sana, Sutra and the regional anchors in the group's growing family of AI presenters."],
+ n:"Send Suzan's launch date and a clip link."},
 {c:"lang",img:"pm-bengali",y:"May 2024",k:"AI dubbing",t:"One interview, six languages",
  b:"The Prime Minister's interview, heard in Bhojpuri, Marathi, Bengali, Punjabi, Odia and English.",
  gal:["pm-bhojpuri","pm-marathi","pm-punjabi","pm-odia","pm-english"],
@@ -563,7 +565,7 @@ const ITEMS=[
  gal:["promo1","promo3","promo4"],
  f:["AI Summit 2026 promo for India Today.","Elections 2026 results-day promo for India Today and Aaj Tak.","US midterm elections analysis promo.","Aaj Tak Vertical launch promo with Anjana Om Kashyap."],
  l:[["AI Summit 2026",yt("euHV7hdKw70"),1],["Results Day 2026",yt("XVdTXIQh4tc")],["US midterms",yt("dtTeXgdnNSQ")],["Aaj Tak Vertical",yt("BibzhCkuDbE")]]},
-{c:"film",img:"sp-konark",v:1,y:"2025 – 2026",k:"AI-assisted specials",t:"Specials, made with AI",
+{c:"film",img:"sp-konark",v:1,eps:1,y:"2025 – 2026",k:"AI-assisted specials",t:"Specials, made with AI",
  b:"Adbhut Avishvasniya Akalpniya, Patliputra, Sarkar and more: history and legend, visualised.",
  gal:["sp-jagannath","sp-patli1","sp-sarkar1","sp-modi"],
  f:["Adbhut Avishvasniya Akalpniya with Sweta Singh: eight episodes on temples, legends and lost places.","Patliputra: three episodes on Bihar's history ahead of the assembly election.","Sarkar: three episodes on how Uttar Pradesh's politics changed.","Muqaddar Ka Sikandar: a birthday special on PM Modi's political journey."],
@@ -571,10 +573,13 @@ const ITEMS=[
 
 {c:"design",img:"cover-citizen",y:"2023 – 2025",k:"Magazine",t:"Magazine covers made with AI",
  b:"From eight reimagined classics to AI imagery on this year's newsstand.",
- gal:["cover-job","cv-emergency-orig","cv-emergency-ai","cv-cup-orig","cv-cup-ai"],
- f:["Eight iconic covers from 1975 to 2014 were redesigned by AI and shown side by side with the originals.","AI-made cover imagery now runs on India Today, including \"Who Moved My Job?\" and \"Who Is a Citizen?\" in 2025.","Concept by Vibhor Gandotra; designed by Group Creative Editor Nilanjan Das with AI."],
- l:[["Compare original vs AI","#covers",1]],
- n:"Send any AI-made infographics to add here."},
+ gal:["cover-job","cv-emergency-ai","cv-space-ai","cv-licence-ai","cv-bombay-ai","cv-beauty-ai","cv-cup-ai","cv-young-ai","cv-conqueror-ai"],
+ f:["AI-made cover imagery runs on India Today, including \"Who Moved My Job?\" and \"Who Is a Citizen?\" in 2025.","AI Reimagines Iconic India Moments: eight defining covers from 1975 to 2014, redesigned by AI with its own vision and style.","Concept by Vibhor Gandotra; designed by Group Creative Editor Nilanjan Das with AI."],
+ l:[["Compare original vs AI","#covers",1]]},
+{c:"design",img:"info-climate",y:"",k:"Infographics",t:"Infographics built with AI",
+ b:"Data stories set inside AI-generated 3D worlds, from climate to conflict.",
+ gal:["info-manipur"],
+ f:["The Era of Extreme Weather: India's climate data mapped across an AI-built landscape of mountains, floods, drought and ocean. Graphic by Nilanjan Das.","The Tragic Divide: Manipur's ethnic map, populations and broken highway on a 3D terrain. Graphic by Tanmoy Chakraborty."]},
 
 {c:"design",img:"interactive",y:"",k:"Visual & interactive",t:"Visual and interactive stories",
  b:"Stories you scroll, tap and explore, built with AI.",
@@ -597,7 +602,7 @@ const ITEMS=[
  b:"An integrated AI video workflow turns one broadcast into chapters, moments, headlines and shorts.",
  f:["Context-based chapters: AI splits a long report into topic chapters.","Virality-based key moments: AI picks the clips most likely to travel.","Tailored metadata: AI suggests headlines for each platform.","Re-purposed short-form videos: vertical news feeds built from the same source.","The result: faster conversion across templates and platforms."]}
 ];
-const TL=[["Mar 2023","Sana debuts","India's first AI news anchor",1],["Aug 2023","Anthem film","Freedom fighters sing Jana Gana Mana"],["2023","Anjana 2.0","First AI twin of a living anchor"],["Oct 2023","Five more anchors","Marathi, Bhojpuri, Bengali, Hindi, English"],["May 2024","PM in six languages","AI translation of a landmark interview",1],["2024","INMA award","Sana wins Best Use of AI",1],["Mar 2025","A-POP","Aishan and Ruh release their first songs",1],["May 2025","Operation Sindoor","100 hours reconstructed with AI",1],["2025","AI on the cover","AI imagery on the newsstand"],["Feb 2026","Sutra + charter","Sovereign AI anchor and nine-point charter",1],["May 2026","Pragya","Newsroom platform built with Google"],["May 2026","Live Tamil feed","English news, dubbed live into Tamil",1],["Aug 2026","India Today Tamil","A new Tamil channel launches"],["Oct 2026","Life Tak + RRRR","AI-aided Ramayan in vertical video",1]];
+const TL=[["Mar 2023","Sana debuts","India's first AI news anchor",1],["Aug 2023","Anthem film","Freedom fighters sing Jana Gana Mana"],["2023","Anjana 2.0","First AI twin of a living anchor"],["Oct 2023","Five more anchors","Marathi, Bhojpuri, Bengali, Hindi, English"],["May 2024","PM in six languages","AI translation of a landmark interview",1],["2024","INMA award","Sana wins Best Use of AI",1],["Mar 2025","A-POP","Aishan and Ruh release their first songs",1],["May 2025","Operation Sindoor","100 hours reconstructed with AI",1],["2025","AI on the cover","AI covers and 3D infographics in print"],["Feb 2026","Sutra + charter","Sovereign AI anchor and nine-point charter",1],["May 2026","Pragya","Newsroom platform built with Google"],["May 2026","Live Tamil feed","English news, dubbed live into Tamil",1],["Aug 2026","India Today Tamil","A new Tamil channel launches"],["Oct 2026","Life Tak + RRRR","AI-aided Ramayan in vertical video",1]];
 
 $("#tl").innerHTML=TL.map(e=>`<li class="${e[3]?'big':''}"><time>${e[0]}</time><b>${e[1]}</b><span>${e[2]}</span></li>`).join("");
 const media=(i,big)=>i.img?`<img src="img/${i.img}.jpg" alt="" loading="lazy">${i.v&&!big?'<span class="play" aria-hidden="true"></span>':''}${i.gal&&!big?`<span class="count">+${i.gal.length}</span>`:''}`:`<div class="glyph"><span class="tag">${i.k}</span>${G[i.gl]}</div>`;
@@ -608,7 +613,7 @@ $("#filters").addEventListener("click",e=>{const b=e.target.closest(".chip");if(
 const dlg=$("#dlg");
 $("#grid").addEventListener("click",e=>{const b=e.target.closest(".card");if(!b)return;const i=ITEMS[b.dataset.i];
   const top=i.gal?`<div class="gal">${[i.img,...i.gal.filter(g=>g!==i.img)].map(g=>`<img src="img/${g}.jpg" alt="">`).join("")}</div>`:`<div class="dthumb${i.fit?' fit':''}">${media(i,1)}</div>`;
-  dlg.innerHTML=`<button class="x" id="dlgClose" aria-label="Close">×</button>${top}<div class="dbody"><div style="display:flex;justify-content:space-between;gap:10px"><span class="kind">${i.k}</span><span class="yr">${i.y}</span></div><h3 id="dTitle">${i.t}</h3><p>${i.b}</p><ul>${i.f.map(f=>`<li>${f}</li>`).join("")}</ul>${(L=>L.length?`<div class="links">${L.map(l=>`<a class="${l[2]?'primary':''}" href="${l[1]}" ${l[1].startsWith('#')?'data-jump="1"':'target="_blank" rel="noopener"'}>${l[2]&&!l[1].startsWith('#')?'▶ ':''}${l[0]}</a>`).join("")}</div>`:"")((i.l||[]).filter(l=>!l[1].startsWith("#")||document.querySelector(l[1])))}${i.n?`<div class="note"><b>Curator note</b>${i.n}</div>`:""}</div>`;
+  dlg.innerHTML=`<button class="x" id="dlgClose" aria-label="Close">×</button>${top}<div class="dbody"><div style="display:flex;justify-content:space-between;gap:10px"><span class="kind">${i.k}</span><span class="yr">${i.y}</span></div><h3 id="dTitle">${i.t}</h3><p>${i.b}</p><ul>${i.f.map(f=>`<li>${f}</li>`).join("")}</ul>${(L=>L.length?`<div class="links">${L.map(l=>`<a class="${l[2]?'primary':''}" href="${l[1]}" ${l[1].startsWith('#')?'data-jump="1"':'target="_blank" rel="noopener"'}>${l[2]&&!l[1].startsWith('#')?'▶ ':''}${l[0]}</a>`).join("")}</div>`:"")((i.l||[]).filter(l=>!l[1].startsWith("#")||document.querySelector(l[1])))}${i.eps?`<div class="eplist">${SH.map(h=>`<div><b>${h.t}</b><div class="links">${h.e.map(e=>`<a href="${yt(e[2])}" target="_blank" rel="noopener">${e[1]}</a>`).join("")}</div></div>`).join("")}</div>`:""}${i.n?`<div class="note"><b>Curator note</b>${i.n}</div>`:""}</div>`;
   dlg.showModal()});
 dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.id==="dlgClose"||e.target.dataset.jump)dlg.close()});
 $("#needList").innerHTML=ITEMS.filter(i=>i.n).map(i=>`<li><b>${i.t}:</b> ${i.n}</li>`).join("");

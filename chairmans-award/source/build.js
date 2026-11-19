@@ -72,13 +72,13 @@ async function icon(Comp, color) {
   s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Team" });
   kicker(s, "THE TEAM");
   s.addText("TWO PEOPLE. A WHOLE GROUP BEHIND THEM", { placeholder: "title" });
-  const people = [["Poulomi Saha", "Emp ID: [to be added]"], ["Puneet Nayak", "Emp ID: [to be added]"]];
+  const people = [["Poulomi Saha", "Emp ID: T08226"], ["Puneet Nayak", "Emp ID: T07577"]];
   for (let i = 0; i < 2; i++) {
     const y = 2.4 + i * 1.25;
     s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y, w: 6.4, h: 1.05, fill: { color: GREY }, line: { color: GREY, width: 0 } });
     await iconCircle(s, fa.FaUser, 0.85, y + 0.17, 0.7, RED, WHITE);
     T(s, people[i][0], { x: 1.8, y: y + 0.17, w: 5, h: 0.42, fontFace: HEAD, fontSize: 24, color: INK });
-    T(s, people[i][1], { x: 1.8, y: y + 0.6, w: 5, h: 0.3, fontSize: 14, color: RED, italic: true });
+    T(s, people[i][1], { x: 1.8, y: y + 0.6, w: 5, h: 0.3, fontSize: 14, color: MUTE });
   }
   T(s, [
     { text: "Team Name:  ", options: { bold: true, color: INK } }, { text: "The 3C Project — Candid Constructive Conversations", options: { color: INK, breakLine: true } },
@@ -90,28 +90,30 @@ async function icon(Comp, color) {
     objectName: "Team photo placeholder" });
   await iconCircle(s, fa.FaCamera, 9.85, 3.9, 0.8, WHITE, MUTE);
   T(s, "Team group picture", { x: 7.75, y: 4.85, w: 5.0, h: 0.4, fontSize: 16, color: MUTE, align: "center" });
-  s.addNotes("Two-member core team — Poulomi Saha and Puneet Nayak — supported by video editing, shoot, camera and studio teams across ITG. SBU & Department: Vice-Chairperson's Office. Still to add: Employee IDs and the team photo.");
+  s.addNotes("Two-member core team — Poulomi Saha and Puneet Nayak — supported by video editing, shoot, camera and studio teams across ITG. SBU & Department: Vice-Chairperson's Office. Still to add: the team photo.");
 
   // ---------- 3. Situation ----------
   pres.addSection({ title: "Situation" });
   s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Situation" });
   kicker(s, "SITUATION");
-  s.addText("INDIA IS TALKING LOUDER — AND LISTENING LESS", { placeholder: "title" });
+  s.addText("ONE BRIEF: FIND THE COMMON GROUND", { placeholder: "title" });
+  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 2.35, w: 6.45, h: 1.75, fill: { color: GREY }, line: { color: GREY, width: 0 } });
+  tag(s, "AP SIR'S BRIEF", 0.85, 2.55, 1.9, 0.38, 14);
+  T(s, "Build an initiative to curb polarisation: bring together people and communities who disagree with each other, and help them find common ground.",
+    { x: 0.85, y: 3.05, w: 6.0, h: 0.9, fontSize: 14.5, bold: true, color: INK });
+  T(s, [{ text: "Our answer: 3C", options: { color: RED } }, { text: "  — an IP first shaped with Vibhor G", options: { color: MUTE, fontFace: BODY, fontSize: 12, italic: true } }],
+    { x: 0.6, y: 4.3, w: 6.45, h: 0.4, fontFace: HEAD, fontSize: 20 });
   const sit = [
-    [fa.FaBolt, "A polarised public square", "Caste, faith, youth and justice divide families, campuses and timelines."],
-    [fa.FaTv, "Debate TV rewards noise", "Politicians, experts and anchors perform for their side. The middlemen own the conversation."],
-    [fa.FaUsers, "Real people go unheard", "Those whose lives are shaped by these issues rarely get to speak to each other."],
+    [fa.FaUserSlash, "No middlemen", "No politicians, experts, journalists or anchors in the conversation."],
+    [fa.FaUsers, "Lived experience first", "Common people whose lives are shaped by the issue, holding divergent views."],
+    [fa.FaHandshake, "From clash to conversation", "Not about winning: candid, constructive and solution-oriented."],
   ];
   for (let i = 0; i < 3; i++) {
-    const y = 2.35 + i * 1.1;
-    await iconCircle(s, sit[i][0], 0.6, y, 0.75, RED, WHITE);
-    T(s, sit[i][1], { x: 1.6, y: y - 0.02, w: 5.3, h: 0.42, fontSize: 18, bold: true, color: INK });
-    T(s, sit[i][2], { x: 1.6, y: y + 0.4, w: 5.3, h: 0.6, fontSize: 13, color: MUTE });
+    const y = 4.85 + i * 0.68;
+    await iconCircle(s, sit[i][0], 0.6, y, 0.52, RED, WHITE);
+    T(s, [{ text: sit[i][1] + "  ", options: { bold: true, color: INK } }, { text: sit[i][2], options: { color: MUTE, fontSize: 12 } }],
+      { x: 1.3, y: y - 0.04, w: 5.75, h: 0.6, fontSize: 14, valign: "middle" });
   }
-  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 5.75, w: 6.45, h: 1.0, fill: { color: GREY }, line: { color: GREY, width: 0 } });
-  T(s, [{ text: "The spark: ", options: { bold: true, color: RED } },
-        { text: "a brief from Aroon Purie to curb polarisation by finding common ground between communities that disagree. 3C grew out of it, first shaped with Vibhor G.", options: { color: INK } }],
-    { x: 0.85, y: 5.85, w: 6.0, h: 0.8, fontSize: 12.5, valign: "middle" });
   photo(s, "9_c.jpg", 7.4, 2.35, 5.35, 2.3, "Five women in a 3C studio conversation");
   s.addShape(pres.shapes.RECTANGLE, { x: 7.4, y: 4.65, w: 5.35, h: 2.1, fill: { color: INK }, line: { color: INK, width: 0 } });
   T(s, [{ text: "THIS IS NOT A DEBATE.", options: { color: WHITE, breakLine: true } },
@@ -119,7 +121,7 @@ async function icon(Comp, color) {
     { x: 7.75, y: 4.85, w: 4.75, h: 0.95, fontFace: HEAD, fontSize: 24, lineSpacingMultiple: 1.0 });
   T(s, "Common people with divergent views, grounded in lived experience, looking for the common ground lost in the noise.",
     { x: 7.75, y: 5.85, w: 4.75, h: 0.75, fontSize: 12.5, color: WHITE });
-  s.addNotes("The problem: polarised discourse and a debate culture that rewards noise. 3C removes the middlemen and puts people with lived experience in conversation with each other. The idea came from AP Sir (Aroon Purie): something to curb polarisation by finding common ground between communities that disagree. The IP was initially started with Vibhor G.");
+  s.addNotes("It began with AP Sir's brief: an initiative to curb polarisation by finding common ground between people and communities who disagree. 3C removes the middlemen and puts people with lived experience in conversation with each other. The idea came from AP Sir (Aroon Purie): something to curb polarisation by finding common ground between communities that disagree. The IP was initially started with Vibhor G.");
 
   // ---------- 4. Challenges ----------
   pres.addSection({ title: "Challenges" });
@@ -210,11 +212,11 @@ async function icon(Comp, color) {
   kicker(s, "IMPACT");
   s.addText("A NEW IP — LAUNCHED, SUSTAINED, HEARD", { placeholder: "title" });
   const stats = [["~1.48M+", "views for Ep 1: Caste Reservations"], ["~4.7K", "live X Spaces tune-ins*"], ["6–7K+", "views per Reddit thread"]];
-  photo(s, "8_c.jpg", 9.05, 2.15, 3.7, 1.6, "Two 3C participants mid-conversation");
+  photo(s, "8_c.jpg", 9.05, 2.15, 3.7, 2.0, "Two 3C participants mid-conversation");
   for (let i = 0; i < 3; i++) {
     const x = 0.6 + i * 2.85;
-    T(s, stats[i][0], { x, y: 2.2, w: 2.7, h: 0.95, fontFace: HEAD, fontSize: 50, color: RED, valign: "middle" });
-    T(s, stats[i][1], { x, y: 3.15, w: 2.5, h: 0.55, fontSize: 13, color: MUTE });
+    T(s, stats[i][0], { x, y: 2.35, w: 2.7, h: 0.95, fontFace: HEAD, fontSize: 50, color: RED, valign: "middle" });
+    T(s, stats[i][1], { x, y: 3.3, w: 2.5, h: 0.55, fontSize: 13, color: MUTE });
   }
   const imp = [
     [fa.FaRocket, "A new IP, launched and sustained", "Unlike any usual format in the market — kept going, episode after episode."],
@@ -222,9 +224,9 @@ async function icon(Comp, color) {
     [fa.FaBalanceScale, "The hardest topics, handled civilly", "Common ground found on several points across many episodes."],
     [fa.FaGlobe, "One conversation, every platform", "Episodes, social media, X Spaces with the general audience, and TV expert debates."],
   ];
-  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 3.95, w: 12.15, h: 2.65, fill: { color: GREY }, line: { color: GREY, width: 0 } });
+  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 4.4, w: 12.15, h: 2.25, fill: { color: GREY }, line: { color: GREY, width: 0 } });
   for (let i = 0; i < 4; i++) {
-    const x = 0.85 + (i % 2) * 6.0, y = 4.2 + Math.floor(i / 2) * 1.2;
+    const x = 0.85 + (i % 2) * 6.0, y = 4.6 + Math.floor(i / 2) * 1.05;
     await iconCircle(s, imp[i][0], x, y, 0.65, RED, WHITE);
     T(s, imp[i][1], { x: x + 0.85, y: y - 0.02, w: 4.95, h: 0.36, fontSize: 15.5, bold: true, color: INK });
     T(s, imp[i][2], { x: x + 0.85, y: y + 0.36, w: 4.95, h: 0.6, fontSize: 12.5, color: MUTE });

@@ -15,7 +15,8 @@ W, H = 1920, 1080
 K_END = 39.05                      # Kalli clip 0 -> 39.05
 B1, B2, B3 = 16.64, 24.96, 30.76   # b-roll windows inside Kalli's audio
 V3_IN, V3_OUT = 0.40, 14.60        # testimonial, trimmed of screen-recording jerks
-T_V3 = K_END
+SP = 1.2                           # Kalli clip playback speed
+T_V3 = K_END / SP
 T_MORPH = T_V3 + (V3_OUT - V3_IN)  # 53.25
 MORPH_LEN = 9.6
 T_END = T_MORPH + MORPH_LEN        # 62.85
@@ -75,7 +76,7 @@ c = Image.open(f"{D}/paper.png").convert("RGBA")
 lg = Image.open(f"{V2DIR}/logo.png").convert("RGBA"); lw = 700
 lg = lg.resize((lw, int(lw * lg.height / lg.width)), Image.LANCZOS)
 c.alpha_composite(lg, ((W - lw) // 2, 150))
-t = tag_img("THE WHOLE UNIT", 60); c.alpha_composite(t, ((W - t.width) // 2, 560))
+t = tag_img("OUR UNIT", 60); c.alpha_composite(t, ((W - t.width) // 2, 560))
 d = ImageDraw.Draw(c)
 for txt, f, col, y in [("Poulomi Saha   ·   Puneet Nayak", ImageFont.truetype(POP_B, 54), INK, 700),
                        ("Vice-Chairperson's Office, India Today Group", ImageFont.truetype(POP_R, 32), (80, 80, 80), 790),
@@ -100,7 +101,7 @@ part = [(0.54, 3.80, "I think all of us started in very opposite directions."),
         (7.14, 9.98, "and that is the beauty of India — a multicultural society."),
         (10.16, 12.08, "It was very nice, very democratic."),
         (12.36, 14.10, "Very democratic — you allowed different ideas.")]
-subs = kalli + [(T_V3 + s - V3_IN, T_V3 + e - V3_IN, x) for s, e, x in part]
+subs = [(a / SP, b / SP, x) for a, b, x in kalli] + [(T_V3 + s - V3_IN, T_V3 + e - V3_IN, x) for s, e, x in part]
 
 
 def ts(t):
@@ -122,7 +123,7 @@ Style: Sub,Poppins SemiBold,46,&H00FFFFFF,&H00FFFFFF,&H00111111,&H96000000,0,0,0
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 for s, e, x in subs:
-    ass += f"Dialogue: 0,{ts(s)},{ts(min(e + 0.15, K_END - 0.05) if s < K_END else e + 0.15)},Sub,,0,0,0,,{x}\n"
+    ass += f"Dialogue: 0,{ts(s)},{ts(min(e + 0.15, T_V3 - 0.05) if s < T_V3 else e + 0.15)},Sub,,0,0,0,,{x}\n"
 open(f"{D}/subs.ass", "w").write(ass)
 
 # ---------------- ffmpeg graph ----------------
@@ -130,9 +131,17 @@ NORM = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={
 inputs = ["-i", f"{SRC}/v1.mp4", "-i", f"{SRC}/v2.mp4", "-i", f"{SRC}/v3.mp4",
           "-loop", "1", "-t", "6", "-i", f"{IMG}/5_c.jpg",
           "-loop", "1", "-t", "6", "-i", f"{IMG}/9_c.jpg",
-          "-loop", "1", "-t", f"{END_LEN}", "-i", END_PNG]
-for p in (OV_KALLI, OV_UNIT, OV_PART, OV_WM):
+          "-loop", "1", "-t", f"{END_LEN}", "-i", END_PNG,
+          "-loop", "1", "-t", "7", "-i", f"{IMG}/6_c.jpg",
+          "-loop", "1", "-t", "7", "-i", f"{IMG}/7_c.jpg"]
+for p in (OV_KALLI, OV_PART, OV_WM):
     inputs += ["-loop", "1", "-t", f"{TOTAL}", "-i", p]
+
+
+def tilt(idx, dur, label, frac=0.4):
+    # portrait-ish still: fill the width, slow downward tilt
+    return (f"[{idx}:v]scale={W}:-2:flags=lanczos,fps=25,trim=duration={dur},setpts=PTS-STARTPTS,"
+            f"crop={W}:{H}:x=0:y='(ih-{H})*{frac}*(1-t/{dur})',setsar=1,format=yuv420p[{label}]")
 
 
 def pan(idx, dur, label):
@@ -142,13 +151,18 @@ def pan(idx, dur, label):
 
 
 fc = [
-    f"[0:v]trim=0:{B1},setpts=PTS-STARTPTS,{NORM}[ka]",
+    # Kalli visuals, built in source time, then sped up as one track
+    f"[0:v]trim=0:7.74,setpts=PTS-STARTPTS,{NORM}[ka]",
+    pan(6, 13.42 - 7.74, "st6"),
+    f"[0:v]trim=13.42:{B1},setpts=PTS-STARTPTS,{NORM}[kc]",
     pan(3, (B2 - B1) / 2, "st5"),
     pan(4, (B2 - B1) / 2, "st9"),
-    f"[0:v]trim={B2}:{B3},setpts=PTS-STARTPTS,{NORM}[kb]",
+    f"[0:v]trim={B2}:27.60,setpts=PTS-STARTPTS,{NORM}[kb]",
+    tilt(7, B3 - 27.60, "st7", 0.12),
     f"[1:v]trim=12.30:{12.30 + K_END - B3},setpts=PTS-STARTPTS,{NORM}[eps]",
-    "[ka][st5][st9][kb][eps]concat=n=5:v=1:a=0[kvid]",
-    f"[0:a]atrim=0:{K_END},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
+    "[ka][st6][kc][st5][st9][kb][st7][eps]concat=n=8:v=1:a=0[kvid0]",
+    f"[kvid0]setpts=PTS/{SP},fps=25[kvid]",
+    f"[0:a]atrim=0:{K_END},asetpts=PTS-STARTPTS,atempo={SP},aresample=48000,aformat=channel_layouts=stereo,"
     f"loudnorm=I=-16:TP=-1.5:LRA=11,afade=t=in:d=0.3[kaud]",
     f"[2:v]trim={V3_IN}:{V3_OUT},setpts=PTS-STARTPTS,crop=1340:754:40:0,{NORM}[v3v]",
     f"[2:a]atrim={V3_IN}:{V3_OUT},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
@@ -161,10 +175,9 @@ fc = [
     "[mv][endv]concat=n=2:v=1:a=0[mv2]",
     "[pv][pa][mv2][ma]concat=n=2:v=1:a=1[cv][ca]",
     "[cv]fade=t=in:st=0:d=0.4[c0]",
-    f"[c0][6:v]overlay=0:0:enable='between(t,0.6,6.2)'[c1]",
-    f"[c1][7:v]overlay=0:0:enable='between(t,13.9,17.6)'[c2]",
-    f"[c2][8:v]overlay=0:0:enable='between(t,{T_V3 + 0.3},{T_V3 + 4.5})'[c3]",
-    f"[c3][9:v]overlay=0:0:enable='between(t,0,{B3})+between(t,{T_V3},{T_MORPH})'[c4]",
+    f"[c0][8:v]overlay=0:0:enable='between(t,0.5,6.3)'[c1]",
+    f"[c1][9:v]overlay=0:0:enable='between(t,{T_V3 + 0.3},{T_V3 + 4.5})'[c3]",
+    f"[c3][10:v]overlay=0:0:enable='between(t,0,{27.60 / SP})+between(t,{T_V3},{T_MORPH})'[c4]",
     f"[c4]ass={D}/subs.ass[outv]",
 ]
 cmd = ["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fc), "-map", "[outv]", "-map", "[ca]",
